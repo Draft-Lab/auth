@@ -1,6 +1,6 @@
 {
 	"name": "@draftlab/auth",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"type": "module",
 	"description": "Core implementation for @draftlab/auth",
 	"author": "Matheus Pergoli",
@@ -38,11 +38,9 @@
 	"license": "MIT",
 	"scripts": {
 		"build": "tsdown",
-		"deploy": "tsdown && changeset publish",
 		"clean": "rm -rf dist .turbo node_modules"
 	},
 	"devDependencies": {
-		"@changesets/cli": "^2.29.5",
 		"@draftlab/tsconfig": "workspace:*",
 		"@types/node": "^24.0.12",
 		"tsdown": "^0.12.9",

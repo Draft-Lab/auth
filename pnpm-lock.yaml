@@ -11,6 +11,9 @@ importers:
       '@biomejs/biome':
         specifier: ^2.1.1
         version: 2.1.1
+      '@changesets/cli':
+        specifier: ^2.29.5
+        version: 2.29.5
       '@turbo/gen':
         specifier: ^2.5.4
         version: 2.5.4(@types/node@24.0.12)(typescript@5.8.3)
@@ -39,9 +42,6 @@ importers:
         specifier: ^1.0.0
         version: 1.16.0
     devDependencies:
-      '@changesets/cli':
-        specifier: ^2.29.5
-        version: 2.29.5
       '@draftlab/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/typescript

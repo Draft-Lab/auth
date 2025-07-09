@@ -1,0 +1,65 @@
+{
+	"name": "@draftlab/auth",
+	"version": "0.13.0",
+	"type": "module",
+	"description": "Draft Auth Core",
+	"author": "Matheus Pergoli",
+	"main": "dist/index.js",
+	"typings": "dist/index.d.ts",
+	"files": [
+		"src",
+		"dist"
+	],
+	"exports": {
+		".": {
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		},
+		"./*": {
+			"import": "./dist/*.js",
+			"types": "./dist/*.d.ts"
+		},
+		"./ui": {
+			"import": "./dist/ui/index.js",
+			"types": "./dist/ui/index.d.ts"
+		}
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/matheuspergoli/draftauth-test.git"
+	},
+	"bugs": {
+		"url": "https://github.com/matheuspergoli/draftauth-test/issues"
+	},
+	"license": "MIT",
+	"scripts": {
+		"build": "tsup",
+		"deploy": "tsup && changeset publish",
+		"clean": "rm -rf dist .turbo node_modules"
+	},
+	"devDependencies": {
+		"@changesets/cli": "^2.29.5",
+		"@draftlab/tsconfig": "workspace:*",
+		"@types/node": "^24.0.12",
+		"tsup": "^8.5.0",
+		"typescript": "^5.8.3",
+		"valibot": "^1.1.0"
+	},
+	"peerDependencies": {
+		"@libsql/client": "^0.15.0",
+		"unstorage": "^1.0.0"
+	},
+	"peerDependenciesMeta": {
+		"@libsql/client": {
+			"optional": true
+		},
+		"unstorage": {
+			"optional": true
+		}
+	},
+	"dependencies": {
+		"@draftlab/router": "workspace:*",
+		"@standard-schema/spec": "^1.0.0",
+		"jose": "^6.0.11"
+	}
+}

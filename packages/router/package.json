@@ -1,5 +1,6 @@
 {
 	"name": "@draftlab/router",
+	"private": true,
 	"version": "0.1.0",
 	"type": "module",
 	"description": "Minimal router implementation for @draftlab/auth",

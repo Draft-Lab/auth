@@ -23,7 +23,7 @@ importers:
 
   packages/core:
     dependencies:
-      '@draftlab/router':
+      '@draftlab/auth-router':
         specifier: workspace:*
         version: link:../router
       '@libsql/client':
@@ -60,6 +60,9 @@ importers:
       '@draftlab/tsconfig':
         specifier: workspace:*
         version: link:../../tooling/typescript
+      tsdown:
+        specifier: ^0.12.9
+        version: 0.12.9(typescript@5.8.3)
       typescript:
         specifier: ^5.8.3
         version: 5.8.3

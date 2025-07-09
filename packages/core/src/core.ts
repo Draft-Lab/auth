@@ -2,10 +2,10 @@
  * Core issuer implementation.
  */
 
-import { Router } from "@draftlab/router"
-import { deleteCookie, getCookie, setCookie } from "@draftlab/router/cookies"
-import { cors } from "@draftlab/router/middleware/cors"
-import type { RouterContext } from "@draftlab/router/types"
+import { Router } from "@draftlab/auth-router"
+import { deleteCookie, getCookie, setCookie } from "@draftlab/auth-router/cookies"
+import { cors } from "@draftlab/auth-router/middleware/cors"
+import type { RouterContext } from "@draftlab/auth-router/types"
 import { CompactEncrypt, compactDecrypt, SignJWT } from "jose"
 import { type AllowCheckInput, defaultAllowCheck } from "./allow"
 import {

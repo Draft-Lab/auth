@@ -1,24 +1,52 @@
 {
-	"name": "@draftlab/router",
-	"private": true,
-	"version": "0.1.0",
-	"type": "module",
+	"name": "@draftlab/auth-router",
+	"version": "0.0.1",
 	"description": "Minimal router implementation for @draftlab/auth",
+	"author": "Matheus Pergoli",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Draft-Lab/auth.git",
+		"directory": "packages/router"
+	},
+	"homepage": "https://github.com/Draft-Lab/auth",
+	"keywords": [
+		"router",
+		"http",
+		"auth",
+		"draftlab",
+		"typescript"
+	],
+	"scripts": {
+		"clean": "rm -rf dist .turbo node_modules",
+		"build": "tsdown"
+	},
+	"type": "module",
+	"main": "dist/index.js",
+	"typings": "dist/index.d.ts",
 	"exports": {
 		".": {
-			"import": "./src/index.ts",
-			"types": "./src/index.ts"
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
 		},
 		"./*": {
-			"import": "./src/*.ts",
-			"types": "./src/*.ts"
+			"import": "./dist/*.js",
+			"types": "./dist/*.d.ts"
 		}
 	},
-	"scripts": {
-		"clean": "rm -rf dist .turbo node_modules"
+	"sideEffects": false,
+	"files": [
+		"dist"
+	],
+	"engines": {
+		"node": ">=18"
 	},
 	"devDependencies": {
 		"@draftlab/tsconfig": "workspace:*",
+		"tsdown": "^0.12.9",
 		"typescript": "^5.8.3"
+	},
+	"publishConfig": {
+		"access": "public"
 	}
 }

@@ -1,8 +1,8 @@
 {
 	"name": "@draftlab/auth",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"type": "module",
-	"description": "Core implementation",
+	"description": "Core implementation for @draftlab/auth",
 	"author": "Matheus Pergoli",
 	"main": "dist/index.js",
 	"typings": "dist/index.d.ts",
@@ -17,19 +17,24 @@
 		"./*": {
 			"import": "./dist/*.js",
 			"types": "./dist/*.d.ts"
-		},
-		"./ui": {
-			"import": "./dist/ui/index.js",
-			"types": "./dist/ui/index.d.ts"
 		}
 	},
+	"sideEffects": false,
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/Draft-Lab/auth.git"
+		"url": "https://github.com/Draft-Lab/auth.git"
 	},
 	"bugs": {
 		"url": "https://github.com/Draft-Lab/auth/issues"
 	},
+	"homepage": "https://github.com/Draft-Lab/auth",
+	"keywords": [
+		"auth",
+		"oauth",
+		"authentication",
+		"draftlab",
+		"typescript"
+	],
 	"license": "MIT",
 	"scripts": {
 		"build": "tsdown",
@@ -56,8 +61,14 @@
 		}
 	},
 	"dependencies": {
-		"@draftlab/router": "workspace:*",
+		"@draftlab/auth-router": "workspace:*",
 		"@standard-schema/spec": "^1.0.0",
 		"jose": "^6.0.11"
+	},
+	"engines": {
+		"node": ">=18"
+	},
+	"publishConfig": {
+		"access": "public"
 	}
 }

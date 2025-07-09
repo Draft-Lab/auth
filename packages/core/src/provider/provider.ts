@@ -1,5 +1,5 @@
-import type { Router } from "@draftlab/router"
-import type { RouterContext } from "@draftlab/router/types"
+import type { Router } from "@draftlab/auth-router"
+import type { RouterContext } from "@draftlab/auth-router/types"
 import type { StorageAdapter } from "../storage/storage"
 
 /**

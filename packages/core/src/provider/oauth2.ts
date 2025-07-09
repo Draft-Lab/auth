@@ -56,7 +56,7 @@
  * @packageDocumentation
  */
 
-import type { RouterContext } from "@draftlab/router/types"
+import type { RouterContext } from "@draftlab/auth-router/types"
 import { OauthError, type OauthErrorType } from "../error"
 import { generatePKCE } from "../pkce"
 import { generateSecureToken, timingSafeCompare } from "../random"

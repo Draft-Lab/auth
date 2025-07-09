@@ -1,13 +1,12 @@
 {
 	"name": "@draftlab/auth",
-	"version": "0.13.0",
+	"version": "0.0.1",
 	"type": "module",
-	"description": "Draft Auth Core",
+	"description": "Core implementation",
 	"author": "Matheus Pergoli",
 	"main": "dist/index.js",
 	"typings": "dist/index.d.ts",
 	"files": [
-		"src",
 		"dist"
 	],
 	"exports": {
@@ -26,10 +25,10 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/matheuspergoli/draftauth-test.git"
+		"url": "git+https://github.com/Draft-Lab/auth.git"
 	},
 	"bugs": {
-		"url": "https://github.com/matheuspergoli/draftauth-test/issues"
+		"url": "https://github.com/Draft-Lab/auth/issues"
 	},
 	"license": "MIT",
 	"scripts": {
@@ -42,8 +41,7 @@
 		"@draftlab/tsconfig": "workspace:*",
 		"@types/node": "^24.0.12",
 		"tsup": "^8.5.0",
-		"typescript": "^5.8.3",
-		"valibot": "^1.1.0"
+		"typescript": "^5.8.3"
 	},
 	"peerDependencies": {
 		"@libsql/client": "^0.15.0",

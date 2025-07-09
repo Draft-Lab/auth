@@ -238,15 +238,3 @@ eslint.config.js
 
 # cache
 **/cache/
-
-# SQLite
-*.sqlite
-
-# tanstack start
-**/.nitro
-**/.output
-**/.tanstack
-**/routeTree.gen.ts
-
-# docs
-.astro/

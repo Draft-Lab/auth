@@ -32,15 +32,15 @@
 	},
 	"license": "MIT",
 	"scripts": {
-		"build": "tsup",
-		"deploy": "tsup && changeset publish",
+		"build": "tsdown",
+		"deploy": "tsdown && changeset publish",
 		"clean": "rm -rf dist .turbo node_modules"
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.29.5",
 		"@draftlab/tsconfig": "workspace:*",
 		"@types/node": "^24.0.12",
-		"tsup": "^8.5.0",
+		"tsdown": "^0.12.9",
 		"typescript": "^5.8.3"
 	},
 	"peerDependencies": {

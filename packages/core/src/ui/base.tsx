@@ -289,6 +289,25 @@ const css = `@import url("https://unpkg.com/tailwindcss@3.4.15/src/css/preflight
 		color: var(--color-high);
 	}
 }
+
+/* Logo theme switching */
+[data-component="logo"][data-mode="light"] {
+	display: none;
+}
+
+[data-component="logo"][data-mode="dark"] {
+	display: block;
+}
+
+@media (prefers-color-scheme: light) {
+	[data-component="logo"][data-mode="light"] {
+		display: block;
+	}
+	
+	[data-component="logo"][data-mode="dark"] {
+		display: none;
+	}
+}
 `
 
 /**

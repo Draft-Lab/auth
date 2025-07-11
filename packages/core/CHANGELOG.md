@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.1.1
+
+### Patch Changes
+
+- fix logo render
+
 ## 0.1.0
 
 ### Minor Changes

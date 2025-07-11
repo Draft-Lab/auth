@@ -5,8 +5,8 @@
  * ## Quick Setup
  *
  * ```ts
- * import { CodeUI } from "@draftauth/core/ui/code"
- * import { CodeProvider } from "@draftauth/core/provider/code"
+ * import { CodeUI } from "@draftlab/auth/ui/code"
+ * import { CodeProvider } from "@draftlab/auth/provider/code"
  *
  * export default issuer({
  *   providers: {
@@ -16,7 +16,11 @@
  *           code_info: "We'll send a PIN code to your email"
  *         },
  *         sendCode: async (claims, code) => {
- *           await sendEmail(claims.email, `Your code: ${code}`)
+ *           try {
+ *             await sendEmail(claims.email, `Your code: ${code}`)
+ *           } catch {
+ *             return { type: "invalid_claim", key: "delivery", value: "Failed to send code" }
+ *           }
  *         }
  *       })
  *     )
@@ -33,12 +37,16 @@
  *     return new Response(renderCodePage(state, form, error))
  *   },
  *   sendCode: async (claims, code) => {
- *     if (claims.email) {
- *       await emailService.send(claims.email, code)
- *     } else if (claims.phone) {
- *       await smsService.send(claims.phone, code)
- *     } else {
- *       return { type: "invalid_claim", key: "contact", value: "missing" }
+ *     try {
+ *       if (claims.email) {
+ *         await emailService.send(claims.email, code)
+ *       } else if (claims.phone) {
+ *         await smsService.send(claims.phone, code)
+ *       } else {
+ *         return { type: "invalid_claim", key: "email", value: "Email or phone number is required" }
+ *       }
+ *     } catch {
+ *       return { type: "invalid_claim", key: "delivery", value: "Failed to send code" }
  *     }
  *   }
  * })
@@ -152,8 +160,8 @@ export interface CodeProviderConfig<
 	 *     } else {
 	 *       return {
 	 *         type: "invalid_claim",
-	 *         key: "contact",
-	 *         value: "No email or phone provided"
+	 *         key: "email",
+	 *         value: "Email or phone number is required"
 	 *       }
 	 *     }
 	 *   } catch (error) {
@@ -245,7 +253,15 @@ export interface CodeUserData<Claims extends Record<string, string> = Record<str
  *       }
  *     }
  *
- *     await emailService.send(claims.email, `Your verification code: ${code}`)
+ *     try {
+ *       await emailService.send(claims.email, `Your verification code: ${code}`)
+ *     } catch {
+ *       return {
+ *         type: "invalid_claim",
+ *         key: "delivery",
+ *         value: "Failed to send code"
+ *       }
+ *     }
  *   }
  * })
  *
@@ -261,15 +277,23 @@ export interface CodeUserData<Claims extends Record<string, string> = Record<str
  *     }
  *   },
  *   sendCode: async (claims, code) => {
- *     if (claims.email) {
- *       await emailService.send(claims.email, `PIN: ${code}`)
- *     } else if (claims.phone) {
- *       await smsService.send(claims.phone, `PIN: ${code}`)
- *     } else {
+ *     try {
+ *       if (claims.email) {
+ *         await emailService.send(claims.email, `PIN: ${code}`)
+ *       } else if (claims.phone) {
+ *         await smsService.send(claims.phone, `PIN: ${code}`)
+ *       } else {
+ *         return {
+ *           type: "invalid_claim",
+ *           key: "email",
+ *           value: "Provide either email or phone number"
+ *         }
+ *       }
+ *     } catch {
  *       return {
  *         type: "invalid_claim",
- *         key: "contact",
- *         value: "Provide either email or phone number"
+ *         key: "delivery",
+ *         value: "Failed to send code"
  *       }
  *     }
  *   }
@@ -365,7 +389,7 @@ export const CodeProvider = <Claims extends Record<string, string> = Record<stri
 				}
 
 				// Handle PIN code verification
-				if (action === "verify" && currentState?.type === "code") {
+				else if (action === "verify" && currentState?.type === "code") {
 					const enteredCode = formData.get("code")?.toString()
 
 					if (
@@ -388,14 +412,10 @@ export const CodeProvider = <Claims extends Record<string, string> = Record<stri
 
 					// PIN verification successful - complete authentication
 					await ctx.unset(c, "provider")
-					const successResponse = await ctx.success(c, {
+					return await ctx.success(c, {
 						claims: currentState.claims as Claims
 					})
-					return ctx.forward(c, successResponse)
 				}
-
-				// Default: return to start state
-				return transition(c, { type: "start" }, formData)
 			})
 		}
 	}

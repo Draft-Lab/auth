@@ -9,7 +9,7 @@
  *   InvalidAuthorizationCodeError,
  *   OauthError,
  *   UnknownStateError
- * } from "@draftauth/core/error"
+ * } from "@draftlab/auth/error"
  *
  * try {
  *   await client.exchange(code, redirectUri)

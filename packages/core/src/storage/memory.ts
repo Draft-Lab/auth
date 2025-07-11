@@ -9,7 +9,7 @@ import { joinKey, type StorageAdapter, splitKey } from "./storage"
  *
  * ### Basic in-memory storage (development only)
  * ```ts
- * import { MemoryStorage } from "@draftauth/core/storage/memory"
+ * import { MemoryStorage } from "@draftlab/auth/storage/memory"
  *
  * const storage = MemoryStorage()
  *

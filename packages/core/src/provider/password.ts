@@ -12,8 +12,8 @@ import type { Provider } from "./provider"
  * ## Quick Setup
  *
  * ```ts
- * import { PasswordUI } from "@draftauth/core/ui/password"
- * import { PasswordProvider } from "@draftauth/core/provider/password"
+ * import { PasswordUI } from "@draftlab/auth/ui/password"
+ * import { PasswordProvider } from "@draftlab/auth/provider/password"
  *
  * export default issuer({
  *   providers: {

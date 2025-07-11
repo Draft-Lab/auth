@@ -5,7 +5,7 @@
  * ## Quick Setup
  *
  * ```ts
- * import { FacebookProvider } from "@draftauth/core/provider/facebook"
+ * import { FacebookProvider } from "@draftlab/auth/provider/facebook"
  *
  * export default issuer({
  *   providers: {

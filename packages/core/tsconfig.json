@@ -1,7 +1,9 @@
 {
 	"extends": "@draftlab/tsconfig/internal-package.json",
 	"compilerOptions": {
-		"types": ["@draftlab/tsconfig/reset", "node"]
+		"types": ["@draftlab/tsconfig/reset", "node"],
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact"
 	},
 	"include": ["src"]
 }

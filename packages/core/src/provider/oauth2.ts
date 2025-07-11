@@ -5,7 +5,7 @@
  * ## Quick Setup
  *
  * ```ts
- * import { Oauth2Provider } from "@draftauth/core/provider/oauth2"
+ * import { Oauth2Provider } from "@draftlab/auth/provider/oauth2"
  *
  * export default issuer({
  *   providers: {

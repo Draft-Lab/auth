@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.1.0
+
+### Minor Changes
+
+- migrate UI to Preact JSX
+
 ## 0.0.4
 
 ### Patch Changes

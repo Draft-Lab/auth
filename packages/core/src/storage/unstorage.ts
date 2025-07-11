@@ -30,7 +30,7 @@ interface StorageEntry {
  *
  * @example
  * ```ts
- * import { UnStorage } from "@draftauth/core/storage/unstorage"
+ * import { UnStorage } from "@draftlab/auth/storage/unstorage"
  * import redisDriver from "unstorage/drivers/redis"
  *
  * // Using Redis driver

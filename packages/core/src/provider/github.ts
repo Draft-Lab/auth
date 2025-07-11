@@ -5,7 +5,7 @@
  * ## Quick Setup
  *
  * ```ts
- * import { GithubProvider } from "@draftauth/core/provider/github"
+ * import { GithubProvider } from "@draftlab/auth/provider/github"
  *
  * export default issuer({
  *   providers: {

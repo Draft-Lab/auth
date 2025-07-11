@@ -1,4 +1,20 @@
-import { getTheme } from "../themes/theme"
+/**
+ * Base layout component for DraftAuth UI
+ */
+
+import type { ComponentChildren, VNode } from "preact"
+import { render } from "preact-render-to-string"
+import { getTheme, type Theme } from "../themes/theme"
+
+/**
+ * Props for the Layout component
+ */
+export interface LayoutProps {
+	children: ComponentChildren
+	theme?: Theme
+	title?: string
+	size?: "small"
+}
 
 // Embedded CSS styles for Draft Auth UI components
 const css = `@import url("https://unpkg.com/tailwindcss@3.4.15/src/css/preflight.css");
@@ -102,102 +118,6 @@ const css = `@import url("https://unpkg.com/tailwindcss@3.4.15/src/css/preflight
 	width: 300px;
 }
 
-[data-component="link"] {
-	text-decoration: underline;
-	text-underline-offset: 0.125rem;
-	font-weight: 600;
-}
-
-[data-component="label"] {
-	display: flex;
-	gap: 0.75rem;
-	flex-direction: column;
-	font-size: var(--font-size-xs);
-}
-
-[data-component="logo"] {
-	margin: 0 auto;
-	height: 2.5rem;
-	width: auto;
-	display: none;
-}
-
-@media (prefers-color-scheme: light) {
-	[data-component="logo"][data-mode="light"] {
-		display: block;
-	}
-}
-
-@media (prefers-color-scheme: dark) {
-	[data-component="logo"][data-mode="dark"] {
-		display: block;
-	}
-}
-
-[data-component="logo-default"] {
-	margin: 0 auto;
-	height: 2.5rem;
-	width: auto;
-}
-
-@media (prefers-color-scheme: light) {
-	[data-component="logo-default"] {
-		color: var(--color-high);
-	}
-}
-
-@media (prefers-color-scheme: dark) {
-	[data-component="logo-default"] {
-		color: var(--color-high);
-	}
-}
-
-[data-component="input"] {
-	width: 100%;
-	height: 2.5rem;
-	padding: 0 1rem;
-	border: 1px solid transparent;
-	--background: oklch(
-		from var(--color-background)
-			calc(l + (-0.06 * clamp(0, calc((l - 0.714) * 1000), 1) + 0.03)) c h
-	);
-	background: var(--background);
-	border-color: oklch(
-		from var(--color-background)
-			calc(
-				clamp(
-					0.22,
-					l +
-					(-0.12 * clamp(0, calc((l - 0.714) * 1000), 1) + 0.06),
-					0.88
-				)
-			)
-			c h
-	);
-	border-radius: calc(var(--border-radius) * 0.25rem);
-	font-size: var(--font-size-sm);
-	outline: none;
-}
-
-[data-component="input"]:focus {
-	border-color: oklch(
-		from var(--color-background)
-			calc(
-				clamp(
-					0.3,
-					l +
-					(-0.2 * clamp(0, calc((l - 0.714) * 1000), 1) + 0.1),
-					0.7
-				)
-			)
-			c h
-	);
-}
-
-[data-component="input"]:user-invalid:not(:focus) {
-	border-color: oklch(0.4 0.09 7.91);
-}
-
 [data-component="button"] {
 	height: 2.5rem;
 	cursor: pointer;
@@ -251,42 +171,93 @@ const css = `@import url("https://unpkg.com/tailwindcss@3.4.15/src/css/preflight
 	margin: 0;
 }
 
-[data-component="form-alert"] {
+[data-component="input"] {
 	height: 2.5rem;
+	border: 1px solid
+		oklch(
+			from var(--color-background)
+				calc(
+					clamp(
+						0.22,
+						l +
+						(-0.12 * clamp(0, calc((l - 0.714) * 1000), 1) + 0.06),
+						0.88
+					)
+				)
+				c h
+		);
+	border-radius: calc(var(--border-radius) * 0.25rem);
+	background: var(--color-background);
+	color: var(--color-high);
+	padding: 0 0.75rem;
+	font-size: var(--font-size-sm);
+	font-family: var(--font-family);
+}
+
+[data-component="input"]:focus {
+	outline: none;
+	border-color: var(--color-primary);
+}
+
+[data-component="input"]::placeholder {
+	color: oklch(
+		from var(--color-high) 
+		l 
+		c 
+		h / 
+		0.6
+	);
+}
+
+[data-component="form-alert"] {
+	padding: 0.75rem;
+	border-radius: calc(var(--border-radius) * 0.25rem);
 	display: flex;
 	align-items: center;
-	padding: 0 1rem;
-	border-radius: calc(var(--border-radius) * 0.25rem);
+	gap: 0.75rem;
+	font-size: var(--font-size-sm);
+}
+
+[data-component="form-alert"][data-color="danger"] {
 	background: var(--color-background-error);
 	color: var(--color-error);
-	text-align: left;
-	font-size: 0.75rem;
-	gap: 0.5rem;
+	border: 1px solid var(--color-error);
 }
 
 [data-component="form-alert"][data-color="success"] {
 	background: var(--color-background-success);
 	color: var(--color-success);
+	border: 1px solid var(--color-success);
+}
+
+[data-component="form-alert"] [data-slot="icon-success"] {
+	display: none;
+}
+
+[data-component="form-alert"] [data-slot="icon-danger"] {
+	display: none;
 }
 
 [data-component="form-alert"][data-color="success"] [data-slot="icon-success"] {
 	display: block;
-}
-[data-component="form-alert"][data-color="success"] [data-slot="icon-danger"] {
-	display: none;
-}
-
-[data-component="form-alert"]:has([data-slot="message"]:empty) {
-	display: none;
+	width: 16px;
+	height: 16px;
 }
 
-[data-component="form-alert"] [data-slot="icon-success"],
-[data-component="form-alert"] [data-slot="icon-danger"] {
-	width: 1rem;
-	height: 1rem;
+[data-component="form-alert"][data-color="danger"] [data-slot="icon-danger"] {
+	display: block;
+	width: 16px;
+	height: 16px;
 }
-[data-component="form-alert"] [data-slot="icon-success"] {
-	display: none;
+
+[data-component="link"] {
+	color: var(--color-primary);
+	text-decoration: none;
+	font-size: var(--font-size-sm);
+}
+
+[data-component="link"]:hover {
+	text-decoration: underline;
 }
 
 [data-component="form-footer"] {
@@ -300,75 +271,55 @@ const css = `@import url("https://unpkg.com/tailwindcss@3.4.15/src/css/preflight
 [data-component="form-footer"]:has(> :nth-child(2)) {
 	justify-content: space-between;
 }
-`
 
-type PropsWithChildren<P = {}> = P & { children?: string }
-
-/**
- * Base layout component for Draft Auth UI.
- * Provides theming, responsive design, and consistent styling across all auth screens.
- *
- * ## Features
- *
- * - **Theme Support**: Light/dark mode with custom colors and fonts
- * - **Responsive Design**: Adapts to different screen sizes
- * - **Custom Branding**: Support for custom logos and styling
- * - **CSS Variables**: Uses CSS custom properties for theming
- *
- * @example
- * ```tsx
- * <Layout size="small">
- *   <div>Your auth form content</div>
- * </Layout>
- * ```
- */
-
-/**
- * Props for the Layout component.
- */
-export interface LayoutProps {
-	/**
-	 * Optional size variant for the layout container.
-	 *
-	 * @default undefined (normal size)
-	 */
-	readonly size?: "small"
+[data-component="logo-default"] {
+	margin: 0 auto;
+	height: 2.5rem;
+	width: auto;
 }
 
+@media (prefers-color-scheme: light) {
+	[data-component="logo-default"] {
+		color: var(--color-high);
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	[data-component="logo-default"] {
+		color: var(--color-high);
+	}
+}
+`
+
 /**
- * Main layout component that wraps all authentication UI screens.
- * Handles theming, logo display, and provides consistent styling.
- *
- * @param props - Layout props including children and optional size
- * @returns Complete HTML document as a string with theming and branding applied
+ * Base Layout component that provides the foundational structure for all auth UIs
  */
-export const Layout = (props: PropsWithChildren<LayoutProps>): string => {
-	const theme = getTheme()
+export const Layout = ({ children, theme, title, size }: LayoutProps) => {
+	const currentTheme = theme || getTheme()
 
 	/**
 	 * Gets a theme value for a specific key and color mode.
-	 * Handles both string values and light/dark object configurations.
 	 */
 	const getThemeValue = (
 		key: "primary" | "background" | "logo",
 		mode: "light" | "dark"
 	): string | undefined => {
-		if (!theme?.[key]) {
+		if (!currentTheme?.[key]) {
 			return
 		}
 
-		if (typeof theme[key] === "string") {
-			return theme[key] as string
+		if (typeof currentTheme[key] === "string") {
+			return currentTheme[key] as string
 		}
 
-		return (theme[key] as Record<string, string>)[mode]
+		return (currentTheme[key] as Record<string, string>)[mode]
 	}
 
 	/**
 	 * Calculates border radius value based on theme configuration.
 	 */
 	const getBorderRadius = (): string => {
-		switch (theme?.radius) {
+		switch (currentTheme?.radius) {
 			case "none":
 				return "0"
 			case "sm":
@@ -399,14 +350,14 @@ export const Layout = (props: PropsWithChildren<LayoutProps>): string => {
 		`--color-background-dark: ${getThemeValue("background", "dark") || ""}`,
 		`--color-primary-light: ${getThemeValue("primary", "light") || ""}`,
 		`--color-primary-dark: ${getThemeValue("primary", "dark") || ""}`,
-		`--font-family: ${theme?.font?.family || ""}`,
-		`--font-scale: ${theme?.font?.scale || ""}`,
+		`--font-family: ${currentTheme?.font?.family || ""}`,
+		`--font-scale: ${currentTheme?.font?.scale || ""}`,
 		`--border-radius: ${getBorderRadius()}`
 	].join("; ")
 
 	// Favicon handling
-	const faviconHtml = theme?.favicon
-		? `<link href="${theme.favicon}" rel="icon" />`
+	const faviconHtml = currentTheme?.favicon
+		? `<link href="${currentTheme.favicon}" rel="icon" />`
 		: `
 			<link href="https://openauth.js.org/favicon.ico" rel="icon" sizes="48x48" />
 			<link href="https://openauth.js.org/favicon.svg" media="(prefers-color-scheme: light)" rel="icon" />
@@ -430,57 +381,50 @@ export const Layout = (props: PropsWithChildren<LayoutProps>): string => {
 				src="${getThemeValue("logo", "dark") || ""}"
 			/>
 		  `
-		: DefaultDraftAuthLogo()
+		: `
+			<svg
+				aria-label="Draft Auth Logo"
+				data-component="logo-default"
+				fill="none"
+				height="51"
+				viewBox="0 0 51 51"
+				width="51"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<title>Draft Auth Logo</title>
+				<path
+					d="M0 50.2303V0.12854H50.1017V50.2303H0ZM3.08002 11.8326H11.7041V3.20856H3.08002V11.8326ZM14.8526 11.8326H23.4766V3.20856H14.8526V11.8326ZM26.5566 11.8326H35.1807V3.20856H26.5566V11.8326ZM38.3292 11.8326H47.0217V3.20856H38.3292V11.8326ZM3.08002 23.6052H11.7041V14.9811H3.08002V23.6052ZM14.8526 23.6052H23.4766V14.9811H14.8526V23.6052ZM26.5566 23.6052H35.1807V14.9811H26.5566V23.6052ZM38.3292 23.6052H47.0217V14.9811H38.3292V23.6052ZM3.08002 35.3092H11.7041V26.6852H3.08002V35.3092ZM14.8526 35.3092H23.4766V26.6852H14.8526V35.3092ZM26.5566 35.3092H35.1807V26.6852H26.5566V35.3092ZM38.3292 35.3092H47.0217V26.6852H38.3292V35.3092ZM3.08002 47.1502H11.7041V38.3893H3.08002V47.1502ZM14.8526 47.1502H23.4766V38.3893H14.8526V47.1502ZM26.5566 47.1502H35.1807V38.3893H26.5566V47.1502ZM38.3292 47.1502H47.0217V38.3893H38.3292V47.1502Z"
+					fill="currentColor"
+				/>
+			</svg>
+		  `
 
-	// Main content
-	const childrenHtml = props.children || ""
-
-	return `
-		<!DOCTYPE html>
-		<html lang="en" style="${themeStyles}">
+	return (
+		<html lang="en" style={themeStyles}>
 			<head>
-				<title>${theme?.title || "Draft Auth"}</title>
+				<title>{title || currentTheme?.title || "Draft Auth"}</title>
 				<meta charset="utf-8" />
 				<meta content="width=device-width, initial-scale=1" name="viewport" />
-
-				${faviconHtml}
-
-				<!-- Base CSS styles -->
-				<style>${css}</style>
-
-				<!-- Custom theme CSS if provided -->
-				${theme?.css ? `<style>${theme.css}</style>` : ""}
+				<div dangerouslySetInnerHTML={{ __html: faviconHtml }} />
+				<style dangerouslySetInnerHTML={{ __html: css }} />
+				{currentTheme?.css && <style dangerouslySetInnerHTML={{ __html: currentTheme.css }} />}
 			</head>
 			<body>
 				<div data-component="root">
-					<div data-component="center" data-size="${props.size || ""}">
-						${logoHtml}
-						${childrenHtml}
+					<div data-component="center" data-size={size || ""}>
+						<div dangerouslySetInnerHTML={{ __html: logoHtml }} />
+						{children}
 					</div>
 				</div>
 			</body>
 		</html>
-	`
+	)
 }
 
 /**
- * Default Draft Auth logo component.
- * Used when no custom logo is provided in the theme configuration.
+ * Helper function to render a Preact component to HTML string
  */
-const DefaultDraftAuthLogo = (): string => `
-	<svg
-		aria-label="Draft Auth Logo"
-		data-component="logo-default"
-		fill="none"
-		height="51"
-		viewBox="0 0 51 51"
-		width="51"
-		xmlns="http://www.w3.org/2000/svg"
-	>
-		<title>Draft Auth Logo</title>
-		<path
-			d="M0 50.2303V0.12854H50.1017V50.2303H0ZM3.08002 11.8326H11.7041V3.20856H3.08002V11.8326ZM14.8526 11.8326H23.4766V3.20856H14.8526V11.8326ZM26.5566 11.8326H35.1807V3.20856H26.5566V11.8326ZM38.3292 11.8326H47.0217V3.20856H38.3292V11.8326ZM3.08002 23.6052H11.7041V14.9811H3.08002V23.6052ZM14.8526 23.6052H23.4766V14.9811H14.8526V23.6052ZM26.5566 23.6052H35.1807V14.9811H26.5566V23.6052ZM38.3292 23.6052H47.0217V14.9811H38.3292V23.6052ZM3.08002 35.3092H11.7041V26.6852H3.08002V35.3092ZM14.8526 35.3092H23.4766V26.6852H14.8526V35.3092ZM26.5566 35.3092H35.1807V26.6852H26.5566V35.3092ZM38.3292 35.3092H47.0217V26.6852H38.3292V35.3092ZM3.08002 47.1502H11.7041V38.3893H3.08002V47.1502ZM14.8526 47.1502H23.4766V38.3893H14.8526V47.1502ZM26.5566 47.1502H35.1807V38.3893H26.5566V47.1502ZM38.3292 47.1502H47.0217V38.3893H38.3292V47.1502Z"
-			fill="currentColor"
-		/>
-	</svg>
-`
+export const renderToHTML = (component: ComponentChildren): string => {
+	if (!component) return ""
+	return render(component as VNode)
+}

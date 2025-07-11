@@ -5,7 +5,7 @@
  * ## Quick Setup
  *
  * ```ts
- * import { GoogleProvider } from "@draftauth/core/provider/google"
+ * import { GoogleProvider } from "@draftlab/auth/provider/google"
  *
  * export default issuer({
  *   providers: {

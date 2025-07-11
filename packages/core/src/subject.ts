@@ -8,7 +8,7 @@
  * ### 1. Define your subjects
  * ```ts title="subjects.ts"
  * import { object, string } from "valibot"
- * import { createSubjects } from "@draftauth/core/subject"
+ * import { createSubjects } from "@draftlab/auth/subject"
  *
  * export const subjects = createSubjects({
  *   user: object({

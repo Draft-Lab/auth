@@ -15,7 +15,7 @@ import { joinKey, type StorageAdapter, splitKey } from "./storage"
  * @example
  * ```ts
  * import { createClient } from "@libsql/client"
- * import { TursoStorage } from "@draftauth/core/storage/turso"
+ * import { TursoStorage } from "@draftlab/auth/storage/turso"
  *
  * const client = createClient({
  *   url: "libsql://your-database.turso.io",

@@ -7,7 +7,7 @@ import type { StandardSchemaV1 } from "@standard-schema/spec"
  * First, create a client.
  *
  * ```ts title="client.ts"
- * import { createClient } from "@draftauth/core/client"
+ * import { createClient } from "@draftlab/auth/client"
  *
  * const client = createClient({
  *   clientID: "my-client",

@@ -92,6 +92,10 @@ export class RouteMatcher {
 			normalized = normalized.slice(basePath.length) || "/"
 		}
 
+		if (!normalized.startsWith("/")) {
+			normalized = `/${normalized}`
+		}
+
 		if (!strict && normalized.length > 1 && normalized.endsWith("/")) {
 			normalized = normalized.slice(0, -1)
 		}

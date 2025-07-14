@@ -507,8 +507,7 @@ export const issuer = <
 		},
 
 		async invalidate(subject: string) {
-			const keys = await Array.fromAsync(Storage.scan(storage, ["oauth:refresh", subject]))
-			for (const [key] of keys) {
+			for await (const [key] of Storage.scan(storage, ["oauth:refresh", subject])) {
 				await Storage.remove(storage, key)
 			}
 		},

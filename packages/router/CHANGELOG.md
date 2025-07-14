@@ -1,5 +1,11 @@
 # @draftlab/auth-router
 
+## 0.0.4
+
+### Patch Changes
+
+- simplify router and remove hard limit on unstorage
+
 ## 0.0.3
 
 ### Patch Changes

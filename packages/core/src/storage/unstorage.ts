@@ -132,10 +132,7 @@ export const UnStorage = ({ driver }: { driver?: UnstorageDriver } = {}): Storag
 					}
 				}
 
-				// Limit scan results to prevent memory issues
-				const limitedKeys = keys.slice(0, 1000)
-
-				for (const keyPath of limitedKeys) {
+				for (const keyPath of keys) {
 					try {
 						const entry = await store.getItem(keyPath)
 

@@ -25,30 +25,4 @@ export class ContextVariableManager<TVariables extends VariableMap = VariableMap
 	has<K extends keyof TVariables>(key: K): key is K {
 		return this.state.has(key as string)
 	}
-
-	keys(): string[] {
-		return Array.from(this.state.keys())
-	}
-
-	clear(): void {
-		this.state.clear()
-	}
-
-	get size(): number {
-		return this.state.size
-	}
-
-	toObject(): Record<string, unknown> {
-		const result: Record<string, unknown> = {}
-		for (const [key, value] of this.state.entries()) {
-			result[key] = value
-		}
-		return result
-	}
-}
-
-export const createVariableManager = <TVariables extends VariableMap = VariableMap>(
-	initialVariables?: Partial<TVariables>
-): ContextVariableManager<TVariables> => {
-	return new ContextVariableManager(initialVariables)
 }

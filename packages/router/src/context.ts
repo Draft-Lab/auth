@@ -125,13 +125,6 @@ export class ContextBuilder<TVariables extends VariableMap = VariableMap> {
 				}
 			},
 
-			parseText: () => {
-				if (this.request.bodyUsed) {
-					throw new Error("Request body has already been consumed.")
-				}
-				return this.request.text()
-			},
-
 			redirect: (url, status = 302) => {
 				validateRedirectStatus(status)
 				const location = url instanceof URL ? url.toString() : url
@@ -157,17 +150,6 @@ export class ContextBuilder<TVariables extends VariableMap = VariableMap> {
 					...init,
 					headers: {
 						"content-type": "text/plain; charset=utf-8",
-						...init?.headers
-					}
-				}
-				return this.newResponse(data, finalInit)
-			},
-
-			html: (data, init) => {
-				const finalInit = {
-					...init,
-					headers: {
-						"content-type": "text/html; charset=utf-8",
 						...init?.headers
 					}
 				}
@@ -208,14 +190,6 @@ export class ContextBuilder<TVariables extends VariableMap = VariableMap> {
 		}
 	}
 
-	getVariableManager(): ContextVariableManager<TVariables> {
-		return this.variableManager
-	}
-
-	setResponseHeader(name: string, value: string): void {
-		this.responseHeaders.set(name, value)
-	}
-
 	newResponse(body?: BodyInit, init?: ResponseInit): Response {
 		if (this.finalized) {
 			throw new Error("Response already finalized")
@@ -242,9 +216,5 @@ export class ContextBuilder<TVariables extends VariableMap = VariableMap> {
 
 		this.finalized = true
 		return response
-	}
-
-	getResponseHeaders(): Headers {
-		return new Headers(this.responseHeaders)
 	}
 }

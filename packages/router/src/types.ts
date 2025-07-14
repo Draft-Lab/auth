@@ -36,12 +36,10 @@ export interface RouterContext<
 
 	formData(): Promise<FormData>
 	parseJson<T = unknown>(): Promise<T>
-	parseText(): Promise<string>
 
 	json<T>(data: T, init?: ResponseInit): Response
 	redirect(url: string | URL, status?: 300 | 301 | 302 | 303 | 307 | 308): Response
 	text(data: string, init?: ResponseInit): Response
-	html(data: string, init?: ResponseInit): Response
 
 	setCookie(name: string, value: string, options?: CookieOptions): void
 	deleteCookie(name: string, options?: Pick<CookieOptions, "domain" | "path">): void
@@ -66,21 +64,12 @@ export type MiddlewareHandler<
 	next: () => Promise<Response> | Response
 ) => Promise<Response> | Response
 
-export interface RouteMetadata {
-	name?: string
-	description?: string
-	version?: string
-	deprecated?: boolean
-	tags?: string[]
-}
-
 export type EnhancedRouteHandler<
 	TParams extends Record<string, string> = Record<string, string>,
 	TVariables extends VariableMap = VariableMap
 > = {
 	handler: RouteHandler<TParams, TVariables>
 	middleware?: MiddlewareHandler<TParams, TVariables>[]
-	metadata?: RouteMetadata
 }
 
 export type AnyHandler<
@@ -88,7 +77,7 @@ export type AnyHandler<
 	TVariables extends VariableMap = VariableMap
 > = RouteHandler<TParams, TVariables> | EnhancedRouteHandler<TParams, TVariables>
 
-export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS"
+export type HttpMethod = "GET" | "POST"
 
 export interface CompiledRoute {
 	regex: RegExp
@@ -107,7 +96,6 @@ export interface RouteDefinition<TVariables extends VariableMap = VariableMap> {
 	handler: RouteHandler<Record<string, string>, TVariables>
 	middleware: MiddlewareHandler<Record<string, string>, TVariables>[]
 	compiled: CompiledRoute
-	metadata?: RouteMetadata
 }
 
 export interface RouterOptions {
@@ -121,9 +109,7 @@ export type ErrorHandler<TVariables extends VariableMap = VariableMap> = (
 	ctx: RouterContext<Record<string, string>, TVariables>
 ) => Promise<Response> | Response
 
-export type NextFunction = () => Promise<Response> | Response
-
 export type GlobalMiddleware<TVariables extends VariableMap = VariableMap> = (
 	ctx: RouterContext<Record<string, string>, TVariables>,
-	next: NextFunction
+	next: () => Promise<Response> | Response
 ) => Promise<Response> | Response

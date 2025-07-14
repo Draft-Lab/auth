@@ -17,12 +17,10 @@ import type {
 export class Router<TEnvironment extends RouterEnvironment = RouterEnvironment> {
 	private readonly routes = new Map<HttpMethod, RouteDefinition<TEnvironment["Variables"]>[]>()
 	private readonly matcher: RouteMatcher
-	private readonly routerOptions: RouterOptions
 	private readonly globalMiddleware: GlobalMiddleware<TEnvironment["Variables"]>[] = []
 	private errorHandler?: ErrorHandler<TEnvironment["Variables"]>
 
 	constructor(routerOptions: RouterOptions = {}) {
-		this.routerOptions = routerOptions
 		this.matcher = new RouteMatcher(routerOptions)
 	}
 
@@ -31,11 +29,8 @@ export class Router<TEnvironment extends RouterEnvironment = RouterEnvironment> 
 		path: TPath,
 		handler: AnyHandler<ExtractParams<TPath>, TEnvironment["Variables"]>
 	): this {
-		const {
-			handler: mainHandler,
-			middleware = [],
-			metadata
-		} = typeof handler === "function" ? { handler } : handler
+		const { handler: mainHandler, middleware = [] } =
+			typeof handler === "function" ? { handler } : handler
 
 		if (typeof mainHandler !== "function") {
 			throw new Error(`Handler for ${method} ${path} must be a function.`)
@@ -55,8 +50,7 @@ export class Router<TEnvironment extends RouterEnvironment = RouterEnvironment> 
 					TEnvironment["Variables"]
 				>[])
 			],
-			compiled: this.matcher.compile(path),
-			metadata
+			compiled: this.matcher.compile(path)
 		}
 
 		const methodRoutes = this.routes.get(method) ?? []
@@ -90,41 +84,6 @@ export class Router<TEnvironment extends RouterEnvironment = RouterEnvironment> 
 		return this.addRoute("POST", path, handler)
 	}
 
-	put<TPath extends string>(
-		path: TPath,
-		handler: AnyHandler<ExtractParams<TPath>, TEnvironment["Variables"]>
-	): this {
-		return this.addRoute("PUT", path, handler)
-	}
-
-	delete<TPath extends string>(
-		path: TPath,
-		handler: AnyHandler<ExtractParams<TPath>, TEnvironment["Variables"]>
-	): this {
-		return this.addRoute("DELETE", path, handler)
-	}
-
-	patch<TPath extends string>(
-		path: TPath,
-		handler: AnyHandler<ExtractParams<TPath>, TEnvironment["Variables"]>
-	): this {
-		return this.addRoute("PATCH", path, handler)
-	}
-
-	head<TPath extends string>(
-		path: TPath,
-		handler: AnyHandler<ExtractParams<TPath>, TEnvironment["Variables"]>
-	): this {
-		return this.addRoute("HEAD", path, handler)
-	}
-
-	options<TPath extends string>(
-		path: TPath,
-		handler: AnyHandler<ExtractParams<TPath>, TEnvironment["Variables"]>
-	): this {
-		return this.addRoute("OPTIONS", path, handler)
-	}
-
 	use(middleware: GlobalMiddleware<TEnvironment["Variables"]>): this {
 		this.globalMiddleware.push(middleware)
 		return this
@@ -151,22 +110,11 @@ export class Router<TEnvironment extends RouterEnvironment = RouterEnvironment> 
 					middleware: route.middleware as MiddlewareHandler<
 						Record<string, string>,
 						TEnvironment["Variables"]
-					>[],
-					metadata: route.metadata
+					>[]
 				})
 			}
 		}
 
-		return this
-	}
-
-	group<TGroupEnvironment extends RouterEnvironment = TEnvironment>(
-		prefix: string,
-		callback: (router: Router<TGroupEnvironment>) => void
-	): this {
-		const groupRouter = new Router<TGroupEnvironment>(this.routerOptions)
-		callback(groupRouter)
-		this.mount(prefix, groupRouter)
 		return this
 	}
 
@@ -242,63 +190,10 @@ export class Router<TEnvironment extends RouterEnvironment = RouterEnvironment> 
 		}
 	}
 
-	async request(
-		requestOrUrl: Request | string,
-		optionsOrInitialVariables?: RequestInit | Partial<TEnvironment["Variables"]>
-	): Promise<Response> {
-		let request: Request
-		let initialVariables: Partial<TEnvironment["Variables"]> | undefined
-
-		if (typeof requestOrUrl === "string") {
-			request = new Request(requestOrUrl, optionsOrInitialVariables as RequestInit)
-			initialVariables = undefined
-		} else {
-			request = requestOrUrl
-			initialVariables = optionsOrInitialVariables as Partial<TEnvironment["Variables"]>
-		}
-
-		return this.handle(request, initialVariables)
-	}
-
 	private createErrorResponse(message: string, status: number): Response {
 		return new Response(JSON.stringify({ error: message, status }), {
 			status,
 			headers: { "Content-Type": "application/json" }
 		})
-	}
-
-	getRoutes(): ReadonlyMap<HttpMethod, readonly RouteDefinition<TEnvironment["Variables"]>[]> {
-		const routesCopy = new Map<
-			HttpMethod,
-			readonly RouteDefinition<TEnvironment["Variables"]>[]
-		>()
-		for (const [method, routes] of this.routes) {
-			routesCopy.set(method, [...routes])
-		}
-		return routesCopy
-	}
-
-	hasErrorHandler(): boolean {
-		return this.errorHandler !== undefined
-	}
-
-	getStats(): {
-		totalRoutes: number
-		routesByMethod: Record<HttpMethod, number>
-		hasErrorHandler: boolean
-	} {
-		const routesByMethod = {} as Record<HttpMethod, number>
-		let totalRoutes = 0
-
-		for (const [method, routes] of this.routes) {
-			routesByMethod[method] = routes.length
-			totalRoutes += routes.length
-		}
-
-		return {
-			totalRoutes,
-			routesByMethod,
-			hasErrorHandler: this.hasErrorHandler()
-		}
 	}
 }

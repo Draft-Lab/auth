@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.2.1
+
+### Patch Changes
+
+- refactor copy and components
+
 ## 0.2.0
 
 ### Minor Changes

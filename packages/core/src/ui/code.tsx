@@ -206,10 +206,12 @@ export const CodeUI = (options: CodeUIOptions): CodeProviderOptions => {
 					<input name={mode} type="hidden" value={contact} />
 
 					<div data-component="form-footer">
-						<span>{copy.code_didnt_get}</span>
-						<button data-component="button" type="submit">
-							{copy.code_resend}
-						</button>
+						<span>
+							{copy.code_didnt_get}{" "}
+							<button type="submit" data-component="link">
+								{copy.code_resend}
+							</button>
+						</span>
 					</div>
 				</form>
 			</Layout>

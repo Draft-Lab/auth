@@ -11,20 +11,13 @@ import { FormAlert } from "./form"
  * Strongly typed copy text configuration for passkey UI
  */
 interface PasskeyUICopy {
-	// Page titles and descriptions
-	readonly authorize_title: string
-	readonly authorize_description: string
-	readonly register_title: string
-	readonly register_description: string
-
 	// Action buttons and links
 	readonly register: string
-	readonly register_with_passkey: string
+	readonly button_continue: string
 	readonly register_other_device: string
 	readonly register_prompt: string
 	readonly login_prompt: string
 	readonly login: string
-	readonly login_with_passkey: string
 	readonly change_prompt: string
 	readonly code_resend: string
 	readonly code_return: string
@@ -34,22 +27,13 @@ interface PasskeyUICopy {
 }
 
 const DEFAULT_COPY: PasskeyUICopy = {
-	// Page titles and descriptions
-	authorize_title: "Sign in with Passkey",
-	authorize_description:
-		"Passkeys are a simple and more secure alternative to passwords. With passkeys, you can log in with your PIN, biometric sensor, or hardware security key.",
-	register_title: "Create a Passkey",
-	register_description:
-		"Create a passkey to enable secure, passwordless authentication for your account.",
-
 	// Action buttons and links
 	register: "Register",
-	register_with_passkey: "Register With Passkey",
 	register_other_device: "Use another device",
 	register_prompt: "Don't have an account?",
 	login_prompt: "Already have an account?",
 	login: "Login",
-	login_with_passkey: "Login With Passkey",
+	button_continue: "Continue",
 	change_prompt: "Forgot password?",
 	code_resend: "Resend code",
 	code_return: "Back to",
@@ -159,8 +143,6 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 							`
 						}}
 					/>
-					<h1 data-component="title">{copy.authorize_title}</h1>
-					<p data-component="description">{copy.authorize_description}</p>
 					<form id="authorizeForm" data-component="form">
 						<FormAlert />
 						<input
@@ -175,7 +157,7 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 							placeholder={copy.input_email}
 						/>
 						<button type="submit" id="btnLogin" data-component="button">
-							{copy.login_with_passkey}
+							{copy.button_continue}
 						</button>
 						<div data-component="form-footer">
 							<span>
@@ -295,8 +277,6 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 						}}
 					/>
 
-					<h1 data-component="title">{copy.register_title}</h1>
-					<p data-component="description">{copy.register_description}</p>
 					<form id="registerForm" data-component="form">
 						<FormAlert />
 						<input
@@ -311,7 +291,7 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 							placeholder={copy.input_email}
 						/>
 						<button data-component="button" type="submit" id="btnRegister">
-							{copy.register_with_passkey}
+							{copy.button_continue}
 						</button>
 						<button data-component="button" type="submit" id="btnOtherDevice">
 							{copy.register_other_device}

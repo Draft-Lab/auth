@@ -446,7 +446,7 @@ export const PasswordUI = (options: PasswordUIOptions): PasswordConfig => {
 
 							<div data-component="form-footer">
 								<span>
-									{copy.code_return} <Link href="./authorize">{copy.login.toLowerCase()}</Link>
+									{copy.code_return} <Link href="./authorize">{copy.login}</Link>
 								</span>
 								<Button type="submit" data-component="link">
 									{copy.code_resend}

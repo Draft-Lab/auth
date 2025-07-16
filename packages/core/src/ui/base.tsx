@@ -16,297 +16,297 @@ export interface LayoutProps {
 	size?: "small"
 }
 
-// Embedded CSS styles for Draft Auth UI components
+// Modern CSS styles for DraftAuth UI components
 const css = `@import url("https://unpkg.com/tailwindcss@3.4.15/src/css/preflight.css");
 
 :root {
-	--color-background-dark: #0e0e11;
-	--color-background-light: #ffffff;
-	--color-primary-dark: #6772e5;
-	--color-primary-light: #6772e5;
+  --color-background-dark: #0e0e11;
+  --color-background-light: #ffffff;
+  --color-primary-dark: #6772e5;
+  --color-primary-light: #6772e5;
 
-	--color-background-success-dark: oklch(0.3 0.04 172);
-	--color-background-success-light: oklch(
-		from var(--color-background-success-dark) 0.83 c h
-	);
-	--color-success-dark: oklch(
-		from var(--color-background-success-dark) 0.92 c h
-	);
-	--color-success-light: oklch(
-		from var(--color-background-success-dark) 0.25 c h
-	);
+  --color-background-success-dark: oklch(0.3 0.04 172);
+  --color-background-success-light: oklch(from var(--color-background-success-dark) 0.83 c h);
+  --color-success-dark: oklch(from var(--color-background-success-dark) 0.92 c h);
+  --color-success-light: oklch(from var(--color-background-success-dark) 0.25 c h);
 
-	--color-background-error-dark: oklch(0.32 0.07 15);
-	--color-background-error-light: oklch(
-		from var(--color-background-error-dark) 0.92 c h
-	);
-	--color-error-dark: oklch(from var(--color-background-error-dark) 0.92 c h);
-	--color-error-light: oklch(from var(--color-background-error-dark) 0.25 c h);
+  --color-background-error-dark: oklch(0.32 0.07 15);
+  --color-background-error-light: oklch(from var(--color-background-error-dark) 0.92 c h);
+  --color-error-dark: oklch(from var(--color-background-error-dark) 0.92 c h);
+  --color-error-light: oklch(from var(--color-background-error-dark) 0.25 c h);
 
-	--border-radius: 0;
+  --border-radius: 0;
 
-	--color-background: var(--color-background-dark);
-	--color-primary: var(--color-primary-dark);
+  --color-background: var(--color-background-dark);
+  --color-primary: var(--color-primary-dark);
 
-	--color-background-success: var(--color-background-success-dark);
-	--color-success: var(--color-success-dark);
-	--color-background-error: var(--color-background-error-dark);
-	--color-error: var(--color-error-dark);
+  --color-background-success: var(--color-background-success-dark);
+  --color-success: var(--color-success-dark);
+  --color-background-error: var(--color-background-error-dark);
+  --color-error: var(--color-error-dark);
 
-	@media (prefers-color-scheme: light) {
-		--color-background: var(--color-background-light);
-		--color-primary: var(--color-primary-light);
+  @media (prefers-color-scheme: light) {
+    --color-background: var(--color-background-light);
+    --color-primary: var(--color-primary-light);
 
-		--color-background-success: var(--color-background-success-light);
-		--color-success: var(--color-success-light);
-		--color-background-error: var(--color-background-error-light);
-		--color-error: var(--color-error-light);
-	}
+    --color-background-success: var(--color-background-success-light);
+    --color-success: var(--color-success-light);
+    --color-background-error: var(--color-background-error-light);
+    --color-error: var(--color-error-light);
+  }
 
-	--color-high: oklch(
-		from var(--color-background) clamp(0, calc((l - 0.714) * -1000), 1) 0 0
-	);
-	--color-low: oklch(
-		from var(--color-background) clamp(0, calc((l - 0.714) * 1000), 1) 0 0
-	);
-	--lightness-high: color-mix(
-		in oklch,
-		var(--color-high) 0%,
-		oklch(var(--color-high) 0 0)
-	);
-	--lightness-low: color-mix(
-		in oklch,
-		var(--color-low) 0%,
-		oklch(var(--color-low) 0 0)
-	);
-	--font-family:
-		ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-		"Segoe UI Symbol", "Noto Color Emoji";
-	--font-scale: 1;
+  --color-high: oklch(
+    from var(--color-background) clamp(0, calc((l - 0.714) * -1000), 1) 0 0
+  );
+  --color-low: oklch(from var(--color-background) clamp(0, calc((l - 0.714) * 1000), 1) 0 0);
+  --lightness-high: color-mix(
+    in oklch,
+    var(--color-high) 0%,
+    oklch(var(--color-high) 0 0)
+  );
+  --lightness-low: color-mix(
+    in oklch,
+    var(--color-low) 0%,
+    oklch(var(--color-low) 0 0)
+  );
+  --font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-scale: 1;
 
-	--font-size-xs: calc(0.75rem * var(--font-scale));
-	--font-size-sm: calc(0.875rem * var(--font-scale));
-	--font-size-md: calc(1rem * var(--font-scale));
-	--font-size-lg: calc(1.125rem * var(--font-scale));
-	--font-size-xl: calc(1.25rem * var(--font-scale));
-	--font-size-2xl: calc(1.5rem * var(--font-scale));
+  --font-size-xs: calc(0.75rem * var(--font-scale));
+  --font-size-sm: calc(0.875rem * var(--font-scale));
+  --font-size-md: calc(1rem * var(--font-scale));
+  --font-size-lg: calc(1.125rem * var(--font-scale));
+  --font-size-xl: calc(1.25rem * var(--font-scale));
+  --font-size-2xl: calc(1.5rem * var(--font-scale));
 }
 
 [data-component="root"] {
-	font-family: var(--font-family);
-	background-color: var(--color-background);
-	padding: 1rem;
-	color: white;
-	position: absolute;
-	inset: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	flex-direction: column;
-	user-select: none;
-	color: var(--color-high);
+  font-family: var(--font-family);
+  background-color: var(--color-background);
+  padding: 1rem;
+  color: white;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  user-select: none;
+  color: var(--color-high);
 }
 
 [data-component="center"] {
-	width: 380px;
-	display: flex;
-	flex-direction: column;
-	gap: 1.5rem;
+  width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 [data-component="center"][data-size="small"] {
-	width: 300px;
-}
-
-[data-component="button"] {
-	height: 2.5rem;
-	cursor: pointer;
-	border: 0;
-	font-weight: 500;
-	font-size: var(--font-size-sm);
-	border-radius: calc(var(--border-radius) * 0.25rem);
-	display: flex;
-	gap: 0.75rem;
-	align-items: center;
-	justify-content: center;
-	background: var(--color-primary);
-	color: oklch(
-		from var(--color-primary) clamp(0, calc((l - 0.714) * -1000), 1) 0 0
-	);
-}
-
-[data-component="button"][data-color="ghost"] {
-	background: transparent;
-	color: var(--color-high);
-	border: 1px solid
-		oklch(
-			from var(--color-background)
-				calc(
-					clamp(
-						0.22,
-						l +
-						(-0.12 * clamp(0, calc((l - 0.714) * 1000), 1) + 0.06),
-						0.88
-					)
-				)
-				c h
-		);
-}
-
-[data-component="button"] [data-slot="icon"] {
-	width: 16px;
-	height: 16px;
-}
-
-[data-component="button"] [data-slot="icon"] svg {
-	width: 100%;
-	height: 100%;
-}
-
-[data-component="form"] {
-	max-width: 100%;
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-	margin: 0;
-}
-
-[data-component="input"] {
-	height: 2.5rem;
-	border: 1px solid
-		oklch(
-			from var(--color-background)
-				calc(
-					clamp(
-						0.22,
-						l +
-						(-0.12 * clamp(0, calc((l - 0.714) * 1000), 1) + 0.06),
-						0.88
-					)
-				)
-				c h
-		);
-	border-radius: calc(var(--border-radius) * 0.25rem);
-	background: var(--color-background);
-	color: var(--color-high);
-	padding: 0 0.75rem;
-	font-size: var(--font-size-sm);
-	font-family: var(--font-family);
-}
-
-[data-component="input"]:focus {
-	outline: none;
-	border-color: var(--color-primary);
-}
-
-[data-component="input"]::placeholder {
-	color: oklch(
-		from var(--color-high) 
-		l 
-		c 
-		h / 
-		0.6
-	);
-}
-
-[data-component="form-alert"] {
-	padding: 0.75rem;
-	border-radius: calc(var(--border-radius) * 0.25rem);
-	display: flex;
-	align-items: center;
-	gap: 0.75rem;
-	font-size: var(--font-size-sm);
-}
-
-[data-component="form-alert"][data-color="danger"] {
-	background: var(--color-background-error);
-	color: var(--color-error);
-	border: 1px solid var(--color-error);
-}
-
-[data-component="form-alert"][data-color="success"] {
-	background: var(--color-background-success);
-	color: var(--color-success);
-	border: 1px solid var(--color-success);
-}
-
-[data-component="form-alert"] [data-slot="icon-success"] {
-	display: none;
-}
-
-[data-component="form-alert"] [data-slot="icon-danger"] {
-	display: none;
-}
-
-[data-component="form-alert"][data-color="success"] [data-slot="icon-success"] {
-	display: block;
-	width: 16px;
-	height: 16px;
-}
-
-[data-component="form-alert"][data-color="danger"] [data-slot="icon-danger"] {
-	display: block;
-	width: 16px;
-	height: 16px;
+  width: 300px;
 }
 
 [data-component="link"] {
-	color: var(--color-primary);
-	text-decoration: none;
-	font-size: var(--font-size-sm);
+  text-decoration: underline;
+  text-underline-offset: 0.125rem;
+  font-weight: 600;
 }
 
-[data-component="link"]:hover {
-	text-decoration: underline;
+[data-component="label"] {
+  display: flex;
+  gap: 0.75rem;
+  flex-direction: column;
+  font-size: var(--font-size-xs);
 }
 
-[data-component="form-footer"] {
-	display: flex;
-	gap: 1rem;
-	font-size: 0.75rem;
-	align-items: center;
-	justify-content: center;
+[data-component="logo"] {
+  margin: 0 auto;
+  height: 2.5rem;
+  width: auto;
+  display: none;
 }
 
-[data-component="form-footer"]:has(> :nth-child(2)) {
-	justify-content: space-between;
-}
-
-[data-component="logo-default"] {
-	margin: 0 auto;
-	height: 2.5rem;
-	width: auto;
-}
-
-@media (prefers-color-scheme: light) {
-	[data-component="logo-default"] {
-		color: var(--color-high);
-	}
-}
-
-@media (prefers-color-scheme: dark) {
-	[data-component="logo-default"] {
-		color: var(--color-high);
-	}
-}
-
-/* Logo theme switching */
 [data-component="logo"][data-mode="light"] {
-	display: none;
+  display: none;
 }
 
 [data-component="logo"][data-mode="dark"] {
-	display: block;
+  display: block;
 }
 
 @media (prefers-color-scheme: light) {
-	[data-component="logo"][data-mode="light"] {
-		display: block;
-	}
-	
-	[data-component="logo"][data-mode="dark"] {
-		display: none;
-	}
+  [data-component="logo"][data-mode="light"] {
+    display: block;
+  }
+  
+  [data-component="logo"][data-mode="dark"] {
+    display: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-component="logo"][data-mode="dark"] {
+    display: block;
+  }
+}
+
+[data-component="logo-default"] {
+  margin: 0 auto;
+  height: 2.5rem;
+  width: auto;
+}
+
+@media (prefers-color-scheme: light) {
+  [data-component="logo-default"] {
+    color: var(--color-high);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-component="logo-default"] {
+    color: var(--color-high);
+  }
+}
+
+[data-component="input"] {
+  width: 100%;
+  height: 2.5rem;
+  padding: 0 1rem;
+  border: 1px solid transparent;
+  --background: oklch(
+    from var(--color-background) calc(l + (-0.06 * clamp(0, calc((l - 0.714) * 1000), 1) + 0.03)) c h
+  );
+  background: var(--background);
+  border-color: oklch(
+    from var(--color-background)
+      calc(clamp(0.22, l + (-0.12 * clamp(0, calc((l - 0.714) * 1000), 1) + 0.06), 0.88)) c h
+  );
+  border-radius: calc(var(--border-radius) * 0.25rem);
+  font-size: var(--font-size-sm);
+  outline: none;
+}
+
+[data-component="input"]:focus {
+  border-color: oklch(
+    from var(--color-background)
+      calc(clamp(0.3, l + (-0.2 * clamp(0, calc((l - 0.714) * 1000), 1) + 0.1), 0.7)) c h
+  );
+}
+
+[data-component="input"]:user-invalid:not(:focus) {
+  border-color: oklch(0.4 0.09 7.91);
+}
+
+[data-component="button"] {
+  height: 2.5rem;
+  cursor: pointer;
+  border: 0;
+  font-weight: 500;
+  font-size: var(--font-size-sm);
+  border-radius: calc(var(--border-radius) * 0.25rem);
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  color: oklch(from var(--color-primary) clamp(0, calc((l - 0.714) * -1000), 1) 0 0);
+}
+
+[data-component="button"][data-color="ghost"] {
+  background: transparent;
+  color: var(--color-high);
+  border: 1px solid
+    oklch(
+      from var(--color-background)
+        calc(clamp(0.22, l + (-0.12 * clamp(0, calc((l - 0.714) * 1000), 1) + 0.06), 0.88)) c h
+    );
+}
+
+[data-component="button"] [data-slot="icon"] {
+  width: 16px;
+  height: 16px;
+}
+
+[data-component="button"] [data-slot="icon"] svg {
+  width: 100%;
+  height: 100%;
+}
+
+[data-component="form"] {
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0;
+}
+
+[data-component="form-alert"] {
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  border-radius: calc(var(--border-radius) * 0.25rem);
+  background: var(--color-background-error);
+  color: var(--color-error);
+  text-align: left;
+  font-size: 0.75rem;
+  gap: 0.5rem;
+}
+
+[data-component="form-alert"][data-color="success"] {
+  background: var(--color-background-success);
+  color: var(--color-success);
+}
+
+[data-component="form-alert"][data-color="success"] [data-slot="icon-success"] {
+  display: block;
+}
+
+[data-component="form-alert"][data-color="success"] [data-slot="icon-danger"] {
+  display: none;
+}
+
+[data-component="form-alert"]:has([data-slot="message"]:empty) {
+  display: none;
+}
+
+[data-component="form-alert"] [data-slot="icon-success"],
+[data-component="form-alert"] [data-slot="icon-danger"] {
+  width: 1rem;
+  height: 1rem;
+}
+
+[data-component="form-alert"] [data-slot="icon-success"] {
+  display: none;
+}
+
+[data-component="form-footer"] {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-component="form-footer"]:has(> :nth-child(2)) {
+  justify-content: space-between;
+}
+
+[data-component="title"] {
+  font-size: var(--font-size-2xl);
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: var(--color-high);
+  text-align: center;
+}
+
+[data-component="description"] {
+  font-size: var(--font-size-sm);
+  color: var(--color-high);
+  margin: 0 0 1.5rem 0;
+  text-align: center;
+  opacity: 0.8;
 }
 `
 

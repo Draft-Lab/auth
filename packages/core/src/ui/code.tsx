@@ -10,6 +10,7 @@ import type {
 	CodeProviderState
 } from "../provider/code"
 import { Layout, renderToHTML } from "./base"
+import { FormAlert } from "./form"
 
 /**
  * Default text copy for the PIN code authentication UI
@@ -72,115 +73,6 @@ export interface CodeUIOptions extends Pick<CodeProviderOptions, "sendCode"> {
 	 */
 	readonly copy?: Partial<CodeUICopy>
 }
-
-/**
- * FormAlert component for displaying messages
- */
-const FormAlert = ({
-	message,
-	color = "danger"
-}: {
-	readonly message?: string
-	readonly color?: "danger" | "success"
-}): ComponentChildren => {
-	if (!message) return null
-
-	return (
-		<div data-component="form-alert" data-color={color}>
-			<i data-slot={color === "success" ? "icon-success" : "icon-danger"}>
-				{color === "success" ? (
-					<svg
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-						xmlns="http://www.w3.org/2000/svg"
-						aria-label="Success"
-						role="img"
-					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							strokeWidth={2}
-							d="M5 13l4 4L19 7"
-						/>
-					</svg>
-				) : (
-					<svg
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-						xmlns="http://www.w3.org/2000/svg"
-						aria-label="Error"
-						role="img"
-					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							strokeWidth={2}
-							d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.232 16.5c-.77.833.192 2.5 1.732 2.5z"
-						/>
-					</svg>
-				)}
-			</i>
-			<span data-slot="message">{message}</span>
-		</div>
-	)
-}
-
-/**
- * Input component with consistent styling
- */
-const Input = ({
-	type,
-	name,
-	placeholder,
-	value,
-	required,
-	autoComplete,
-	autoFocus,
-	...props
-}: {
-	readonly type: "email" | "tel" | "text"
-	readonly name: string
-	readonly placeholder: string
-	readonly value?: string
-	readonly required?: boolean
-	readonly autoComplete?: string
-	readonly autoFocus?: boolean
-	readonly [key: string]: unknown
-}): ComponentChildren => (
-	<input
-		type={type}
-		name={name}
-		placeholder={placeholder}
-		value={value}
-		required={required}
-		autoComplete={autoComplete}
-		data-component="input"
-		{...props}
-	/>
-)
-
-/**
- * Button component with consistent styling
- */
-const Button = ({
-	type = "submit",
-	children,
-	...props
-}: {
-	readonly type?: "button" | "submit"
-	readonly children: ComponentChildren
-	readonly [key: string]: unknown
-}): ComponentChildren => (
-	<button type={type} data-component="button" {...props}>
-		{children}
-	</button>
-)
-
-/**
- * Link component with consistent styling
- */
 
 /**
  * Gets the appropriate error message for display
@@ -247,7 +139,8 @@ export const CodeUI = (options: CodeUIOptions): CodeProviderOptions => {
 						<FormAlert message={getErrorMessage(error, copy)} />
 					)}
 
-					<Input
+					<input
+						data-component="input"
 						type={mode === "email" ? "email" : "tel"}
 						name={mode}
 						placeholder={copy.email_placeholder}
@@ -257,18 +150,11 @@ export const CodeUI = (options: CodeUIOptions): CodeProviderOptions => {
 					/>
 
 					<input type="hidden" name="action" value="request" />
-					<Button type="submit">{copy.button_continue}</Button>
+					<button data-component="button" type="submit">
+						{copy.button_continue}
+					</button>
 
-					<p
-						style={{
-							fontSize: "0.875rem",
-							color: "var(--color-high)",
-							textAlign: "center",
-							margin: "1rem 0 0 0"
-						}}
-					>
-						{copy.code_info}
-					</p>
+					<p data-component="description">{copy.code_info}</p>
 				</form>
 			</Layout>
 		)
@@ -296,7 +182,8 @@ export const CodeUI = (options: CodeUIOptions): CodeProviderOptions => {
 
 					<input name="action" type="hidden" value="verify" />
 
-					<Input
+					<input
+						data-component="input"
 						type="text"
 						name="code"
 						placeholder={copy.code_placeholder}
@@ -306,11 +193,12 @@ export const CodeUI = (options: CodeUIOptions): CodeProviderOptions => {
 						maxLength={6}
 						minLength={6}
 						pattern="[0-9]{6}"
-						autoFocus
 						required
 					/>
 
-					<Button type="submit">{copy.button_continue}</Button>
+					<button data-component="button" type="submit">
+						{copy.button_continue}
+					</button>
 				</form>
 
 				<form method="post">
@@ -318,10 +206,10 @@ export const CodeUI = (options: CodeUIOptions): CodeProviderOptions => {
 					<input name={mode} type="hidden" value={contact} />
 
 					<div data-component="form-footer">
-						<span style={{ fontSize: "0.875rem" }}>{copy.code_didnt_get}</span>
-						<Button type="submit" data-component="link">
+						<span>{copy.code_didnt_get}</span>
+						<button data-component="button" type="submit">
 							{copy.code_resend}
-						</Button>
+						</button>
 					</div>
 				</form>
 			</Layout>

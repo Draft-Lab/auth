@@ -163,26 +163,17 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 					<p data-component="description">{copy.authorize_description}</p>
 					<form id="authorizeForm" data-component="form">
 						<FormAlert />
-						<div data-component="input-group">
-							<label htmlFor="auth-email" data-component="input-label">
-								{copy.input_email}
-								<span data-slot="required">*</span>
-							</label>
-							<input
-								id="auth-email"
-								data-component="input"
-								type="email"
-								name="email"
-								aria-required="true"
-								aria-describedby="auth-email-help"
-								autoComplete="email"
-								required
-								placeholder={copy.input_email}
-							/>
-							<div id="auth-email-help" data-component="input-help">
-								Enter your email to authenticate with your passkey
-							</div>
-						</div>
+						<input
+							id="auth-email"
+							data-component="input"
+							type="email"
+							name="email"
+							aria-required="true"
+							aria-describedby="auth-email-help"
+							autoComplete="email"
+							required
+							placeholder={copy.input_email}
+						/>
 						<button type="submit" id="btnLogin" data-component="button">
 							{copy.login_with_passkey}
 						</button>
@@ -308,26 +299,17 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 					<p data-component="description">{copy.register_description}</p>
 					<form id="registerForm" data-component="form">
 						<FormAlert />
-						<div data-component="input-group">
-							<label htmlFor="reg-email" data-component="input-label">
-								{copy.input_email}
-								<span data-slot="required">*</span>
-							</label>
-							<input
-								id="reg-email"
-								data-component="input"
-								type="email"
-								name="email"
-								aria-required="true"
-								aria-describedby="reg-email-help"
-								autoComplete="email"
-								required
-								placeholder={copy.input_email}
-							/>
-							<div id="reg-email-help" data-component="input-help">
-								Enter your email to register a new passkey
-							</div>
-						</div>
+						<input
+							id="reg-email"
+							data-component="input"
+							type="email"
+							name="email"
+							aria-required="true"
+							aria-describedby="reg-email-help"
+							autoComplete="email"
+							required
+							placeholder={copy.input_email}
+						/>
 						<button data-component="button" type="submit" id="btnRegister">
 							{copy.register_with_passkey}
 						</button>

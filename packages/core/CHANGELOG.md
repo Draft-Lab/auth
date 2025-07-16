@@ -1,5 +1,17 @@
 # @draftlab/auth
 
+## 0.2.0
+
+### Minor Changes
+
+- refactor ui components
+
+## 0.1.6
+
+### Patch Changes
+
+- change passkey ui URLs for fetch
+
 ## 0.1.5
 
 ### Patch Changes

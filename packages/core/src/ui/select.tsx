@@ -60,6 +60,7 @@ const DEFAULT_DISPLAYS: Record<string, string> = {
 	github: "GitHub",
 	google: "Google",
 	code: "Code",
+	passkey: "Passkey",
 	password: "Password"
 }
 

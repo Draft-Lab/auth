@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.1.4
+
+### Patch Changes
+
+- add passkey provider
+
 ## 0.1.3
 
 ### Patch Changes

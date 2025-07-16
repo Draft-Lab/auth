@@ -1,6 +1,6 @@
 {
 	"name": "@draftlab/auth",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"type": "module",
 	"description": "Core implementation for @draftlab/auth",
 	"author": "Matheus Pergoli",

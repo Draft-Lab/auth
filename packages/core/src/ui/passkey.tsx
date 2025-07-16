@@ -57,6 +57,7 @@ const DEFAULT_COPY: PasskeyUICopy = {
 	// Input placeholders
 	input_email: "Email"
 }
+
 interface PasskeyUIOptions
 	extends Omit<PasskeyProviderConfig, "authorize" | "register" | "copy"> {
 	readonly copy?: Partial<PasskeyUICopy>
@@ -121,7 +122,7 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 										// GET authentication options from the endpoint that calls
 										// @simplewebauthn/server -> generateAuthenticationOptions()
 										const resp = await fetch(
-											"/passkey/authenticate-options?userId=" + email + "&rpID=" + rpID
+											"./passkey/authenticate-options?userId=" + email + "&rpID=" + rpID
 										);
 
 										const optionsJSON = await resp.json();
@@ -141,7 +142,7 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 										}
 										
 										const verificationResp = await fetch(
-											"/passkey/authenticate-verify?userId=" +
+											"./passkey/authenticate-verify?userId=" +
 												email +
 												"&rpID=" +
 												rpID +
@@ -196,7 +197,7 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 						<div data-component="form-footer">
 							<span>
 								{copy.register_prompt}{" "}
-								<a data-component="link" href="register">
+								<a data-component="link" href="./register">
 									{copy.register}
 								</a>
 							</span>
@@ -256,7 +257,7 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 										// GET registration options from the endpoint that calls
 										// @simplewebauthn/server -> generateRegistrationOptions()
 										const resp = await fetch(
-											"/passkey/register-request?userId=" +
+											"./passkey/register-request?userId=" +
 												email +
 												"&origin=" +
 												origin +
@@ -285,7 +286,7 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 										// @simplewebauthn/server -> verifyRegistrationResponse()
 										try {
 											const verificationResp = await fetch(
-												"/passkey/register-verify?userId=" +
+												"./passkey/register-verify?userId=" +
 													email +
 													"&origin=" +
 													origin +
@@ -353,7 +354,7 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 						<div data-component="form-footer">
 							<span>
 								{copy.login_prompt}{" "}
-								<a data-component="link" href="authorize">
+								<a data-component="link" href="./authorize">
 									{copy.login}
 								</a>
 							</span>

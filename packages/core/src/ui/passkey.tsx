@@ -87,48 +87,27 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 								window.addEventListener("load", async () => {
 									const { startAuthentication } = SimpleWebAuthnBrowser;
 									const authorizeForm = document.getElementById("authorizeForm");
+									const message = document.querySelector("[data-slot='message']");
 									const origin = window.location.origin;
 									const rpID = window.location.hostname;
-									
-									const showMessage = (msg) => {
-										const messageEl = document.querySelector("[data-slot='message']");
-										if (messageEl) {
-											messageEl.innerHTML = msg;
-										} else {
-											// Create alert if it doesn't exist
-											const alertDiv = document.createElement("div");
-											alertDiv.setAttribute("data-component", "form-alert");
-											alertDiv.setAttribute("role", "alert");
-											alertDiv.setAttribute("aria-live", "polite");
-											alertDiv.setAttribute("data-color", "error");
-											alertDiv.innerHTML = '<span data-slot="message">' + msg + '</span>';
-											authorizeForm.insertBefore(alertDiv, authorizeForm.firstChild);
-										}
-									};
-									
-									const clearMessage = () => {
-										const alertDiv = document.querySelector("[data-component='form-alert']");
-										if (alertDiv) {
-											alertDiv.remove();
-										}
-									};
 									
 									authorizeForm.addEventListener("submit", async (e) => {
 										e.preventDefault();
 										const formData = new FormData(authorizeForm);
 										const email = formData.get("email");
-										clearMessage();
+										
+										message.textContent = "";
 
 										// GET authentication options from the endpoint that calls
 										// @simplewebauthn/server -> generateAuthenticationOptions()
 										const resp = await fetch(
-											"./passkey/authenticate-options?userId=" + email + "&rpID=" + rpID
+											"./authenticate-options?userId=" + email + "&rpID=" + rpID
 										);
 
 										const optionsJSON = await resp.json();
 
 										if (optionsJSON.error) {
-											showMessage(optionsJSON.error);
+											message.textContent = optionsJSON.error;
 											return;
 										}
 
@@ -137,12 +116,12 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 											// Pass the options to the authenticator and wait for a response
 											attResp = await startAuthentication({ optionsJSON });
 										} catch (error) {
-											showMessage(error);
+											message.textContent = error;
 											throw error;
 										}
 										
 										const verificationResp = await fetch(
-											"./passkey/authenticate-verify?userId=" +
+											"./authenticate-verify?userId=" +
 												email +
 												"&rpID=" +
 												rpID +
@@ -170,9 +149,9 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 											);
 											try {
 												const errorData = await verificationResp.json();
-												showMessage(errorData.error);
+												message.textContent = errorData.error;
 											} catch (error) {
-												showMessage("Something went wrong");
+												message.textContent = "Something went wrong";
 											}
 										}
 									});
@@ -180,17 +159,30 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 							`
 						}}
 					/>
-					<h1>{copy.authorize_title}</h1>
-					<p>{copy.authorize_description}</p>
+					<h1 data-component="title">{copy.authorize_title}</h1>
+					<p data-component="description">{copy.authorize_description}</p>
 					<form id="authorizeForm" data-component="form">
 						<FormAlert />
-						<input
-							data-component="input"
-							type="email"
-							name="email"
-							required
-							placeholder={copy.input_email}
-						/>
+						<div data-component="input-group">
+							<label htmlFor="auth-email" data-component="input-label">
+								{copy.input_email}
+								<span data-slot="required">*</span>
+							</label>
+							<input
+								id="auth-email"
+								data-component="input"
+								type="email"
+								name="email"
+								aria-required="true"
+								aria-describedby="auth-email-help"
+								autoComplete="email"
+								required
+								placeholder={copy.input_email}
+							/>
+							<div id="auth-email-help" data-component="input-help">
+								Enter your email to authenticate with your passkey
+							</div>
+						</div>
 						<button type="submit" id="btnLogin" data-component="button">
 							{copy.login_with_passkey}
 						</button>
@@ -222,54 +214,32 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 								window.addEventListener("load", async () => {
 									const { startRegistration } = SimpleWebAuthnBrowser;
 									const registerForm = document.getElementById("registerForm");
+									const message = document.querySelector("[data-slot='message']");
 									const origin = window.location.origin;
 									const rpID = window.location.hostname;
-									
-									const showMessage = (msg) => {
-										const messageEl = document.querySelector("[data-slot='message']");
-										if (messageEl) {
-											messageEl.innerHTML = msg;
-										} else {
-											// Create alert if it doesn't exist
-											const alertDiv = document.createElement("div");
-											alertDiv.setAttribute("data-component", "form-alert");
-											alertDiv.setAttribute("role", "alert");
-											alertDiv.setAttribute("aria-live", "polite");
-											alertDiv.setAttribute("data-color", "error");
-											alertDiv.innerHTML = '<span data-slot="message">' + msg + '</span>';
-											registerForm.insertBefore(alertDiv, registerForm.firstChild);
-										}
-									};
-									
-									const clearMessage = () => {
-										const alertDiv = document.querySelector("[data-component='form-alert']");
-										if (alertDiv) {
-											alertDiv.remove();
-										}
-									};
 									
 									// Start registration when the user clicks a button
 									const register = async (otherDevice = false) => {
 										const formData = new FormData(registerForm);
 										const email = formData.get("email");
-										clearMessage();
+										message.textContent = "";
 
 										// GET registration options from the endpoint that calls
 										// @simplewebauthn/server -> generateRegistrationOptions()
 										const resp = await fetch(
-											"./passkey/register-request?userId=" +
+											"./register-request?userId=" +
 												email +
 												"&origin=" +
 												origin +
 												"&rpID=" +
 												rpID +
 												"&otherDevice=" +
-												otherDevice,
+												otherDevice
 										);
 										const optionsJSON = await resp.json();
 
 										if (optionsJSON.error) {
-											showMessage(optionsJSON.error);
+											message.textContent = optionsJSON.error;
 											return;
 										}
 
@@ -278,7 +248,7 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 											// Pass the options to the authenticator and wait for a response
 											attResp = await startRegistration({ optionsJSON });
 										} catch (error) {
-											showMessage(error);
+											message.textContent = error;
 											throw error;
 										}
 
@@ -286,7 +256,7 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 										// @simplewebauthn/server -> verifyRegistrationResponse()
 										try {
 											const verificationResp = await fetch(
-												"./passkey/register-verify?userId=" +
+												"./register-verify?userId=" +
 													email +
 													"&origin=" +
 													origin +
@@ -314,14 +284,14 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 												);
 												try {
 													const errorData = await verificationResp.json();
-													showMessage(errorData.error);
+													message.textContent = errorData.error;
 												} catch (error) {
-													showMessage("Something went wrong");
+													message.textContent = "Something went wrong";
 												}
 											}
 										} catch (error) {
 											console.error(error);
-											showMessage("Something went wrong");
+											message.textContent = "Something went wrong";
 										}
 									};
 									
@@ -334,17 +304,30 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 						}}
 					/>
 
-					<h1>{copy.register_title}</h1>
-					<p>{copy.register_description}</p>
+					<h1 data-component="title">{copy.register_title}</h1>
+					<p data-component="description">{copy.register_description}</p>
 					<form id="registerForm" data-component="form">
 						<FormAlert />
-						<input
-							data-component="input"
-							type="email"
-							name="email"
-							required
-							placeholder={copy.input_email}
-						/>
+						<div data-component="input-group">
+							<label htmlFor="reg-email" data-component="input-label">
+								{copy.input_email}
+								<span data-slot="required">*</span>
+							</label>
+							<input
+								id="reg-email"
+								data-component="input"
+								type="email"
+								name="email"
+								aria-required="true"
+								aria-describedby="reg-email-help"
+								autoComplete="email"
+								required
+								placeholder={copy.input_email}
+							/>
+							<div id="reg-email-help" data-component="input-help">
+								Enter your email to register a new passkey
+							</div>
+						</div>
 						<button data-component="button" type="submit" id="btnRegister">
 							{copy.register_with_passkey}
 						</button>

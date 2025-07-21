@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.2.2
+
+### Patch Changes
+
+- add plugin features
+
 ## 0.2.1
 
 ### Patch Changes

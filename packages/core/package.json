@@ -1,6 +1,6 @@
 {
 	"name": "@draftlab/auth",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"type": "module",
 	"description": "Core implementation for @draftlab/auth",
 	"author": "Matheus Pergoli",
@@ -42,7 +42,7 @@
 	},
 	"devDependencies": {
 		"@draftlab/tsconfig": "workspace:*",
-		"@types/node": "^24.0.14",
+		"@types/node": "^24.0.15",
 		"tsdown": "^0.12.9",
 		"typescript": "^5.8.3"
 	},

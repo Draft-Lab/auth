@@ -16,6 +16,8 @@ import {
 } from "./error"
 import { encryptionKeys, signingKeys } from "./keys"
 import { validatePKCE } from "./pkce"
+import { PluginManager } from "./plugin/manager"
+import type { Plugin } from "./plugin/types"
 import type { Provider, ProviderOptions, ProviderRoute } from "./provider/provider"
 import { generateSecureToken } from "./random"
 import { Storage, type StorageAdapter } from "./storage/storage"
@@ -113,6 +115,8 @@ interface IssuerInput<
 	error?(error: UnknownStateError, req: Request): Promise<Response>
 	/** Client authorization check function */
 	allow?(input: AllowCheckInput, req: Request): Promise<boolean>
+	/** Plugin configuration */
+	plugins?: readonly Plugin[]
 	/**
 	 * Refresh callback for updating user claims.
 	 *
@@ -519,6 +523,19 @@ export const issuer = <
 	const app = new Router<{ Variables: { authorization: AuthorizationState } }>({
 		basePath: input.basePath
 	})
+
+	// Initialize plugin manager if plugins are provided
+	if (input.plugins && input.plugins.length > 0) {
+		const manager = new PluginManager(input.storage)
+
+		// Register all plugins
+		for (const plugin of input.plugins) {
+			manager.register(plugin)
+		}
+
+		// Setup routes
+		manager.setupRoutes(app)
+	}
 
 	// Setup provider routes
 	for (const [name, value] of Object.entries(input.providers)) {

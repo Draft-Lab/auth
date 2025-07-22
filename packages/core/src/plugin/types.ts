@@ -1,5 +1,5 @@
 /**
- * Core plugin system types for DraftAuth
+ * Core plugin system types
  */
 
 import type { RouterContext } from "@draftlab/auth-router/types"

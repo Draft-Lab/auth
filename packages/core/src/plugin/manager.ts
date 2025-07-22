@@ -1,9 +1,9 @@
 /**
  * Plugin manager for DraftAuth
- * Handles plugin registration, execution, and lifecycle
  */
 
 import type { Router } from "@draftlab/auth-router"
+import type { RouterContext } from "@draftlab/auth-router/types"
 import type { StorageAdapter } from "../storage/storage"
 import { type Plugin, type PluginContext, PluginError } from "./types"
 
@@ -27,32 +27,63 @@ export class PluginManager {
 	}
 
 	/**
+	 * Register multiple plugins at once
+	 */
+	registerAll(plugins: Plugin[]): void {
+		for (const plugin of plugins) {
+			this.register(plugin)
+		}
+	}
+
+	/**
+	 * Get all registered plugins
+	 */
+	getAll(): Plugin[] {
+		return Array.from(this.plugins.values())
+	}
+
+	/**
+	 * Get plugin by id
+	 */
+	get(id: string): Plugin | undefined {
+		return this.plugins.get(id)
+	}
+
+	/**
 	 * Setup plugin routes on a router
 	 */
 	setupRoutes(router: Router): void {
+		const registeredPaths = new Set<string>()
+
 		for (const plugin of this.plugins.values()) {
 			if (!plugin.routes) continue
 
 			for (const route of plugin.routes) {
-				// Add plugin routes to router
+				// Prefix plugin routes with plugin id for namespacing
+				const fullPath = `/${plugin.id}${route.path}`
+
+				// Check for path conflicts
+				if (registeredPaths.has(fullPath)) {
+					throw new PluginError(`Route conflict: ${fullPath} already registered`, plugin.id)
+				}
+				registeredPaths.add(fullPath)
+
+				// Create context
+				const handler = async (ctx: RouterContext) => {
+					const pluginCtx: PluginContext = {
+						...ctx,
+						storage: this.storage
+					}
+					return await route.handler(pluginCtx)
+				}
+
+				// Register route based on method
 				switch (route.method) {
 					case "GET":
-						router.get(route.path, async (ctx) => {
-							const pluginCtx: PluginContext = {
-								...ctx,
-								storage: this.storage
-							}
-							return await route.handler(pluginCtx)
-						})
+						router.get(fullPath, handler)
 						break
 					case "POST":
-						router.post(route.path, async (ctx) => {
-							const pluginCtx: PluginContext = {
-								...ctx,
-								storage: this.storage
-							}
-							return await route.handler(pluginCtx)
-						})
+						router.post(fullPath, handler)
 						break
 				}
 			}

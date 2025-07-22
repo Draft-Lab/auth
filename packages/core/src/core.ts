@@ -116,7 +116,7 @@ interface IssuerInput<
 	/** Client authorization check function */
 	allow?(input: AllowCheckInput, req: Request): Promise<boolean>
 	/** Plugin configuration */
-	plugins?: readonly Plugin[]
+	plugins?: Plugin[]
 	/**
 	 * Refresh callback for updating user claims.
 	 *
@@ -529,9 +529,7 @@ export const issuer = <
 		const manager = new PluginManager(input.storage)
 
 		// Register all plugins
-		for (const plugin of input.plugins) {
-			manager.register(plugin)
-		}
+		manager.registerAll(input.plugins)
 
 		// Setup routes
 		manager.setupRoutes(app)

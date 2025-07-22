@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.2.3
+
+### Patch Changes
+
+- modify plugin core logic
+
 ## 0.2.2
 
 ### Patch Changes

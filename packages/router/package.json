@@ -43,7 +43,7 @@
 	},
 	"devDependencies": {
 		"@draftlab/tsconfig": "workspace:*",
-		"tsdown": "^0.12.9",
+		"tsdown": "^0.13.0",
 		"typescript": "^5.8.3"
 	},
 	"publishConfig": {

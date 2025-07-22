@@ -1,11 +1,11 @@
 /**
- * Type-safe plugin system for DraftAuth
+ * Plugin system for DraftAuth
  */
 
 import type { Plugin, PluginRouteHandler } from "./types"
 
 /**
- * Plugin builder interface for fluent API
+ * Plugin builder interface
  */
 export interface PluginBuilder {
 	/** Add GET route */

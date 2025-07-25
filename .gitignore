@@ -238,3 +238,5 @@ eslint.config.js
 
 # cache
 **/cache/
+
+routeTree.gen.ts

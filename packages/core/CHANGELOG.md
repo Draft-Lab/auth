@@ -1,5 +1,17 @@
 # @draftlab/auth
 
+## 0.2.5
+
+### Patch Changes
+
+- release
+
+## 0.2.4
+
+### Patch Changes
+
+- add totp provider
+
 ## 0.2.3
 
 ### Patch Changes

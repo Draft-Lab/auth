@@ -1,0 +1,38 @@
+[
+	[
+		"encryption:key\u001fW1wlWDL-w7SQiAHw9mkbTw",
+		{
+			"value": {
+				"id": "W1wlWDL-w7SQiAHw9mkbTw",
+				"publicKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqI2ELT1v98Fr7iq9Ukk+\nhxqzKroJM2+rh0fZzr3ijm2EiqjbiSa5WYCnQGQim1EagKB6xEqtynj5MoGiZQgi\naU3dtK5igqXdyVhsCpX+1xweTOGHAS7v+L8F+tAJ5ulVQKJbxn19zLZFwk2Ydyj8\nEdxvxHWIeOZDt/QuwFaIe4UjDJK8BQXtf0tFlgUJk1rZMOa9jOYbZ/8Gip+CIyAx\nVWuMchZnA8WcOxGL+7+KqwHNE+TcUyAdWOEnnvGUDzW1/pIpzcUspMUWu486YN0U\nFNresCjnZtcu7khBuDnrO7iylSfKbNndyPK7KAQ0yvRKQkiE+94Jt7yZxNzXf/uP\nyQIDAQAB\n-----END PUBLIC KEY-----",
+				"privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCojYQtPW/3wWvu\nKr1SST6HGrMqugkzb6uHR9nOveKObYSKqNuJJrlZgKdAZCKbURqAoHrESq3KePky\ngaJlCCJpTd20rmKCpd3JWGwKlf7XHB5M4YcBLu/4vwX60Anm6VVAolvGfX3MtkXC\nTZh3KPwR3G/EdYh45kO39C7AVoh7hSMMkrwFBe1/S0WWBQmTWtkw5r2M5htn/waK\nn4IjIDFVa4xyFmcDxZw7EYv7v4qrAc0T5NxTIB1Y4See8ZQPNbX+kinNxSykxRa7\njzpg3RQU2t6wKOdm1y7uSEG4Oes7uLKVJ8ps2d3I8rsoBDTK9EpCSIT73gm3vJnE\n3Nd/+4/JAgMBAAECggEARNxQCEWF1XPlms9GOnRnAb5EPWv0r1lre+C8WMzV3rda\ng2WaDy3NYoX/jnx6cPbQ+4TUsxYJa2NB98LjbCBHIrtnnNXztAl8kzI3LZn7G7nG\nnUU0KSUacAbmtAHDUd248SeDlBOXzgcXd9rIs8IAPXHQDbSw1SfJucEeSoDv0Ho5\nxHOfXrV2VXpbfFoyqhsLjkHvmm3iQY2wD1njRMAq6Y8QDL0g0MdW16f34/jV9sOY\nS49go1NbE+VJ0GeVcGPvvjuUAVCCUCBaOj1hL/zGhXp1QHnpTrqWirj8uKnuzOKG\nAZjC2MJ7BX7V2ZoWcrt44SY3gEBap3YzV0ewbh7huwKBgQDT5KEuhA8fFCgq0Eg3\nXhIhKornmbANSKRW14ybiTCoQk9VatnyfrHHOqjIzZ1xDjjqT0OdJ2PkMW0vySWT\nXQpPxXd2w+BW4l2Fv3S1xr9Hi6fA2poC6/r8kqHqETkMGSlZWon+GplkLwQippaA\nYxJdC+JPrs+SXz3XeLGmSehdawKBgQDLo138GyvBsCsLrYbKM9B7xqWX3WM08S2l\nhWZbE4EAA/hW+/FIjYweBYWFwQReo7nGB66PHHm0uinWSY/OWKIymFKUDSd3e7r4\npd004/MLnUsDTViHYASHU54zkjrciTs0fkAwO3bMwafssZlhYuz87h/K1L9iof/T\nFmGSAKEAmwKBgQC0p3FwWjEWOzY/wlI/ullUo5PH/7UkrjFGxQFhPicY3WgMGEx3\nPeNOS8nJYdyAnjKSOkAYRZQZ4rYHjsQVjraS6nV+8WNcUCSSOnhD3o4Ibp34g6fZ\nI95Z5p5bFJIBqZYiU1nhJkZvLtKkxEj+bvkiEVbCvvTEA6WTBpjXgJ22vwKBgCyC\n0AdMFRtoG3CZBG5sNvTnLcjtHkMzOGwGpaHguIC9XWn99faK4gap5E6hKwhYt0Ge\n6jvj2IJ1crGhMKrE2uc+PkaYPXkzdWHmN1zZOoXeYsgc/u3QQg0mbN0O6IjOAj/u\nHK+uP8Bvz/m/tCwCSJTco9xc9lxj1pxYNwmH06ljAoGBAJXru6rGoq4FSo6FxI2J\n8T4ekAeXYeuIdouE/XB9DVcHCDwI1TNLTvBUd6iQC7JbZV+qjndTs0EI0GX7f351\nI7wPufpkI6Bl9L5X4Kx6beD79OCzXUNnKw4eU3MQXH04Ponty8BfHD6IRUkmSWbN\nB9bpt46yFoob8oCNe9FYiikT\n-----END PRIVATE KEY-----",
+				"created": 1753391827265,
+				"alg": "RSA-OAEP-512"
+			}
+		}
+	],
+	[
+		"signing:key\u001f860r0be7xtGFRUqjvIdh5A",
+		{
+			"value": {
+				"id": "860r0be7xtGFRUqjvIdh5A",
+				"publicKey": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEI8LuVDEJ831XCb0FIUKIMKTySHyi\nEKSEu5h7rIPlCBNFbrPiaVzq6ClbU7AAh53fE1F04thGD6CYdF6gVloXqw==\n-----END PUBLIC KEY-----",
+				"privateKey": "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgaZcKwdutRaWdy2PX\nIHph6HAJiYiqrAHdiZORd4mJWVmhRANCAAQjwu5UMQnzfVcJvQUhQogwpPJIfKIQ\npIS7mHusg+UIE0Vus+JpXOroKVtTsACHnd8TUXTi2EYPoJh0XqBWWher\n-----END PRIVATE KEY-----",
+				"created": 1753391827224,
+				"alg": "ES256"
+			}
+		}
+	],
+	[
+		"totp\u001fuser\u001fmatheus@email.com",
+		{
+			"value": {
+				"secret": "ZUMJ6MUFZLY5T7SEBZ3HRNUSUJR6CAVG",
+				"enabled": false,
+				"backupCodes": ["WX3D-E8Y3", "JBYY-BM5M", "3MVL-9CM1", "WJBH-Z3K1"],
+				"createdAt": "2025-07-25T03:14:53.154Z",
+				"label": "matheus@email.com"
+			}
+		}
+	]
+]

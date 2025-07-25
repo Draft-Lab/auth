@@ -5,7 +5,6 @@ import type { PluginRoute, PluginRouteHandler } from "./types"
  * Create a new plugin
  */
 export const plugin = (id: string): PluginBuilder => {
-	// Validate plugin id
 	if (!id || typeof id !== "string") {
 		throw new Error("Plugin id must be a non-empty string")
 	}

@@ -1,6 +1,6 @@
 {
 	"name": "@draftlab/auth",
-	"version": "0.2.3",
+	"version": "0.2.5",
 	"type": "module",
 	"description": "Core implementation for @draftlab/auth",
 	"author": "Matheus Pergoli",
@@ -43,6 +43,7 @@
 	"devDependencies": {
 		"@draftlab/tsconfig": "workspace:*",
 		"@types/node": "^24.1.0",
+		"@types/qrcode": "^1.5.5",
 		"tsdown": "^0.13.0",
 		"typescript": "^5.8.3"
 	},
@@ -63,8 +64,10 @@
 		"@simplewebauthn/server": "^13.1.2",
 		"@standard-schema/spec": "^1.0.0",
 		"jose": "^6.0.12",
+		"otpauth": "^9.4.0",
 		"preact": "^10.26.9",
-		"preact-render-to-string": "^6.5.13"
+		"preact-render-to-string": "^6.5.13",
+		"qrcode": "^1.5.4"
 	},
 	"engines": {
 		"node": ">=18"

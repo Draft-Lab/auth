@@ -11,6 +11,7 @@ import type {
 	PasswordRegisterError
 } from "../provider/password"
 import { Layout, renderToHTML } from "./base"
+import { FormAlert } from "./form"
 
 /**
  * Strongly typed copy text configuration for password UI
@@ -117,126 +118,6 @@ interface PasswordAuthState {
 type PasswordError = PasswordLoginError | PasswordRegisterError | PasswordChangeError
 
 /**
- * FormAlert component for displaying error messages
- */
-const FormAlert = ({
-	message,
-	color = "danger"
-}: {
-	readonly message?: string
-	readonly color?: "danger" | "success"
-}): ComponentChildren => {
-	if (!message) return null
-
-	return (
-		<div data-component="form-alert" data-color={color}>
-			<i data-slot={color === "success" ? "icon-success" : "icon-danger"}>
-				{color === "success" ? (
-					<svg
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-						xmlns="http://www.w3.org/2000/svg"
-						aria-label="Success"
-						role="img"
-					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							strokeWidth={2}
-							d="M5 13l4 4L19 7"
-						/>
-					</svg>
-				) : (
-					<svg
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-						xmlns="http://www.w3.org/2000/svg"
-						aria-label="Error"
-						role="img"
-					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							strokeWidth={2}
-							d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.232 16.5c-.77.833.192 2.5 1.732 2.5z"
-						/>
-					</svg>
-				)}
-			</i>
-			<span data-slot="message">{message}</span>
-		</div>
-	)
-}
-
-/**
- * Input component with consistent styling
- */
-const Input = ({
-	type,
-	name,
-	placeholder,
-	value,
-	required,
-	autoComplete,
-	...props
-}: {
-	readonly type: "email" | "password" | "text"
-	readonly name: string
-	readonly placeholder: string
-	readonly value?: string
-	readonly required?: boolean
-	readonly autoComplete?: string
-	readonly [key: string]: unknown
-}): ComponentChildren => (
-	<input
-		type={type}
-		name={name}
-		placeholder={placeholder}
-		value={value}
-		required={required}
-		autoComplete={autoComplete}
-		data-component="input"
-		{...props}
-	/>
-)
-
-/**
- * Button component with consistent styling
- */
-const Button = ({
-	type = "submit",
-	children,
-	...props
-}: {
-	readonly type?: "button" | "submit"
-	readonly children: ComponentChildren
-	readonly [key: string]: unknown
-}): ComponentChildren => (
-	<button type={type} data-component="button" {...props}>
-		{children}
-	</button>
-)
-
-/**
- * Link component with consistent styling
- */
-const Link = ({
-	href,
-	children,
-	...props
-}: {
-	readonly href: string
-	readonly children: ComponentChildren
-	readonly [key: string]: unknown
-}): ComponentChildren => (
-	<a href={href} data-component="link" {...props}>
-		{children}
-	</a>
-)
-
-/**
  * Creates a complete UI configuration for password-based authentication
  */
 export const PasswordUI = (options: PasswordUIOptions): PasswordConfig => {
@@ -270,30 +151,39 @@ export const PasswordUI = (options: PasswordUIOptions): PasswordConfig => {
 			<form data-component="form" method="post">
 				<FormAlert message={getErrorMessage(error)} />
 
-				<Input
+				<input
 					type="email"
 					name="email"
 					placeholder={copy.input_email}
 					value={form?.get("email")?.toString() || ""}
 					autoComplete="email"
+					data-component="input"
 					required
 				/>
 
-				<Input
+				<input
 					type="password"
 					name="password"
 					placeholder={copy.input_password}
 					autoComplete="current-password"
+					data-component="input"
 					required
 				/>
 
-				<Button type="submit">{copy.button_continue}</Button>
+				<button data-component="button" type="submit">
+					{copy.button_continue}
+				</button>
 
 				<div data-component="form-footer">
 					<span>
-						{copy.register_prompt} <Link href="./register">{copy.register}</Link>
+						{copy.register_prompt}{" "}
+						<a data-component="link" href="./register">
+							{copy.register}
+						</a>
 					</span>
-					<Link href="./change">{copy.change_prompt}</Link>
+					<a data-component="link" href="./change">
+						{copy.change_prompt}
+					</a>
 				</div>
 			</form>
 		</Layout>
@@ -322,37 +212,45 @@ export const PasswordUI = (options: PasswordUIOptions): PasswordConfig => {
 
 						<input name="action" type="hidden" value="register" />
 
-						<Input
+						<input
 							type="email"
 							name="email"
 							placeholder={copy.input_email}
 							value={emailError ? "" : form?.get("email")?.toString() || ""}
 							autoComplete="email"
+							data-component="input"
 							required
 						/>
 
-						<Input
+						<input
 							type="password"
 							name="password"
 							placeholder={copy.input_password}
 							value={passwordError ? "" : form?.get("password")?.toString() || ""}
 							autoComplete="new-password"
+							data-component="input"
 							required
 						/>
 
-						<Input
+						<input
 							type="password"
 							name="repeat"
 							placeholder={copy.input_repeat}
 							autoComplete="new-password"
+							data-component="input"
 							required
 						/>
 
-						<Button type="submit">{copy.button_continue}</Button>
+						<button data-component="button" type="submit">
+							{copy.button_continue}
+						</button>
 
 						<div data-component="form-footer">
 							<span>
-								{copy.login_prompt} <Link href="./authorize">{copy.login}</Link>
+								{copy.login_prompt}{" "}
+								<a data-component="link" href="./authorize">
+									{copy.login}
+								</a>
 							</span>
 						</div>
 					</form>
@@ -362,21 +260,23 @@ export const PasswordUI = (options: PasswordUIOptions): PasswordConfig => {
 
 						<input name="action" type="hidden" value="verify" />
 
-						<Input
+						<input
 							type="text"
 							name="code"
 							placeholder={copy.input_code}
 							aria-label="6-digit verification code"
 							autoComplete="one-time-code"
+							data-component="input"
 							inputMode="numeric"
 							maxLength={6}
 							minLength={6}
 							pattern="[0-9]{6}"
-							autoFocus
 							required
 						/>
 
-						<Button type="submit">{copy.button_continue}</Button>
+						<button data-component="button" type="submit">
+							{copy.button_continue}
+						</button>
 					</form>
 				)}
 			</Layout>
@@ -405,16 +305,19 @@ export const PasswordUI = (options: PasswordUIOptions): PasswordConfig => {
 
 						<input name="action" type="hidden" value="code" />
 
-						<Input
+						<input
 							type="email"
 							name="email"
 							placeholder={copy.input_email}
 							value={form?.get("email")?.toString() || ""}
 							autoComplete="email"
+							data-component="input"
 							required
 						/>
 
-						<Button type="submit">{copy.button_continue}</Button>
+						<button data-component="button" type="submit">
+							{copy.button_continue}
+						</button>
 					</form>
 				) : state.type === "code" ? (
 					<>
@@ -423,7 +326,7 @@ export const PasswordUI = (options: PasswordUIOptions): PasswordConfig => {
 
 							<input name="action" type="hidden" value="verify" />
 
-							<Input
+							<input
 								type="text"
 								name="code"
 								placeholder={copy.input_code}
@@ -432,12 +335,14 @@ export const PasswordUI = (options: PasswordUIOptions): PasswordConfig => {
 								inputMode="numeric"
 								maxLength={6}
 								minLength={6}
+								data-component="input"
 								pattern="[0-9]{6}"
-								autoFocus
 								required
 							/>
 
-							<Button type="submit">{copy.button_continue}</Button>
+							<button data-component="button" type="submit">
+								{copy.button_continue}
+							</button>
 						</form>
 
 						<form method="post">
@@ -446,11 +351,14 @@ export const PasswordUI = (options: PasswordUIOptions): PasswordConfig => {
 
 							<div data-component="form-footer">
 								<span>
-									{copy.code_return} <Link href="./authorize">{copy.login}</Link>
+									{copy.code_return}{" "}
+									<a data-component="link" href="./authorize">
+										{copy.login}
+									</a>
 								</span>
-								<Button type="submit" data-component="link">
+								<button type="submit" data-component="link">
 									{copy.code_resend}
-								</Button>
+								</button>
 							</div>
 						</form>
 					</>
@@ -460,25 +368,29 @@ export const PasswordUI = (options: PasswordUIOptions): PasswordConfig => {
 
 						<input name="action" type="hidden" value="update" />
 
-						<Input
+						<input
 							type="password"
 							name="password"
 							placeholder={copy.input_password}
 							value={passwordError ? "" : form?.get("password")?.toString() || ""}
 							autoComplete="new-password"
+							data-component="input"
 							required
 						/>
 
-						<Input
+						<input
 							type="password"
 							name="repeat"
 							placeholder={copy.input_repeat}
 							value={passwordError ? "" : form?.get("repeat")?.toString() || ""}
 							autoComplete="new-password"
+							data-component="input"
 							required
 						/>
 
-						<Button type="submit">{copy.button_continue}</Button>
+						<button data-component="button" type="submit">
+							{copy.button_continue}
+						</button>
 					</form>
 				)}
 			</Layout>

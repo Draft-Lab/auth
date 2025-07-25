@@ -92,7 +92,6 @@ const css = `@import url("https://unpkg.com/tailwindcss@3.4.15/src/css/preflight
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  user-select: none;
   color: var(--color-high);
 }
 

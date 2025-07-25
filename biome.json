@@ -11,13 +11,9 @@
 			"**",
 			"!**/dist/**",
 			"!**/.dist/**",
-			"!**/*.css",
 			"!**/.turbo/**",
-			"!**/routeTree.gen.ts",
-			"!**/coverage",
 			"!node_modules/**",
-			"!**/.next/**",
-			"!**/.tanstack/**"
+			"!**/routeTree.gen.ts"
 		]
 	},
 	"formatter": {

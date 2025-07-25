@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"module": "ESNext",
+		"target": "ES2022",
+		"skipLibCheck": true,
+		"strictNullChecks": true,
+		"moduleResolution": "Bundler",
+		"paths": {
+			"@/*": ["./src/*"],
+			"@draftlab/auth": ["../../packages/core/src/index.ts"],
+			"@draftlab/auth/*": ["../../packages/core/src/*"]
+		}
+	}
+}

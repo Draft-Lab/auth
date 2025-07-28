@@ -16,19 +16,23 @@ export const auth = issuer({
 	subjects,
 	basePath: "/auth",
 	select: Select({
+		copy: { button_provider: " " },
 		displays: {
-			totp: "TOTP"
+			code: "Magic Link",
+			passkey: "Passkey",
+			totp: "One-Time Password",
+			password: "Email/Password"
 		}
 	}),
 	storage: MemoryStorage({
 		persist: "./persist.json"
 	}),
 	providers: {
-		totp: TOTPProvider({
-			window: 5,
-			issuer: "My App",
-			...TOTPUI({ qrSize: 250 })
-		}),
+		passkey: PasskeyProvider(
+			PasskeyUI({
+				rpName: "My Application"
+			})
+		),
 		code: CodeProvider(
 			CodeUI({
 				sendCode: async (claims, code) => {
@@ -37,18 +41,18 @@ export const auth = issuer({
 				}
 			})
 		),
-		passkey: PasskeyProvider(
-			PasskeyUI({
-				rpName: "My Application"
-			})
-		),
 		password: PasswordProvider(
 			PasswordUI({
 				async sendCode(email, code) {
 					console.log(email, code)
 				}
 			})
-		)
+		),
+		totp: TOTPProvider({
+			window: 5,
+			issuer: "My App",
+			...TOTPUI({ qrSize: 250 })
+		})
 	},
 	success: (ctx, value) => {
 		if (value.provider === "password") {

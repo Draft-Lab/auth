@@ -1,5 +1,13 @@
 # @draftlab/auth
 
+## 0.2.6
+
+### Patch Changes
+
+- modify ui components and providers
+- Updated dependencies
+  - @draftlab/auth-router@0.0.5
+
 ## 0.2.5
 
 ### Patch Changes

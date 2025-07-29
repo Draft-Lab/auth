@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.3.0
+
+### Minor Changes
+
+- add linkedin/discord/microsoft provider
+
 ## 0.2.6
 
 ### Patch Changes

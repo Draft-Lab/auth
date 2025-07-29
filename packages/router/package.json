@@ -1,7 +1,7 @@
 {
 	"name": "@draftlab/auth-router",
 	"version": "0.0.4",
-	"description": "Minimal router implementation for @draftlab/auth",
+	"description": "Minimal http router implementation for @draftlab/auth",
 	"author": "Matheus Pergoli",
 	"license": "MIT",
 	"repository": {

@@ -13,14 +13,6 @@ import { FormAlert } from "./form"
  * Strongly typed copy text configuration for TOTP UI
  */
 interface TOTPUICopy {
-	// Page titles and descriptions
-	readonly setup_title: string
-	readonly setup_description: string
-	readonly verify_title: string
-	readonly verify_description: string
-	readonly recovery_title: string
-	readonly recovery_description: string
-
 	// Setup flow specific
 	readonly setup_manual_entry: string
 	readonly setup_backup_codes_title: string
@@ -37,15 +29,6 @@ interface TOTPUICopy {
 }
 
 const DEFAULT_COPY: TOTPUICopy = {
-	// Page titles and descriptions
-	setup_title: "Set up Two-Factor Authentication",
-	setup_description:
-		"Scan the QR code with your authenticator app, then enter the verification code.",
-	verify_title: "Enter authentication code",
-	verify_description: "Open your authenticator app and enter the current 6-digit code.",
-	recovery_title: "Use backup code",
-	recovery_description: "Enter one of your backup codes. Each code can only be used once.",
-
 	// Setup flow specific
 	setup_manual_entry: "Can't scan? Enter this code manually:",
 	setup_backup_codes_title: "Save your backup codes",
@@ -118,7 +101,7 @@ export const TOTPUI = (options: TOTPUIOptions = {}): Omit<TOTPProviderConfig, "i
 			// Show initial form to enter email
 			return (
 				<Layout>
-					<form data-component="form" method="post" action="./register-verify">
+					<form data-component="form" method="post" action="./register">
 						<FormAlert message={error} />
 
 						<input
@@ -152,7 +135,7 @@ export const TOTPUI = (options: TOTPUIOptions = {}): Omit<TOTPProviderConfig, "i
 
 		return (
 			<Layout>
-				<form data-component="form" method="post" action="./register-verify">
+				<form data-component="form" method="post" action="./register">
 					<FormAlert message={error} />
 
 					{/* Hidden field to remember the email */}
@@ -226,7 +209,7 @@ export const TOTPUI = (options: TOTPUIOptions = {}): Omit<TOTPProviderConfig, "i
 	 */
 	const renderAuthorize = (error?: string): ComponentChildren => (
 		<Layout>
-			<form data-component="form" method="post" action="./verify">
+			<form data-component="form" method="post" action="./authorize">
 				<FormAlert message={error} />
 
 				<input
@@ -270,53 +253,11 @@ export const TOTPUI = (options: TOTPUIOptions = {}): Omit<TOTPProviderConfig, "i
 	)
 
 	/**
-	 * Renders the verification form
-	 */
-	const renderVerify = (error?: string): ComponentChildren => (
-		<Layout>
-			<form data-component="form" method="post" action="./verify">
-				<FormAlert message={error} />
-
-				<input
-					type="email"
-					name="email"
-					placeholder="Email"
-					autoComplete="email"
-					data-component="input"
-					required
-				/>
-
-				<input
-					type="text"
-					name="token"
-					placeholder={copy.input_token}
-					pattern="[0-9]{6}"
-					maxLength={6}
-					minLength={6}
-					autoComplete="one-time-code"
-					data-component="input"
-					required
-				/>
-
-				<button type="submit" data-component="button">
-					{copy.button_continue}
-				</button>
-
-				<div data-component="form-footer">
-					<a href="./recovery" data-component="link">
-						{copy.link_use_recovery}
-					</a>
-				</div>
-			</form>
-		</Layout>
-	)
-
-	/**
 	 * Renders the recovery form
 	 */
 	const renderRecovery = (error?: string): ComponentChildren => (
 		<Layout>
-			<form data-component="form" method="post" action="./recovery-verify">
+			<form data-component="form" method="post" action="./recovery">
 				<FormAlert message={error} />
 
 				<input
@@ -362,13 +303,6 @@ export const TOTPUI = (options: TOTPUIOptions = {}): Omit<TOTPProviderConfig, "i
 
 		register: async (_req, qrCodeUrl, secret, backupCodes, error, email) => {
 			const jsx = await renderRegister(qrCodeUrl, secret, backupCodes, error, email)
-			return new Response(renderToHTML(jsx), {
-				headers: { "Content-Type": "text/html" }
-			})
-		},
-
-		verify: async (_req, error) => {
-			const jsx = renderVerify(error)
 			return new Response(renderToHTML(jsx), {
 				headers: { "Content-Type": "text/html" }
 			})

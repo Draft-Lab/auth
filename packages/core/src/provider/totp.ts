@@ -116,15 +116,6 @@ export interface TOTPProviderConfig {
 	) => Promise<Response>
 
 	/**
-	 * Custom verification handler that generates the UI for TOTP verification.
-	 * Called when user needs to enter their TOTP code.
-	 *
-	 * @param req - The HTTP request object
-	 * @param error - Optional error message to display
-	 */
-	verify: (req: Request, error?: string) => Promise<Response>
-
-	/**
 	 * Custom recovery handler that generates the UI for backup code entry.
 	 * Called when user wants to use a recovery code instead of TOTP.
 	 *
@@ -220,10 +211,6 @@ export const TOTPProvider = (
 				await Storage.set(ctx.storage, totpKey(userId), data)
 			}
 
-			const deleteTOTPData = async (userId: string): Promise<void> => {
-				await Storage.remove(ctx.storage, totpKey(userId))
-			}
-
 			const generateBackupCodes = (count: number): string[] => {
 				const codes: string[] = []
 				for (let i = 0; i < count; i++) {
@@ -252,7 +239,7 @@ export const TOTPProvider = (
 				return ctx.forward(c, await config.register(c.request, "", "", []))
 			})
 
-			routes.post("/register-verify", async (c) => {
+			routes.post("/register", async (c) => {
 				const formData = await c.formData()
 				const email = formData.get("email")?.toString()
 				const action = formData.get("action")?.toString()
@@ -352,7 +339,7 @@ export const TOTPProvider = (
 				return ctx.forward(c, await config.authorize(c.request))
 			})
 
-			routes.post("/verify", async (c) => {
+			routes.post("/authorize", async (c) => {
 				const formData = await c.formData()
 				const email = formData.get("email")?.toString()
 				const token = formData.get("token")?.toString()
@@ -360,7 +347,7 @@ export const TOTPProvider = (
 				if (!email || !token) {
 					return ctx.forward(
 						c,
-						await config.verify(c.request, "Email and verification code are required")
+						await config.authorize(c.request, "Email and verification code are required")
 					)
 				}
 
@@ -368,7 +355,7 @@ export const TOTPProvider = (
 				if (!totpData || !totpData.enabled) {
 					return ctx.forward(
 						c,
-						await config.verify(c.request, "TOTP is not set up for this email")
+						await config.authorize(c.request, "TOTP is not set up for this email")
 					)
 				}
 
@@ -384,7 +371,7 @@ export const TOTPProvider = (
 					})
 				}
 
-				return ctx.forward(c, await config.verify(c.request, "Invalid verification code"))
+				return ctx.forward(c, await config.authorize(c.request, "Invalid verification code"))
 			})
 
 			// --- RECOVERY FLOW ---
@@ -393,7 +380,7 @@ export const TOTPProvider = (
 				return ctx.forward(c, await config.recovery(c.request))
 			})
 
-			routes.post("/recovery-verify", async (c) => {
+			routes.post("/recovery", async (c) => {
 				const formData = await c.formData()
 				const email = formData.get("email")?.toString()
 				const code = formData.get("code")?.toString()?.toUpperCase()
@@ -430,56 +417,6 @@ export const TOTPProvider = (
 					c,
 					await config.recovery(c.request, "Invalid or already used recovery code")
 				)
-			})
-
-			// --- MANAGEMENT ROUTES ---
-
-			routes.post("/disable", async (c) => {
-				const userId = c.query("userId")
-				if (!userId) {
-					return c.json({ error: "User ID is required" }, { status: 400 })
-				}
-
-				await deleteTOTPData(userId)
-				return c.json({ success: true, message: "TOTP has been disabled" })
-			})
-
-			routes.get("/status", async (c) => {
-				const userId = c.query("userId")
-				if (!userId) {
-					return c.json({ error: "User ID is required" }, { status: 400 })
-				}
-
-				const totpData = await getTOTPData(userId)
-				return c.json({
-					enabled: totpData?.enabled || false,
-					hasBackupCodes: (totpData?.backupCodes?.length || 0) > 0,
-					backupCodesCount: totpData?.backupCodes?.length || 0,
-					setupDate: totpData?.createdAt
-				})
-			})
-
-			routes.post("/regenerate-backup-codes", async (c) => {
-				const userId = c.query("userId")
-				if (!userId) {
-					return c.json({ error: "User ID is required" }, { status: 400 })
-				}
-
-				const totpData = await getTOTPData(userId)
-				if (!totpData || !totpData.enabled) {
-					return c.json({ error: "TOTP is not enabled for this user" }, { status: 400 })
-				}
-
-				// Generate new backup codes
-				const newBackupCodes = generateBackupCodes(backupCodesCount)
-				totpData.backupCodes = newBackupCodes
-				await saveTOTPData(userId, totpData)
-
-				return c.json({
-					success: true,
-					backupCodes: newBackupCodes,
-					message: "New backup codes generated"
-				})
 			})
 		}
 	}

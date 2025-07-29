@@ -24,6 +24,25 @@
 		}
 	],
 	[
+		"oauth:refresh\u001fuser:30e16a2659c8bbb2\u001f_PaMtkoHUrkKqlL0CE1QVhSx8Z3oinr3mVFEdOZpOaw",
+		{
+			"value": {
+				"type": "user",
+				"properties": {
+					"email": "matheus@email.com"
+				},
+				"clientID": "example",
+				"subject": "user:30e16a2659c8bbb2",
+				"ttl": {
+					"access": 2592000,
+					"refresh": 31536000
+				},
+				"nextToken": "abkqZBksXfXRvN8FxKTLagZigvV2Pb4XNcPvW3gN2w4"
+			},
+			"expiry": 1785297910361
+		}
+	],
+	[
 		"oauth:refresh\u001fuser:30e16a2659c8bbb2\u001fWPuEdSnc8T5Tx2y2N9KcIGYVogvx2B548Tg8RpaJAbM",
 		{
 			"value": {
@@ -51,6 +70,18 @@
 				"privateKey": "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgiNpgK0HukJ7HCix7\n0h66lyw13NJry+WVEwD/7Z5GvBehRANCAATK6pV61QMLl9ZSGkn3p7PH99oEPAYA\nDr9JpHoRqMAWzh5nz3WMDYX0fvW58RqOAnLPrJ2AtUDyc9EqbbhoTfQh\n-----END PRIVATE KEY-----",
 				"created": 1753670164350,
 				"alg": "ES256"
+			}
+		}
+	],
+	[
+		"totp\u001fuser\u001fmatheus@email.com",
+		{
+			"value": {
+				"secret": "Y6DV7XHYAGNPENVW55DTT5SM33ZUM5ZO",
+				"enabled": true,
+				"backupCodes": ["VKAF-EJKJ", "FXJV-FBGZ", "X36K-BNX2", "HMEO-V3FN"],
+				"createdAt": "2025-07-29T04:04:55.516Z",
+				"label": "matheus@email.com"
 			}
 		}
 	]

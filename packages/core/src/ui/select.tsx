@@ -38,19 +38,7 @@ export interface SelectProps {
  */
 const PROVIDER_ICONS: Record<string, () => ComponentChildren> = {
 	github: ICON_GITHUB,
-	google: ICON_GOOGLE,
-	code: () => (
-		<svg
-			width="20"
-			height="20"
-			viewBox="0 0 52 52"
-			fill="currentColor"
-			aria-label="Code authentication"
-			role="img"
-		>
-			<path d="M8.55,36.91A6.55,6.55,0,1,1,2,43.45,6.54,6.54,0,0,1,8.55,36.91Zm17.45,0a6.55,6.55,0,1,1-6.55,6.54A6.55,6.55,0,0,1,26,36.91Zm17.45,0a6.55,6.55,0,1,1-6.54,6.54A6.54,6.54,0,0,1,43.45,36.91ZM8.55,19.45A6.55,6.55,0,1,1,2,26,6.55,6.55,0,0,1,8.55,19.45Zm17.45,0A6.55,6.55,0,1,1,19.45,26,6.56,6.56,0,0,1,26,19.45Zm17.45,0A6.55,6.55,0,1,1,36.91,26,6.55,6.55,0,0,1,43.45,19.45ZM8.55,2A6.55,6.55,0,1,1,2,8.55,6.54,6.54,0,0,1,8.55,2ZM26,2a6.55,6.55,0,1,1-6.55,6.55A6.55,6.55,0,0,1,26,2ZM43.45,2a6.55,6.55,0,1,1-6.54,6.55A6.55,6.55,0,0,1,43.45,2Z" />
-		</svg>
-	)
+	google: ICON_GOOGLE
 }
 
 /**
@@ -62,43 +50,6 @@ const DEFAULT_DISPLAYS: Record<string, string> = {
 	code: "Code",
 	passkey: "Passkey",
 	password: "Password"
-}
-
-/**
- * Individual provider button component
- */
-const ProviderButton = ({
-	providerKey,
-	providerType,
-	config,
-	displays,
-	buttonText
-}: {
-	providerKey: string
-	providerType: string
-	config?: ProviderConfig
-	displays: Record<string, string>
-	buttonText: string
-}) => {
-	const displayName =
-		config?.display || displays[providerType] || DEFAULT_DISPLAYS[providerType] || providerType
-	const IconComponent = PROVIDER_ICONS[providerKey] || PROVIDER_ICONS[providerType]
-
-	return (
-		<a
-			href={`./${providerKey}/authorize`}
-			data-component="button"
-			data-color="ghost"
-			aria-label={`${buttonText} ${displayName}`}
-		>
-			{IconComponent && (
-				<i data-slot="icon">
-					<IconComponent />
-				</i>
-			)}
-			{buttonText} {displayName}
-		</a>
-	)
 }
 
 /**
@@ -123,16 +74,31 @@ const ProviderSelect = ({
 	return (
 		<Layout theme={theme} title="Sign In">
 			<div data-component="form">
-				{visibleProviders.map(([key, type]) => (
-					<ProviderButton
-						key={key}
-						providerKey={key}
-						providerType={type}
-						config={config.providers?.[key]}
-						displays={displays}
-						buttonText={buttonText}
-					/>
-				))}
+				{visibleProviders.map(([key, type]) => {
+					const displayName =
+						config.providers?.[key]?.display ||
+						displays[type] ||
+						DEFAULT_DISPLAYS[type] ||
+						type
+					const IconComponent = PROVIDER_ICONS[key] || PROVIDER_ICONS[type]
+
+					return (
+						<a
+							key={key}
+							href={`./${key}/authorize`}
+							data-component="button"
+							data-color="ghost"
+							aria-label={`${buttonText} ${displayName}`}
+						>
+							{IconComponent && (
+								<i data-slot="icon">
+									<IconComponent />
+								</i>
+							)}
+							{buttonText} {displayName}
+						</a>
+					)
+				})}
 			</div>
 		</Layout>
 	)

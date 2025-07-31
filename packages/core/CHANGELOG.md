@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.4.0
+
+### Minor Changes
+
+- add magic link provider
+
 ## 0.3.0
 
 ### Minor Changes

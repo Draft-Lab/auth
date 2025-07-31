@@ -1,30 +1,18 @@
 [
 	[
-		"email\u001fmatheus@email.com\u001fpassword",
+		"encryption:key\u001fF29oER7HCiy8VP85XPEa5A",
 		{
 			"value": {
-				"hash": "YE1uz9zMZMlzCjqdZT/vKYBWcM8RcnkPgqhE1Ka32Og=",
-				"salt": "b/zvJ2hicMVWJH/784pVhQ==",
-				"N": 16384,
-				"r": 8,
-				"p": 1
-			}
-		}
-	],
-	[
-		"encryption:key\u001f-99UccazzOw6rYMFbcnL1A",
-		{
-			"value": {
-				"id": "-99UccazzOw6rYMFbcnL1A",
-				"publicKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtc5xViej6UdU7exeeH/s\nAx8DwyYAj9oPu8w6USHDmxFCVjWRzPYkyeDmqkwpr3tK6WhDQN0QtfzfMqHOsfaF\nupEeJXCSe983ZbTnUOET1Xhy/iVGYbUffx7KjoJg1GYsM1ojQY0t9RBW6nqMNYXH\n3xWZDKMlEZ3eqgXUP51QLTcBpyZnvk1TP7rGMeSc4JxaDJQ02dpJwK4WJgBoFqn0\nXyZ3YhECdtRvrFlt7MHnKlRUUQ7XJpcwsaM+P26hnYkK+fIEkpcq+PeLl/HMx8MT\nSKDEerJI2cP/1jscRlo8aV4FWoHoLz1LVU+tAZNe0bn5m8EeQSgNOHBZIXm/YNfr\nXQIDAQAB\n-----END PUBLIC KEY-----",
-				"privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC1znFWJ6PpR1Tt\n7F54f+wDHwPDJgCP2g+7zDpRIcObEUJWNZHM9iTJ4OaqTCmve0rpaENA3RC1/N8y\noc6x9oW6kR4lcJJ73zdltOdQ4RPVeHL+JUZhtR9/HsqOgmDUZiwzWiNBjS31EFbq\neow1hcffFZkMoyURnd6qBdQ/nVAtNwGnJme+TVM/usYx5JzgnFoMlDTZ2knArhYm\nAGgWqfRfJndiEQJ21G+sWW3swecqVFRRDtcmlzCxoz4/bqGdiQr58gSSlyr494uX\n8czHwxNIoMR6skjZw//WOxxGWjxpXgVagegvPUtVT60Bk17RufmbwR5BKA04cFkh\neb9g1+tdAgMBAAECggEADKhLexuPmlY7tl4BjIy5AjvR17xlrdFmAGwG1vVguGmN\nsqtp5xkJIgyOrDMl2p1DVf4XyV36sI9JfMcHuTUeeO9q58fI5jRGsSwhYWyiJF3a\nThGLSMWPsU2tlxlcCdcpMAdDZoHTpF898qotTvnTtGQJ2UR8eEsDU9cyQGsnFPBE\nf0n6THP5om/050ekyCoQATedPAXRnLe1dk48kKvHDrDwa0xVJkBulObHPthF3Fn6\nPZukGDDuMfAUTR5e6xSFeRw34WDrX8n9qq49fPZuouhvSDUK+JAZOS37nZGcN3cO\niirFbhzxBAioqUUhxCtD0TORIgHC76HIUG/xBBWZYwKBgQDcfHarw6AXykIsmSB5\n8ywmumVLcVsyezrU2CwfA5/URbj8BMXRXl/6ZUHsrebc95F32/KYGA73xK6efx8O\nGgr3NEyunZ8kceql4G76Z9vhuYZu+Ecuy+ACAMv+y8VAH1KKG8xqJR7uUuRjF8eI\n5sD+g7nS9y4AJFbBcOYyz/P/nwKBgQDTFw5U5FBY/MNA/BWYTCw0uv70PvrT3iUD\nzG9fcDEbZjjAeDBGRt+WUqtBNvuWV1/iDVo6TA1cGGgHUcl3hkjOXxI+77NNckxe\nQk2HAXlB4NjS6vHOFEtL+ED3obWrMYFM7suCSafp+AHNTxY53IdjGf49+emGbti6\n6Db1RvrDgwKBgQCBVlGWuI605eSjnL+8SbVgkn7RHpHMrxT3vkdDejDLqIq262XP\nR3ktvTBK0khW3rLqiI9qQNKm7S0xtIhXEVfVY0yIMdYk3t4yp9Dx+vK1GsuNVP8M\nqHOjOSxxLr9qufUFJwFmUpguXVmz90MJP7N+mW7sHitR0f9CQiQHMo2DKQKBgQC1\n80etMOd47Na4qxFKJ05rXUvp6Gd4PCEXtx3A3AnYHjKI5JBn4ytSfYuUOPp/Sm0h\ngnTljyxs17TDqmHIHv2etSAbE64v8XeWP/xnhIOqn08F7vHiumd04lXNnZvkJlXX\npHXSpf6Qk++psqPr2ATzDTKy5Tm/YMh7wzGsFjSMVQKBgHXApoIi5ALpykaQIVME\nMiEdAVWQ9f/A9oOPFPduYVVbrYfSdunAHPEzkOkbmN87rM6d9+/VJ8k/GSmDf6w3\n2RUOeN6STz8MGbW1z7WOdT8mvpOH5dYkdYpzjCB1+w2Ziit/Q0NahMOQ0a9CP10H\nxina7NXQmCmEKEtNyYB8c/dP\n-----END PRIVATE KEY-----",
-				"created": 1753670164383,
+				"id": "F29oER7HCiy8VP85XPEa5A",
+				"publicKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxZtv3ylyEVCyVsewZit5\nnmxqQmYQYgnMTv0+Kk8Pd3mvsscgADckq33ch4geoiTRW3qwP+VWOacI0svr1Luv\njbNkfG3H8qlZmPWEM2xFoivYV1PUJsAACvHqnhtYLbqPA5zYD2Z2Ac0J2ZHom2lb\naRdmU0RuqTsfaO0dWIBX79jJ6Mv24rfh/qhSPgLBSuRu/Op0kHDAVRc7wv2HGhiS\nVU/KqS29gdZz/b3s8xkwNRzLPOkT3W3e9T9431p7ChNeq+E8yDaqG/EP98ak6NGP\neqK7QRzx6MH+nRafLmJiYsnFcbu9nN2PpXtPV/S2sQ6aHSkhJL5pmkg6o0Fo124P\n4wIDAQAB\n-----END PUBLIC KEY-----",
+				"privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDFm2/fKXIRULJW\nx7BmK3mebGpCZhBiCcxO/T4qTw93ea+yxyAANySrfdyHiB6iJNFberA/5VY5pwjS\ny+vUu6+Ns2R8bcfyqVmY9YQzbEWiK9hXU9QmwAAK8eqeG1gtuo8DnNgPZnYBzQnZ\nkeibaVtpF2ZTRG6pOx9o7R1YgFfv2Mnoy/bit+H+qFI+AsFK5G786nSQcMBVFzvC\n/YcaGJJVT8qpLb2B1nP9vezzGTA1HMs86RPdbd71P3jfWnsKE16r4TzINqob8Q/3\nxqTo0Y96ortBHPHowf6dFp8uYmJiycVxu72c3Y+le09X9LaxDpodKSEkvmmaSDqj\nQWjXbg/jAgMBAAECggEAANxf/ONj1VJ6LGmbSZ6n3XpQbjCeoqazRqbQxgNpKFaV\n3twCNi4HUV3vf4GmzIMHjHP435ZirUaegbiUsu0MYzwkVGxwAg0d0E5FgKnYlc/G\nFf9N/cs5VNLf+EdbN3vIErZ0tIB4RCK+B74ceszXMpqA/hzetIsG5ICf75pDh85y\ngMCLml9/0BRGeH1IEfS3hnCVsOqWo/QUUOaqVlOh291KDIPBY9KnQsORPsViTEjl\nNy8xyLZY7gmh2wSQG+GNBfxvMCDEZaW+HWb0Bx42BDalEz//22EmKxqqjaUr+DnF\nUnbL5BawSNrN1/qfzqZdMFNzxZj1iobAhclzHdBOpQKBgQDo7pT6clB1R2fl57J7\nCwSvFrZcyacpP/9QZa+a8JScaa4ECkW5f48tUNycn5uGp6254AMwDq43c/kJZekC\nTTfizZp0/sEhbH71w/bwhZmvnKrWWf+xliFBdweLRtjcRiKHlrAaWbX1JvJx/NrH\nqb183yvFH/8QDxqDD8558QxepQKBgQDZLUgnGq4YW7ZKeYGJvEEON7PAWZdTWJhZ\nrDpuL9HOBYCtPcr1l4kbQsdNVSsbR1Hs+eV4Sl8ic8T2Sf4itRelh8kXFiow41PU\nIdEcyTmMGI5GvAHOjc2Hkc7TEJUT4M8ZxzZcFHTUvTjiCKLeMcFXzcd4qt+BdWVE\nUZGBt9K15wKBgQDo1Rr7oOrF4EN9rvVcQq5C6fwNkdBSzlLCJXK7+IFEO+qixTXe\n7x/KF0r+EBihJ9jitIXbMsF4Uqd7em/ISjFztzsOeVvJsi7SMTkUQSdXP84Qh1Os\nSrohOv7CfGXnAQAg8kJDhKr6Sx0LTcnOzN/JAzc4SvxlLAO/QDyO7aEEtQKBgHCA\nGXlQQ9EQaSzJJoZQA682waGph09AfKMvKZF8qgU8Kn0Tnnh8SCTcAdwYe10FI/ZL\nOUiH1iJFsEkY6VHXV2mDHnMcIzzx9bHU1rs/rdTZv5H6wEDcihRpPqdtVpxWf1HO\nNWWbny2426eTa7MIOSyfx23FrkQkqRGr42E79SYPAoGAMjLFvHOf7JiTAZ90WFbx\n+XGdDiKypjhW0mx/8hRS/8xY8AJMb5dvIhEyF053lT8s4Vz6Adiwm21PxHCyHpgO\n73ITmP4yYu31p6St7IPXmcd0lV94JRG7BR1eIDyghnGnfDWglD/625VzwdGQyf1v\nRvTIuXIDMkWObKHYf8b94us=\n-----END PRIVATE KEY-----",
+				"created": 1753932262808,
 				"alg": "RSA-OAEP-512"
 			}
 		}
 	],
 	[
-		"oauth:refresh\u001fuser:30e16a2659c8bbb2\u001f_PaMtkoHUrkKqlL0CE1QVhSx8Z3oinr3mVFEdOZpOaw",
+		"oauth:refresh\u001fuser:30e16a2659c8bbb2\u001fn7BHS23oAMiT9j-fw-uN5e3U67UaUpg2CGSdX3WE2JM",
 		{
 			"value": {
 				"type": "user",
@@ -37,52 +25,22 @@
 					"access": 2592000,
 					"refresh": 31536000
 				},
-				"nextToken": "abkqZBksXfXRvN8FxKTLagZigvV2Pb4XNcPvW3gN2w4"
+				"nextToken": "3cpo6Y_jpjj87uSXcfsSTxb-sg1cKgtf4PTsChJ-BPA"
 			},
-			"expiry": 1785297910361
+			"expiry": 1785468299660
 		}
 	],
 	[
-		"oauth:refresh\u001fuser:30e16a2659c8bbb2\u001fWPuEdSnc8T5Tx2y2N9KcIGYVogvx2B548Tg8RpaJAbM",
+		"signing:key\u001f4xTFKlyUGUre759bfUTeqw",
 		{
 			"value": {
-				"type": "user",
-				"properties": {
-					"email": "matheus@email.com"
-				},
-				"clientID": "example",
-				"subject": "user:30e16a2659c8bbb2",
-				"ttl": {
-					"access": 2592000,
-					"refresh": 31536000
-				},
-				"nextToken": "WUwbdUFeqEZywwvlKHtzYPkZ4A7U4EtZewyAhVVvzAk"
-			},
-			"expiry": 1785206185002
-		}
-	],
-	[
-		"signing:key\u001fmmyLSKvuGAwaJfGVy3STqQ",
-		{
-			"value": {
-				"id": "mmyLSKvuGAwaJfGVy3STqQ",
-				"publicKey": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEyuqVetUDC5fWUhpJ96ezx/faBDwG\nAA6/SaR6EajAFs4eZ891jA2F9H71ufEajgJyz6ydgLVA8nPRKm24aE30IQ==\n-----END PUBLIC KEY-----",
-				"privateKey": "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgiNpgK0HukJ7HCix7\n0h66lyw13NJry+WVEwD/7Z5GvBehRANCAATK6pV61QMLl9ZSGkn3p7PH99oEPAYA\nDr9JpHoRqMAWzh5nz3WMDYX0fvW58RqOAnLPrJ2AtUDyc9EqbbhoTfQh\n-----END PRIVATE KEY-----",
-				"created": 1753670164350,
+				"id": "4xTFKlyUGUre759bfUTeqw",
+				"publicKey": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEmU/3fFJ5Z7bSiFLa9R6jIupPM6lO\npCxLLIBcOSFxDz4xk2ZIuapV8mQTJkbrNMpT2JqfunrH0dnYBIAdJfAaDQ==\n-----END PUBLIC KEY-----",
+				"privateKey": "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgomwpXzsHZ46eUEab\nccvRJCDYaFCt0qeO59DFtt6zyNehRANCAASZT/d8UnlnttKIUtr1HqMi6k8zqU6k\nLEssgFw5IXEPPjGTZki5qlXyZBMmRus0ylPYmp+6esfR2dgEgB0l8BoN\n-----END PRIVATE KEY-----",
+				"created": 1753932299664,
 				"alg": "ES256"
-			}
-		}
-	],
-	[
-		"totp\u001fuser\u001fmatheus@email.com",
-		{
-			"value": {
-				"secret": "Y6DV7XHYAGNPENVW55DTT5SM33ZUM5ZO",
-				"enabled": true,
-				"backupCodes": ["VKAF-EJKJ", "FXJV-FBGZ", "X36K-BNX2", "HMEO-V3FN"],
-				"createdAt": "2025-07-29T04:04:55.516Z",
-				"label": "matheus@email.com"
 			}
 		}
 	]
 ]
+

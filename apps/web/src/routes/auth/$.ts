@@ -1,10 +1,12 @@
 import { issuer } from "@draftlab/auth/core"
 import { CodeProvider } from "@draftlab/auth/provider/code"
+import { MagicLinkProvider } from "@draftlab/auth/provider/magiclink"
 import { PasskeyProvider } from "@draftlab/auth/provider/passkey"
 import { PasswordProvider } from "@draftlab/auth/provider/password"
 import { TOTPProvider } from "@draftlab/auth/provider/totp"
 import { MemoryStorage } from "@draftlab/auth/storage/memory"
 import { CodeUI } from "@draftlab/auth/ui/code"
+import { MagicLinkUI } from "@draftlab/auth/ui/magiclink"
 import { PasskeyUI } from "@draftlab/auth/ui/passkey"
 import { PasswordUI } from "@draftlab/auth/ui/password"
 import { Select } from "@draftlab/auth/ui/select"
@@ -18,10 +20,11 @@ export const auth = issuer({
 	select: Select({
 		copy: { button_provider: " " },
 		displays: {
-			code: "Magic Link",
 			passkey: "Passkey",
-			totp: "One-Time Password",
-			password: "Email/Password"
+			code: "One-Time Code",
+			magiclink: "Magic Link",
+			password: "Email/Password",
+			totp: "Time-Based One-Time Password"
 		}
 	}),
 	storage: MemoryStorage({
@@ -31,6 +34,14 @@ export const auth = issuer({
 		passkey: PasskeyProvider(
 			PasskeyUI({
 				rpName: "My Application"
+			})
+		),
+		magiclink: MagicLinkProvider(
+			MagicLinkUI({
+				sendLink: async (claims, code) => {
+					console.log(claims, code)
+					return undefined
+				}
 			})
 		),
 		code: CodeProvider(
@@ -76,6 +87,12 @@ export const auth = issuer({
 		if (value.provider === "totp") {
 			return ctx.subject("user", {
 				email: value.email
+			})
+		}
+
+		if (value.provider === "magiclink") {
+			return ctx.subject("user", {
+				email: value.claims.email
 			})
 		}
 

@@ -9,10 +9,10 @@
 		"ignoreUnknown": false,
 		"includes": [
 			"**",
-			"!**/dist/**",
-			"!**/.dist/**",
-			"!**/.turbo/**",
-			"!node_modules/**",
+			"!**/dist",
+			"!**/.dist",
+			"!**/.turbo",
+			"!node_modules",
 			"!**/routeTree.gen.ts"
 		]
 	},

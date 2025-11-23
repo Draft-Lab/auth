@@ -12,6 +12,12 @@
 		}
 	],
 	[
+		"email\u001fmatheus@email.com\u001fsubject",
+		{
+			"value": "user:30e16a2659c8bbb2"
+		}
+	],
+	[
 		"encryption:key\u001fRMx2tGoPMMpXQ6DJANSVAg",
 		{
 			"value": {
@@ -21,6 +27,44 @@
 				"created": 1763854220704,
 				"alg": "RSA-OAEP-512"
 			}
+		}
+	],
+	[
+		"oauth:refresh\u001fuser:30e16a2659c8bbb2\u001f-tXd9nSDO-7i3tIQ5jVRRKjmN4c-jZx4QRDfm3kuL28",
+		{
+			"value": {
+				"type": "user",
+				"properties": {
+					"email": "matheus@email.com"
+				},
+				"clientID": "example",
+				"subject": "user:30e16a2659c8bbb2",
+				"ttl": {
+					"access": 2592000,
+					"refresh": 31536000
+				},
+				"nextToken": "wXu-CGdLYABz4DpiyIaJMsiyaHblCQCx51rqFi4V8v0"
+			},
+			"expiry": 1795413462966
+		}
+	],
+	[
+		"oauth:refresh\u001fuser:30e16a2659c8bbb2\u001f1L2hAwcVd-WlMXRXG9ksOIDlkvmhyAZwWYgYp_qw41Q",
+		{
+			"value": {
+				"type": "user",
+				"properties": {
+					"email": "matheus@email.com"
+				},
+				"clientID": "example",
+				"subject": "user:30e16a2659c8bbb2",
+				"ttl": {
+					"access": 2592000,
+					"refresh": 31536000
+				},
+				"nextToken": "wcytXstf-ttLvjVAhJ8Ez1smIKQre26Hwa1gaHOSHwE"
+			},
+			"expiry": 1795405723216
 		}
 	],
 	[
@@ -40,6 +84,45 @@
 				"nextToken": "IZQPSxR0YXI_WGk3TI5N1KOAvygbgDINoojRmZL4viE"
 			},
 			"expiry": 1795390639824
+		}
+	],
+	[
+		"oauth:refresh\u001fuser:30e16a2659c8bbb2\u001fk-ehSCQtkX5FtmOlOUum4LwaqSmB3cFVLp37hNyBWDc",
+		{
+			"value": {
+				"type": "user",
+				"properties": {
+					"email": "matheus@email.com"
+				},
+				"clientID": "example",
+				"subject": "user:30e16a2659c8bbb2",
+				"ttl": {
+					"access": 2592000,
+					"refresh": 31536000
+				},
+				"nextToken": "3qiUeJmjZV-avUhJ_PUrgkHFzJ6zaWsK8-uDgkPQLsU"
+			},
+			"expiry": 1795405530653
+		}
+	],
+	[
+		"revocation:token\u001fd95434127af7d9bc2e9ffba9f3dbf5343a53b99d1ccb4733a72ad60dfa798674",
+		{
+			"value": {
+				"revokedAt": 1763877452606,
+				"expiresAt": 1795413452606
+			},
+			"expiry": 1795413452606
+		}
+	],
+	[
+		"revocation:token\u001fef2dc9fe3cc30665e7bf10272b910e5efb9a2e06aaf25374d32ae3545d3d1687",
+		{
+			"value": {
+				"revokedAt": 1763869712462,
+				"expiresAt": 1795405712462
+			},
+			"expiry": 1795405712462
 		}
 	],
 	[

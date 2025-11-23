@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.6.0
+
+### Minor Changes
+
+- add more providers and new revocation methods
+
 ## 0.5.0
 
 ### Minor Changes

@@ -320,8 +320,24 @@ export interface VerifyResult<T extends SubjectSchema> {
 }
 
 /**
- * Options for UserInfo requests.
+ * Options for token revocation.
  */
+export interface RevokeOptions {
+	/**
+	 * Optional hint about the token type.
+	 * Can be "access_token" or "refresh_token".
+	 *
+	 * Helps the server optimize token lookup.
+	 *
+	 * @example
+	 * ```ts
+	 * {
+	 *   tokenTypeHint: "refresh_token"
+	 * }
+	 * ```
+	 */
+	tokenTypeHint?: "access_token" | "refresh_token"
+}
 
 /**
  * Draft Auth client with OAuth 2.0 operations.
@@ -482,6 +498,34 @@ export interface Client {
 			InvalidRefreshTokenError | InvalidAccessTokenError | InvalidSubjectError
 		>
 	>
+
+	/**
+	 * Revoke a token (access or refresh token).
+	 *
+	 * Once revoked, the token cannot be used to access resources or refresh.
+	 * Useful for implementing logout functionality.
+	 *
+	 * @param token - The token to revoke
+	 * @param opts - Additional revocation options
+	 * @returns Empty result on success
+	 *
+	 * @example Logout with refresh token revocation
+	 * ```ts
+	 * const result = await client.revoke(refreshToken, {
+	 *   tokenTypeHint: "refresh_token"
+	 * })
+	 *
+	 * if (result.success) {
+	 *   // Token revoked successfully, user is logged out
+	 *   clearStoredTokens()
+	 *   redirectToHome()
+	 * } else {
+	 *   // Revocation failed, but still clear tokens on client
+	 *   clearStoredTokens()
+	 * }
+	 * ```
+	 */
+	revoke(token: string, opts?: RevokeOptions): Promise<Result<void>>
 }
 
 /**
@@ -731,6 +775,42 @@ export const createClient = (input: ClientInput): Client => {
 				return {
 					success: false,
 					error: new InvalidAccessTokenError()
+				}
+			}
+		},
+
+		async revoke(token: string, opts?: RevokeOptions) {
+			try {
+				const wk = await getIssuer()
+				const body = new URLSearchParams({
+					token,
+					...(opts?.tokenTypeHint ? { token_type_hint: opts.tokenTypeHint } : {})
+				})
+
+				const response = await f(wk.token_endpoint.replace("/token", "/revoke"), {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded"
+					},
+					body: body.toString()
+				})
+
+				// RFC 7009: Revocation endpoint returns 200 whether token was valid or not
+				if (response.ok) {
+					return {
+						success: true,
+						data: undefined
+					}
+				}
+
+				return {
+					success: false,
+					error: new Error("Failed to revoke token")
+				}
+			} catch (error) {
+				return {
+					success: false,
+					error: error as Error
 				}
 			}
 		}

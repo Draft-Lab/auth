@@ -20,6 +20,7 @@ import { PluginManager } from "./plugin/manager"
 import type { Plugin } from "./plugin/types"
 import type { Provider, ProviderOptions, ProviderRoute } from "./provider/provider"
 import { generateSecureToken } from "./random"
+import { Revocation } from "./revocation"
 import { Storage, type StorageAdapter } from "./storage/storage"
 import type { SubjectPayload, SubjectSchema } from "./subject"
 import { setTheme, type Theme } from "./themes/theme"
@@ -724,7 +725,16 @@ export const issuer = <
 					return c.json(error.toJSON(), { status: 400 })
 				}
 
-				const splits = refreshToken.toString().split(":")
+				const refreshTokenStr = refreshToken.toString()
+
+				// Check if refresh token has been revoked
+				const isRevoked = await Revocation.isRevoked(storage, refreshTokenStr)
+				if (isRevoked) {
+					const error = new OauthError("invalid_grant", "Refresh token has been revoked")
+					return c.json(error.toJSON(), { status: 400 })
+				}
+
+				const splits = refreshTokenStr.split(":")
 				const token = splits.pop()
 				if (!token) {
 					throw new Error("Invalid refresh token format")
@@ -842,6 +852,50 @@ export const issuer = <
 				},
 				{ status: 400 }
 			)
+		}
+	})
+
+	app.post("/revoke", {
+		middleware: [
+			cors({
+				origin: "*",
+				allowHeaders: ["Content-Type"],
+				allowMethods: ["POST"],
+				credentials: false
+			})
+		],
+		handler: async (c) => {
+			const form = await c.formData()
+			const token = form.get("token")?.toString()
+
+			if (!token) {
+				const error = new OauthError("invalid_request", "Missing token parameter")
+				return c.json(error.toJSON(), { status: 400 })
+			}
+
+			try {
+				// Revoke the token
+				// Calculate expiry time: tokens are valid until their natural expiration
+				// For this endpoint, we assume tokens expire based on their grant type
+				// Access tokens: ttlAccess seconds
+				// Refresh tokens: ttlRefresh seconds
+				// We'll use a reasonable default (refresh token TTL) since we don't know the grant type
+				const expiresAt = Date.now() + ttlRefresh * 1000
+
+				await Revocation.revoke(storage, token, expiresAt)
+
+				// RFC 7009: Successful revocation returns 200 with empty body
+				// or 200 with 'application/x-www-form-urlencoded' body
+				return c.json({})
+			} catch (_err) {
+				return c.json(
+					{
+						error: "server_error",
+						error_description: "Token revocation failed"
+					},
+					{ status: 500 }
+				)
+			}
 		}
 	})
 

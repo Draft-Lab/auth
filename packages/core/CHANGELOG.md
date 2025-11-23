@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.7.0
+
+### Minor Changes
+
+- add provider icon
+
 ## 0.6.0
 
 ### Minor Changes

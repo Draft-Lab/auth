@@ -5,7 +5,21 @@
 import type { ComponentChildren } from "preact"
 import type { Theme } from "../themes/theme"
 import { Layout, renderToHTML } from "./base"
-import { ICON_GITHUB, ICON_GOOGLE } from "./icon"
+import {
+	ICON_APPLE,
+	ICON_DISCORD,
+	ICON_EMAIL,
+	ICON_FACEBOOK,
+	ICON_GITHUB,
+	ICON_GITLAB,
+	ICON_GOOGLE,
+	ICON_LINKEDIN,
+	ICON_MICROSOFT,
+	ICON_REDDIT,
+	ICON_SLACK,
+	ICON_SPOTIFY,
+	ICON_TWITCH
+} from "./icon"
 
 /**
  * Provider configuration for the select UI
@@ -37,19 +51,42 @@ export interface SelectProps {
  * Icon components for providers
  */
 const PROVIDER_ICONS: Record<string, () => ComponentChildren> = {
+	apple: ICON_APPLE,
+	discord: ICON_DISCORD,
+	email: ICON_EMAIL,
+	facebook: ICON_FACEBOOK,
 	github: ICON_GITHUB,
-	google: ICON_GOOGLE
+	gitlab: ICON_GITLAB,
+	google: ICON_GOOGLE,
+	linkedin: ICON_LINKEDIN,
+	magiclink: ICON_EMAIL,
+	microsoft: ICON_MICROSOFT,
+	password: ICON_EMAIL,
+	reddit: ICON_REDDIT,
+	slack: ICON_SLACK,
+	spotify: ICON_SPOTIFY,
+	twitch: ICON_TWITCH
 }
 
 /**
  * Default display names for provider types
  */
 const DEFAULT_DISPLAYS: Record<string, string> = {
-	github: "GitHub",
-	google: "Google",
+	apple: "Apple",
 	code: "Code",
+	discord: "Discord",
+	facebook: "Facebook",
+	github: "GitHub",
+	gitlab: "GitLab",
+	google: "Google",
+	linkedin: "LinkedIn",
+	microsoft: "Microsoft",
 	passkey: "Passkey",
-	password: "Password"
+	password: "Password",
+	reddit: "Reddit",
+	slack: "Slack",
+	spotify: "Spotify",
+	twitch: "Twitch"
 }
 
 /**

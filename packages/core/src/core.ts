@@ -414,10 +414,27 @@ export const issuer = <
 	const auth: Omit<ProviderOptions<unknown>, "name"> = {
 		async success(ctx, properties, successOpts) {
 			const authorization = await getAuthorization(ctx)
-			const currentProvider = ctx.get("provider") || "unknown"
+			const currentProvider = (ctx.get("provider") as string | undefined) || "unknown"
 
 			if (!authorization.client_id) {
 				throw new Error("client_id is required")
+			}
+
+			// Execute success hooks from plugins after validation
+			if (manager) {
+				try {
+					const subjectProperties: Record<string, unknown> =
+						properties && typeof properties === "object"
+							? (properties as unknown as Record<string, unknown>)
+							: {}
+					await manager.executeSuccessHooks(authorization.client_id, currentProvider, {
+						type: currentProvider,
+						properties: subjectProperties
+					})
+				} catch (error) {
+					console.error("Plugin success hook failed:", error)
+					// Don't fail the authentication flow, just log the error
+				}
 			}
 
 			return await input.success(
@@ -561,14 +578,31 @@ export const issuer = <
 	})
 
 	// Initialize plugin manager if plugins are provided
-	if (input.plugins && input.plugins.length > 0) {
-		const manager = new PluginManager(input.storage)
+	const manager =
+		input.plugins && input.plugins.length > 0 ? new PluginManager(input.storage) : null
 
+	let pluginsInitialized = false
+
+	if (manager && input.plugins) {
 		// Register all plugins
 		manager.registerAll(input.plugins)
 
 		// Setup routes
 		manager.setupRoutes(app)
+
+		// Add middleware to initialize plugins on first request
+		app.use(async (c, next) => {
+			if (!pluginsInitialized) {
+				try {
+					await manager.initialize()
+					pluginsInitialized = true
+				} catch (error) {
+					console.error("Plugin initialization failed:", error)
+					return c.newResponse("Plugin initialization failed", { status: 500 })
+				}
+			}
+			return await next()
+		})
 	}
 
 	// Setup provider routes
@@ -959,6 +993,13 @@ export const issuer = <
 			throw new UnauthorizedClientError(client_id, redirect_uri)
 		}
 
+		// Execute authorize hooks from plugins
+		// If any plugin hook rejects, it will throw an error that triggers the error handler
+		if (manager) {
+			const scopes = scope ? scope.split(" ") : undefined
+			await manager.executeAuthorizeHooks(client_id, provider, scopes)
+		}
+
 		// Store authorization state
 		await auth.set(c, "authorization", 60 * 15, authorization) // 15 minutes for authorization state
 
@@ -986,6 +1027,17 @@ export const issuer = <
 
 	// Error handling
 	app.onError(async (err, c) => {
+		// Execute error hooks from plugins
+		if (manager) {
+			try {
+				const errorObj = err instanceof Error ? err : new Error(String(err))
+				await manager.executeErrorHooks(errorObj)
+			} catch (hookError) {
+				console.error("Plugin error hook failed:", hookError)
+				// Don't fail the error handler, just log the error
+			}
+		}
+
 		if (err instanceof UnknownStateError) {
 			return auth.forward(c, await error(err, c.request))
 		}

@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.8.0
+
+### Minor Changes
+
+- add more features to plugins with hooks and storage extensions
+
 ## 0.7.0
 
 ### Minor Changes

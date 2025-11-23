@@ -1,18 +1,30 @@
 [
 	[
-		"encryption:key\u001fF29oER7HCiy8VP85XPEa5A",
+		"email\u001fmatheus@email.com\u001fpassword",
 		{
 			"value": {
-				"id": "F29oER7HCiy8VP85XPEa5A",
-				"publicKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxZtv3ylyEVCyVsewZit5\nnmxqQmYQYgnMTv0+Kk8Pd3mvsscgADckq33ch4geoiTRW3qwP+VWOacI0svr1Luv\njbNkfG3H8qlZmPWEM2xFoivYV1PUJsAACvHqnhtYLbqPA5zYD2Z2Ac0J2ZHom2lb\naRdmU0RuqTsfaO0dWIBX79jJ6Mv24rfh/qhSPgLBSuRu/Op0kHDAVRc7wv2HGhiS\nVU/KqS29gdZz/b3s8xkwNRzLPOkT3W3e9T9431p7ChNeq+E8yDaqG/EP98ak6NGP\neqK7QRzx6MH+nRafLmJiYsnFcbu9nN2PpXtPV/S2sQ6aHSkhJL5pmkg6o0Fo124P\n4wIDAQAB\n-----END PUBLIC KEY-----",
-				"privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDFm2/fKXIRULJW\nx7BmK3mebGpCZhBiCcxO/T4qTw93ea+yxyAANySrfdyHiB6iJNFberA/5VY5pwjS\ny+vUu6+Ns2R8bcfyqVmY9YQzbEWiK9hXU9QmwAAK8eqeG1gtuo8DnNgPZnYBzQnZ\nkeibaVtpF2ZTRG6pOx9o7R1YgFfv2Mnoy/bit+H+qFI+AsFK5G786nSQcMBVFzvC\n/YcaGJJVT8qpLb2B1nP9vezzGTA1HMs86RPdbd71P3jfWnsKE16r4TzINqob8Q/3\nxqTo0Y96ortBHPHowf6dFp8uYmJiycVxu72c3Y+le09X9LaxDpodKSEkvmmaSDqj\nQWjXbg/jAgMBAAECggEAANxf/ONj1VJ6LGmbSZ6n3XpQbjCeoqazRqbQxgNpKFaV\n3twCNi4HUV3vf4GmzIMHjHP435ZirUaegbiUsu0MYzwkVGxwAg0d0E5FgKnYlc/G\nFf9N/cs5VNLf+EdbN3vIErZ0tIB4RCK+B74ceszXMpqA/hzetIsG5ICf75pDh85y\ngMCLml9/0BRGeH1IEfS3hnCVsOqWo/QUUOaqVlOh291KDIPBY9KnQsORPsViTEjl\nNy8xyLZY7gmh2wSQG+GNBfxvMCDEZaW+HWb0Bx42BDalEz//22EmKxqqjaUr+DnF\nUnbL5BawSNrN1/qfzqZdMFNzxZj1iobAhclzHdBOpQKBgQDo7pT6clB1R2fl57J7\nCwSvFrZcyacpP/9QZa+a8JScaa4ECkW5f48tUNycn5uGp6254AMwDq43c/kJZekC\nTTfizZp0/sEhbH71w/bwhZmvnKrWWf+xliFBdweLRtjcRiKHlrAaWbX1JvJx/NrH\nqb183yvFH/8QDxqDD8558QxepQKBgQDZLUgnGq4YW7ZKeYGJvEEON7PAWZdTWJhZ\nrDpuL9HOBYCtPcr1l4kbQsdNVSsbR1Hs+eV4Sl8ic8T2Sf4itRelh8kXFiow41PU\nIdEcyTmMGI5GvAHOjc2Hkc7TEJUT4M8ZxzZcFHTUvTjiCKLeMcFXzcd4qt+BdWVE\nUZGBt9K15wKBgQDo1Rr7oOrF4EN9rvVcQq5C6fwNkdBSzlLCJXK7+IFEO+qixTXe\n7x/KF0r+EBihJ9jitIXbMsF4Uqd7em/ISjFztzsOeVvJsi7SMTkUQSdXP84Qh1Os\nSrohOv7CfGXnAQAg8kJDhKr6Sx0LTcnOzN/JAzc4SvxlLAO/QDyO7aEEtQKBgHCA\nGXlQQ9EQaSzJJoZQA682waGph09AfKMvKZF8qgU8Kn0Tnnh8SCTcAdwYe10FI/ZL\nOUiH1iJFsEkY6VHXV2mDHnMcIzzx9bHU1rs/rdTZv5H6wEDcihRpPqdtVpxWf1HO\nNWWbny2426eTa7MIOSyfx23FrkQkqRGr42E79SYPAoGAMjLFvHOf7JiTAZ90WFbx\n+XGdDiKypjhW0mx/8hRS/8xY8AJMb5dvIhEyF053lT8s4Vz6Adiwm21PxHCyHpgO\n73ITmP4yYu31p6St7IPXmcd0lV94JRG7BR1eIDyghnGnfDWglD/625VzwdGQyf1v\nRvTIuXIDMkWObKHYf8b94us=\n-----END PRIVATE KEY-----",
-				"created": 1753932262808,
+				"hash": "alSxvdZtrUdFEbc+WhESeDaBd5RvjZgL/bw4/lK24hk=",
+				"salt": "b6pl4ADcJnJr1QPVWZ0bxg==",
+				"N": 16384,
+				"r": 8,
+				"p": 1
+			}
+		}
+	],
+	[
+		"encryption:key\u001fRMx2tGoPMMpXQ6DJANSVAg",
+		{
+			"value": {
+				"id": "RMx2tGoPMMpXQ6DJANSVAg",
+				"publicKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvwLlFMtKPmNm7ajZnQeu\nkBQrevWJcbHZP9Kk3FuMkveUsRWCjhcPDHkQr8fMCVOHpFAkaOEvnUmSovLq6fZX\nHK4sWN53teUNjEvrpGuv0f3X5Fa5nohVu0bol8ddoMrFaXmJyXG7kiC18Mm21HvH\n6nYVzi8HEvP8T5xqna2Pbihn5+N4MhhI2MoUvK/IMiQkFjgcEZJ6qG6isry4+0bp\nuNOy91wlF+Bvv/RwwtxEtcVuuqw3SSYTOFz/cT8NzejSQUf+VNmoCVjIjWfcOrSQ\nxQD+6sqyMwvLNnXDAdKQfm0nfircr3r7ImeJghDWjflT5BFrOb2S0CPPu0zZLlhQ\n9wIDAQAB\n-----END PUBLIC KEY-----",
+				"privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC/AuUUy0o+Y2bt\nqNmdB66QFCt69Ylxsdk/0qTcW4yS95SxFYKOFw8MeRCvx8wJU4ekUCRo4S+dSZKi\n8urp9lccrixY3ne15Q2MS+uka6/R/dfkVrmeiFW7RuiXx12gysVpeYnJcbuSILXw\nybbUe8fqdhXOLwcS8/xPnGqdrY9uKGfn43gyGEjYyhS8r8gyJCQWOBwRknqobqKy\nvLj7Rum407L3XCUX4G+/9HDC3ES1xW66rDdJJhM4XP9xPw3N6NJBR/5U2agJWMiN\nZ9w6tJDFAP7qyrIzC8s2dcMB0pB+bSd+KtyvevsiZ4mCENaN+VPkEWs5vZLQI8+7\nTNkuWFD3AgMBAAECggEAI+VLX6kEfsz3XtpIavYym+jucuEJv1AI37GaQb8Cn+vf\nCZhdPI6gyVtHA4GsmmQULZDSBtOquwhEglLcSrN8k2s38kt8e7Zb4W2zDucd13y4\nwbR6lYxRcCxXMY7JzZnNl5C7kBvLgB6dkm6V6UCJxUoDtwencKxhUiS29ILVXYHu\nfqVQI054vflaCBlIK2YD9oT6XmDVtxIE1W96WcDgsgmAJoKtIIqOWW56OmyClLH3\n78xujkodI+IyUNJ46kuvq1zePHkzqAFq3ynZ/u5EbUllGKolHuFvy0rVgZnmnBfn\ncVagmc4GsE6Lt1tYxAY3hmmBa/+FcCzda0gNGyb04QKBgQD9twrbKmOlGhDqyc3k\npEK1EJQDxtnkBmDK5UAJzN8Z4xLEkTbfY4CJUS0XarzrIbXYETp3nbI033ww9FOP\nWYa9H3jKBo24eaFZMWmlq/vpxVMC86tV/IsBdW3gtllKdTYOVbRP9ClV1ZQPlo/j\nZb3a2Pw47EMHuFivQp6dQph02wKBgQDAu0jiBtHnv1hNFqYFDAwu0udW/ukPMZDh\nNZOi7vuXPI6Vb1DY4rE85xIaOCNnMFwmoV8on7ckz8mlmgD9+zrhhP0mT05YIZya\nVSkCE9RE+zwxoipMT6R7/9U7lRGBcUJVFDdR8KSHpwLzb84a1HHGb+o27W2LBB+m\nqZ8tTduhFQKBgQC1rGxJo4DWqGOUvAyCvFxH6ycRzUIY1bhZkO7aFalrj/3QY2s3\nariPm2D+c5/zfqAHp86F+JWy5pS3OTzcWO7yXabQgwDYJ8AxbgCIcS5hprpaUsFN\nQRkIYl3bmrc1adjbSuNinSM8I0NyJg3CdwgLvXReDk+xJ3/Zf4q0cQtaIQKBgAbR\nGPzVnOsDe44OdQTMrkmhsAkFrxyYdjVg/b3PkhqBS9HBRCzHp9ktmxhOUAJAVaIQ\nJxt6urGUn985mTtifWyolYObXnwDhFR5GqA2L1XZRQHEaJaWYoz4OYSH+zyG0v/L\nXUGKr2cU4yfVFocgaH3KS5BxyWQXWz871KN3k4MZAoGBAMOlRuyXDrIU6bpI8Tzw\nET3s4OGaybEF0YaJY9QdDZVsgkO4r2AmCl4OvdZF2TYYv779UwiQIt0bVBwFRYkd\nih+DVKGlumiWsFDTTtmbWWXRmXGqKXZeR9JCuQVVViQrmNF1rYh5FiHv2z0oGCjq\nJpS6Uq5IT1rdXoYbYlCSXBca\n-----END PRIVATE KEY-----",
+				"created": 1763854220704,
 				"alg": "RSA-OAEP-512"
 			}
 		}
 	],
 	[
-		"oauth:refresh\u001fuser:30e16a2659c8bbb2\u001fn7BHS23oAMiT9j-fw-uN5e3U67UaUpg2CGSdX3WE2JM",
+		"oauth:refresh\u001fuser:30e16a2659c8bbb2\u001f2yh0pQO_Ncplpgz0TyVdKHzfUo36foBouWcUqLY3LXM",
 		{
 			"value": {
 				"type": "user",
@@ -25,19 +37,19 @@
 					"access": 2592000,
 					"refresh": 31536000
 				},
-				"nextToken": "3cpo6Y_jpjj87uSXcfsSTxb-sg1cKgtf4PTsChJ-BPA"
+				"nextToken": "IZQPSxR0YXI_WGk3TI5N1KOAvygbgDINoojRmZL4viE"
 			},
-			"expiry": 1785468299660
+			"expiry": 1795390639824
 		}
 	],
 	[
-		"signing:key\u001f4xTFKlyUGUre759bfUTeqw",
+		"signing:key\u001fgnxy0AT2qPv_2CC1jP6XJQ",
 		{
 			"value": {
-				"id": "4xTFKlyUGUre759bfUTeqw",
-				"publicKey": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEmU/3fFJ5Z7bSiFLa9R6jIupPM6lO\npCxLLIBcOSFxDz4xk2ZIuapV8mQTJkbrNMpT2JqfunrH0dnYBIAdJfAaDQ==\n-----END PUBLIC KEY-----",
-				"privateKey": "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgomwpXzsHZ46eUEab\nccvRJCDYaFCt0qeO59DFtt6zyNehRANCAASZT/d8UnlnttKIUtr1HqMi6k8zqU6k\nLEssgFw5IXEPPjGTZki5qlXyZBMmRus0ylPYmp+6esfR2dgEgB0l8BoN\n-----END PRIVATE KEY-----",
-				"created": 1753932299664,
+				"id": "gnxy0AT2qPv_2CC1jP6XJQ",
+				"publicKey": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEd3gwQbjCpOdUzvDuPsMsGjbUOBSQ\nbtTm/+qv3DqzKiq17ckGt5NcAsVv6BJ1OH2Yqu4UtTsS0GUP/w6it/A95Q==\n-----END PUBLIC KEY-----",
+				"privateKey": "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgO7OZDc6y+WY4iTrT\ndy8yySPJuxBpUWN+pSrCSSHjNbShRANCAAR3eDBBuMKk51TO8O4+wywaNtQ4FJBu\n1Ob/6q/cOrMqKrXtyQa3k1wCxW/oEnU4fZiq7hS1OxLQZQ//DqK38D3l\n-----END PRIVATE KEY-----",
+				"created": 1763854639829,
 				"alg": "ES256"
 			}
 		}

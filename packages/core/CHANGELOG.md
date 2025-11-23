@@ -1,5 +1,16 @@
 # @draftlab/auth
 
+## 0.5.0
+
+### Minor Changes
+
+- add optimizations and fix some security issues
+
+### Patch Changes
+
+- Updated dependencies
+  - @draftlab/auth-router@0.1.0
+
 ## 0.4.1
 
 ### Patch Changes

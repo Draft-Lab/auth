@@ -1,6 +1,6 @@
 {
 	"name": "@draftlab/auth-router",
-	"version": "0.0.6",
+	"version": "0.1.0",
 	"description": "Minimal http router implementation for @draftlab/auth",
 	"author": "Matheus Pergoli",
 	"license": "MIT",
@@ -19,19 +19,20 @@
 	],
 	"scripts": {
 		"clean": "rm -rf dist .turbo node_modules",
-		"build": "tsdown"
+		"build": "tsdown",
+		"typecheck": "tsc --noEmit --emitDeclarationOnly false"
 	},
 	"type": "module",
-	"main": "dist/index.js",
-	"typings": "dist/index.d.ts",
+	"main": "dist/index.mjs",
+	"typings": "dist/index.d.mts",
 	"exports": {
 		".": {
-			"import": "./dist/index.js",
-			"types": "./dist/index.d.ts"
+			"import": "./dist/index.mjs",
+			"types": "./dist/index.d.mts"
 		},
 		"./*": {
-			"import": "./dist/*.js",
-			"types": "./dist/*.d.ts"
+			"import": "./dist/*.mjs",
+			"types": "./dist/*.d.mts"
 		}
 	},
 	"sideEffects": false,
@@ -43,8 +44,8 @@
 	},
 	"devDependencies": {
 		"@draftlab/tsconfig": "workspace:*",
-		"tsdown": "^0.14.1",
-		"typescript": "^5.9.2"
+		"tsdown": "^0.16.6",
+		"typescript": "^5.9.3"
 	},
 	"publishConfig": {
 		"access": "public"

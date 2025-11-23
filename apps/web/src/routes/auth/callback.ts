@@ -1,30 +1,24 @@
-import { redirect } from "@tanstack/react-router"
+import { createFileRoute, redirect } from "@tanstack/react-router"
 import { json } from "@tanstack/react-start"
-import { createServerFileRoute, setCookie } from "@tanstack/react-start/server"
-import { client } from "@/libs/auth"
+import { setCookie } from "@tanstack/react-start/server"
+import { client, getAuthCookieOptions } from "@/libs/auth"
 
-export const ServerRoute = createServerFileRoute("/auth/callback").methods({
-	GET: async ({ request }) => {
-		const url = new URL(request.url)
-		const code = url.searchParams.get("code")
-		if (!code) return json({ error: "no_code" }, { status: 400 })
-		const exchanged = await client.exchange(code, `${url.origin}/auth/callback`)
-		if (!exchanged.success) return json(exchanged.error, { status: 400 })
+export const Route = createFileRoute("/auth/callback")({
+	server: {
+		handlers: {
+			GET: async ({ request }) => {
+				const url = new URL(request.url)
+				const code = url.searchParams.get("code")
+				if (!code) return json({ error: "no_code" }, { status: 400 })
+				const exchanged = await client.exchange(code, `${url.origin}/auth/callback`)
+				if (!exchanged.success) return json(exchanged.error, { status: 400 })
 
-		setCookie("access_token", exchanged.data.access, {
-			httpOnly: true,
-			sameSite: "lax",
-			path: "/",
-			maxAge: 34560000
-		})
+				const cookieOptions = getAuthCookieOptions()
+				setCookie("access_token", exchanged.data.access, cookieOptions)
+				setCookie("refresh_token", exchanged.data.refresh, cookieOptions)
 
-		setCookie("refresh_token", exchanged.data.refresh, {
-			httpOnly: true,
-			sameSite: "lax",
-			path: "/",
-			maxAge: 34560000
-		})
-
-		throw redirect({ to: "/" })
+				throw redirect({ to: "/" })
+			}
+		}
 	}
 })

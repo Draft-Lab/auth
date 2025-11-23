@@ -17,6 +17,10 @@
 		},
 		"clean": {
 			"cache": false
+		},
+		"typecheck": {
+			"cache": false,
+			"persistent": true
 		}
 	}
 }

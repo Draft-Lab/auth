@@ -51,15 +51,22 @@ export interface StorageAdapter {
 const SEPARATOR = String.fromCharCode(0x1f)
 
 /**
+ * Escape character used to escape SEPARATOR characters in key segments.
+ * Uses backslash as the escape character, which is then itself escaped when appearing.
+ */
+const ESCAPE = "\\"
+
+/**
  * Joins an array of key segments into a single string using the separator.
+ * Segments are properly escaped to handle any input, including separators and escape characters.
  *
  * @param key - Array of key segments to join
  * @returns Single string representing the full key path
  *
  * @example
  * ```ts
- * joinKey(['user', 'session', '123'])
- * // Returns: "user\x1fsession\x1f123"
+ * joinKey(['user', 'data\x1fwith\x1fseparators'])
+ * // Returns: "user\x1fdata\\x1fwith\\x1fseparators"
  * ```
  */
 export const joinKey = (key: string[]): string => {
@@ -68,14 +75,15 @@ export const joinKey = (key: string[]): string => {
 
 /**
  * Splits a joined key string back into its component segments.
+ * Handles escaped characters properly.
  *
  * @param key - Joined key string to split
  * @returns Array of individual key segments
  *
  * @example
  * ```ts
- * splitKey("user\x1fsession\x1f123")
- * // Returns: ['user', 'session', '123']
+ * splitKey("user\x1fdata\\x1fwith\\x1fseparators")
+ * // Returns: ['user', 'data\x1fwith\x1fseparators']
  * ```
  */
 export const splitKey = (key: string): string[] => {
@@ -83,26 +91,77 @@ export const splitKey = (key: string): string[] => {
 }
 
 /**
+ * Encodes a single key segment by escaping special characters.
+ * Prevents collisions by properly escaping separator and escape characters.
+ *
+ * @param segment - The key segment to encode
+ * @returns Encoded segment with special characters escaped
+ * @throws {Error} If segment is empty or whitespace-only
+ *
+ * @internal
+ */
+const encodeSegment = (segment: string): string => {
+	// Validate segment is not empty
+	if (!segment || !segment.trim()) {
+		throw new Error(`Storage key segment cannot be empty or whitespace-only: "${segment}"`)
+	}
+
+	// Escape backslashes first, then escape separators
+	// This prevents double-escaping issues
+	return segment.replaceAll(ESCAPE, ESCAPE + ESCAPE).replaceAll(SEPARATOR, ESCAPE + SEPARATOR)
+}
+
+/**
+ * Decodes a key segment by unescaping special characters.
+ * Reverse of encodeSegment operation.
+ *
+ * @param segment - The encoded segment to decode
+ * @returns Decoded segment with special characters restored
+ *
+ * @internal
+ */
+const decodeSegment = (segment: string): string => {
+	// Unescape separators first, then unescape backslashes
+	// This matches the order in encodeSegment
+	return segment.replaceAll(ESCAPE + SEPARATOR, SEPARATOR).replaceAll(ESCAPE + ESCAPE, ESCAPE)
+}
+
+/**
  * High-level storage operations with key encoding and type safety.
  * Provides a convenient interface over storage adapters with additional features
- * like TTL conversion and key sanitization.
+ * like TTL validation and secure key encoding to prevent collisions.
  */
 export const Storage = {
 	/**
-	 * Encodes key segments by removing any separator characters to prevent conflicts.
-	 * Ensures storage keys don't contain characters that could break key parsing.
+	 * Encodes key segments by escaping special characters.
+	 * Ensures storage keys don't contain unescaped separator characters that could cause collisions.
 	 *
 	 * @param key - Array of key segments to encode
-	 * @returns Array of sanitized key segments
+	 * @returns Array of properly escaped key segments
+	 *
+	 * @throws {Error} If any segment is empty or whitespace-only
 	 *
 	 * @example
 	 * ```ts
 	 * Storage.encode(['user', 'data\x1fwith\x1fseparators'])
-	 * // Returns: ['user', 'datawithseparators']
+	 * // Returns: ['user', 'data\\x1fwith\\x1fseparators']
 	 * ```
 	 */
 	encode: (key: string[]): string[] => {
-		return key.map((segment) => segment.replaceAll(SEPARATOR, ""))
+		return key.map(encodeSegment)
+	},
+
+	/**
+	 * Decodes key segments by unescaping special characters.
+	 * Reverse operation of encode().
+	 *
+	 * @param key - Array of encoded key segments
+	 * @returns Array of decoded key segments
+	 *
+	 * @internal
+	 */
+	decode: (key: string[]): string[] => {
+		return key.map(decodeSegment)
 	},
 
 	/**
@@ -135,6 +194,7 @@ export const Storage = {
 
 	/**
 	 * Stores a value with optional time-to-live in seconds.
+	 * Validates that TTL is a positive integer to prevent edge cases like negative or overflow values.
 	 *
 	 * @param adapter - Storage adapter to use
 	 * @param key - Array of key segments identifying where to store
@@ -142,12 +202,14 @@ export const Storage = {
 	 * @param ttlSeconds - Optional TTL in seconds for automatic expiration
 	 * @returns Promise that resolves when storage is complete
 	 *
+	 * @throws {RangeError} If TTL is invalid (negative, non-integer, or exceeds maximum)
+	 *
 	 * @example
 	 * ```ts
 	 * // Store with 1 hour TTL
 	 * await Storage.set(adapter, ['sessions', sessionId], sessionData, 3600)
 	 *
-	 * // Store permanently
+	 * // Store permanently (no expiration)
 	 * await Storage.set(adapter, ['users', userId], userData)
 	 * ```
 	 */
@@ -157,6 +219,25 @@ export const Storage = {
 		value: unknown,
 		ttlSeconds?: number
 	): Promise<void> => {
+		// Validate TTL if provided
+		if (ttlSeconds !== undefined && ttlSeconds !== null) {
+			if (!Number.isInteger(ttlSeconds)) {
+				throw new RangeError(
+					`Storage TTL must be an integer in seconds, received ${typeof ttlSeconds}`
+				)
+			}
+			if (ttlSeconds <= 0) {
+				throw new RangeError(`Storage TTL must be positive, received ${ttlSeconds}`)
+			}
+			// Cap at 10 years to prevent overflow and catch configuration mistakes
+			const maxTtlSeconds = 60 * 60 * 24 * 365 * 10
+			if (ttlSeconds > maxTtlSeconds) {
+				throw new RangeError(
+					`Storage TTL exceeds maximum (${maxTtlSeconds}s = 10 years), received ${ttlSeconds}s`
+				)
+			}
+		}
+
 		const expiry = ttlSeconds ? new Date(Date.now() + ttlSeconds * 1000) : undefined
 		return adapter.set(Storage.encode(key), value, expiry)
 	},

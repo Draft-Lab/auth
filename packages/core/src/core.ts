@@ -32,6 +32,41 @@ import { Select } from "./ui/select"
 import { getRelativeUrl, lazy, type Prettify } from "./util"
 
 /**
+ * Performs an operation with guaranteed minimum execution time.
+ * Adds random jitter to prevent timing-based attacks even if operation completes quickly.
+ *
+ * Used for validating sensitive data where timing differences could leak information
+ * (e.g., authorization codes, refresh tokens).
+ *
+ * @param fn - Async function to execute
+ * @param minTimeMs - Minimum execution time in milliseconds (default: 100ms)
+ * @returns Result of the function, guaranteed to take at least minTimeMs
+ */
+const normalizeTimingAsync = async <T>(
+	fn: () => Promise<T>,
+	minTimeMs: number = 100
+): Promise<T> => {
+	const startTime = performance.now()
+
+	const result = await fn()
+
+	const elapsed = performance.now() - startTime
+	const remainingTime = Math.max(0, minTimeMs - elapsed)
+
+	if (remainingTime > 0) {
+		// Add small random jitter (0-20ms) to prevent precise timing measurement
+		const jitterBuffer = new Uint32Array(1)
+		crypto.getRandomValues(jitterBuffer)
+		const jitter = ((jitterBuffer[0] ?? 0) / 0xffffffff) * 20
+
+		const totalDelay = remainingTime + jitter
+		await new Promise((resolve) => setTimeout(resolve, totalDelay))
+	}
+
+	return result
+}
+
+/**
  * Sets the subject payload in the JWT token and returns the response.
  */
 export interface OnSuccessResponder<T extends { type: string; properties: unknown }> {
@@ -622,25 +657,31 @@ export const issuer = <
 				}
 
 				const key = ["oauth:code", code.toString()]
-				const payload = await Storage.get<CodeStoragePayload>(storage, key)
-				if (!payload) {
+
+				// Validate code with timing normalization to prevent timing attacks
+				const { isValid, payload } = await normalizeTimingAsync(async () => {
+					const data = await Storage.get<CodeStoragePayload>(storage, key)
+
+					// Perform all validations to maintain consistent timing
+					const redirectUri = form.get("redirect_uri")
+					const clientId = form.get("client_id")
+
+					const valid = !!(
+						data &&
+						data.redirectURI === redirectUri &&
+						data.clientID === clientId
+					)
+
+					return {
+						isValid: valid,
+						payload: valid ? data : undefined
+					}
+				})
+
+				if (!isValid || !payload) {
 					const error = new OauthError(
 						"invalid_grant",
 						"Authorization code has been used or expired"
-					)
-					return c.json(error.toJSON(), { status: 400 })
-				}
-
-				// Validate redirect URI
-				if (payload.redirectURI !== form.get("redirect_uri")) {
-					const error = new OauthError("invalid_redirect_uri", "Redirect URI mismatch")
-					return c.json(error.toJSON(), { status: 400 })
-				}
-
-				if (payload.clientID !== form.get("client_id")) {
-					const error = new OauthError(
-						"unauthorized_client",
-						"Client is not authorized to use this authorization code"
 					)
 					return c.json(error.toJSON(), { status: 400 })
 				}
@@ -736,7 +777,6 @@ export const issuer = <
 						}
 
 						// Update properties directly from refresh result
-						payload.properties = refreshResult.properties
 					} catch {
 						return c.json(
 							{
@@ -866,7 +906,7 @@ export const issuer = <
 		}
 
 		// Store authorization state
-		await auth.set(c, "authorization", 60 * 60 * 24, authorization)
+		await auth.set(c, "authorization", 60 * 15, authorization) // 15 minutes for authorization state
 
 		// Handle provider selection
 		if (provider) {

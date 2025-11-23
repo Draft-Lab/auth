@@ -11,7 +11,7 @@ import { PasskeyUI } from "@draftlab/auth/ui/passkey"
 import { PasswordUI } from "@draftlab/auth/ui/password"
 import { Select } from "@draftlab/auth/ui/select"
 import { TOTPUI } from "@draftlab/auth/ui/totp"
-import { createServerFileRoute } from "@tanstack/react-start/server"
+import { createFileRoute } from "@tanstack/react-router"
 import { subjects } from "@/libs/auth"
 
 export const auth = issuer({
@@ -100,7 +100,11 @@ export const auth = issuer({
 	}
 })
 
-export const ServerRoute = createServerFileRoute("/auth/$").methods({
-	GET: ({ request }) => auth.fetch(request),
-	POST: ({ request }) => auth.fetch(request)
+export const Route = createFileRoute("/auth/$")({
+	server: {
+		handlers: {
+			GET: ({ request }) => auth.fetch(request),
+			POST: ({ request }) => auth.fetch(request)
+		}
+	}
 })

@@ -2,8 +2,25 @@ import { createClient } from "@draftlab/auth/client"
 import { createSubjects } from "@draftlab/auth/subject"
 import { redirect } from "@tanstack/react-router"
 import { createServerFn, useServerFn } from "@tanstack/react-start"
-import { deleteCookie, getCookie, getHeader, setCookie } from "@tanstack/react-start/server"
+import {
+	deleteCookie,
+	getCookie,
+	getRequestHeader,
+	setCookie
+} from "@tanstack/react-start/server"
 import { z } from "zod"
+
+export const getAuthCookieOptions = () => {
+	const isProduction = process.env.NODE_ENV === "production"
+
+	return {
+		httpOnly: true,
+		secure: isProduction,
+		sameSite: "lax" as const,
+		path: "/",
+		maxAge: 60 * 60 * 24 * 7
+	}
+}
 
 export const client = createClient({
 	clientID: "example",
@@ -29,19 +46,9 @@ export const $auth = createServerFn().handler(async () => {
 	if (!verified.success) return null
 
 	if (verified.data.tokens) {
-		setCookie("access_token", verified.data.tokens.access, {
-			httpOnly: true,
-			sameSite: "lax",
-			path: "/",
-			maxAge: 34560000
-		})
-
-		setCookie("refresh_token", verified.data.tokens.refresh, {
-			httpOnly: true,
-			sameSite: "lax",
-			path: "/",
-			maxAge: 34560000
-		})
+		const cookieOptions = getAuthCookieOptions()
+		setCookie("access_token", verified.data.tokens.access, cookieOptions)
+		setCookie("refresh_token", verified.data.tokens.refresh, cookieOptions)
 	}
 
 	return verified.data.subject.properties
@@ -57,25 +64,15 @@ export const $login = createServerFn({ method: "POST" }).handler(async () => {
 		})
 
 		if (verified.success && verified.data.tokens) {
-			setCookie("access_token", verified.data.tokens.access, {
-				httpOnly: true,
-				sameSite: "lax",
-				path: "/",
-				maxAge: 34560000
-			})
-
-			setCookie("refresh_token", verified.data.tokens.refresh, {
-				httpOnly: true,
-				sameSite: "lax",
-				path: "/",
-				maxAge: 34560000
-			})
+			const cookieOptions = getAuthCookieOptions()
+			setCookie("access_token", verified.data.tokens.access, cookieOptions)
+			setCookie("refresh_token", verified.data.tokens.refresh, cookieOptions)
 
 			throw redirect({ to: "/" })
 		}
 	}
 
-	const host = getHeader("host")
+	const host = getRequestHeader("Host")
 	const protocol = host?.includes("localhost") ? "http" : "https"
 	const result = await client.authorize(`${protocol}://${host}/auth/callback`, "code")
 

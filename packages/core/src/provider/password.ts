@@ -783,7 +783,7 @@ export const PBKDF2Hasher = (opts?: {
 		async verify(password: string, compare) {
 			const encoder = new TextEncoder()
 			const passwordBytes = encoder.encode(password)
-			const salt = jose.base64url.decode(compare.salt)
+			const salt = jose.base64url.decode(compare.salt) as Uint8Array<ArrayBuffer>
 
 			const keyMaterial = await crypto.subtle.importKey(
 				"raw",

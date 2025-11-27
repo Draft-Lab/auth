@@ -87,7 +87,7 @@ const uint8ArrayToBase64Url = (bytes: Uint8Array): string => {
  * @param base64urlString - The Base64URL encoded string to convert
  * @returns Uint8Array containing the decoded data
  */
-const base64UrlToUint8Array = (base64urlString: string): Uint8Array => {
+const base64UrlToUint8Array = (base64urlString: string): Uint8Array<ArrayBuffer> => {
 	// Convert from Base64URL to Base64
 	const base64 = base64urlString.replace(/-/g, "+").replace(/_/g, "/")
 	/**
@@ -130,7 +130,7 @@ export interface UserModel {
  */
 export interface PasskeyModel {
 	id: string
-	publicKey: Uint8Array
+	publicKey: Uint8Array<ArrayBuffer>
 	userId: string // Foreign key to UserModel
 	webauthnUserID: string
 	counter: number
@@ -453,7 +453,8 @@ export const PasskeyProvider = (
 					})
 				} catch (error) {
 					console.error("Passkey Registration Verification Error:", error)
-					return c.json({ verified: false, error: error.message }, { status: 400 })
+					const message = error instanceof Error ? error.message : "Unknown error"
+					return c.json({ verified: false, error: message }, { status: 400 })
 				}
 
 				const { verified, registrationInfo } = verification

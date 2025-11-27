@@ -416,6 +416,9 @@ export const CodeProvider = <Claims extends Record<string, string> = Record<stri
 						claims: currentState.claims as Claims
 					})
 				}
+
+				// Invalid action - return to start
+				return transition(c, { type: "start" })
 			})
 		}
 	}

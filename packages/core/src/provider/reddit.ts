@@ -8,8 +8,8 @@
  * import { RedditProvider } from "@draftlab/auth/provider/reddit"
  *
  * export default issuer({
- *   providers: {
  *   basePath: "/auth", // Important for callback URL
+ *   providers: {
  *     reddit: RedditProvider({
  *       clientID: process.env.REDDIT_CLIENT_ID,
  *       clientSecret: process.env.REDDIT_CLIENT_SECRET,

@@ -8,8 +8,8 @@
  * import { LinkedInProvider } from "@draftlab/auth/provider/linkedin"
  *
  * export default issuer({
- *   providers: {
  *   basePath: "/auth", // Important for callback URL
+ *   providers: {
  *     linkedin: LinkedInProvider({
  *       clientID: process.env.LINKEDIN_CLIENT_ID,
  *       clientSecret: process.env.LINKEDIN_CLIENT_SECRET,

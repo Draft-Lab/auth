@@ -8,8 +8,8 @@
  * import { TwitchProvider } from "@draftlab/auth/provider/twitch"
  *
  * export default issuer({
- *   providers: {
  *   basePath: "/auth", // Important for callback URL
+ *   providers: {
  *     twitch: TwitchProvider({
  *       clientID: process.env.TWITCH_CLIENT_ID,
  *       clientSecret: process.env.TWITCH_CLIENT_SECRET,

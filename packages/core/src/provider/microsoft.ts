@@ -9,8 +9,8 @@
  * import { MicrosoftProvider } from "@draftlab/auth/provider/microsoft"
  *
  * export default issuer({
- *   providers: {
  *   basePath: "/auth", // Important for callback URL
+ *   providers: {
  *     microsoft: MicrosoftProvider({
  *       tenant: "common", // or specific tenant ID
  *       clientID: process.env.MICROSOFT_CLIENT_ID,

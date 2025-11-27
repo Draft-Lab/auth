@@ -8,8 +8,8 @@
  * import { SpotifyProvider } from "@draftlab/auth/provider/spotify"
  *
  * export default issuer({
- *   providers: {
  *   basePath: "/auth", // Important for callback URL
+ *   providers: {
  *     spotify: SpotifyProvider({
  *       clientID: process.env.SPOTIFY_CLIENT_ID,
  *       clientSecret: process.env.SPOTIFY_CLIENT_SECRET,

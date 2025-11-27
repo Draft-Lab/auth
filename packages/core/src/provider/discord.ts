@@ -8,8 +8,8 @@
  * import { DiscordProvider } from "@draftlab/auth/provider/discord"
  *
  * export default issuer({
- *   providers: {
  *   basePath: "/auth", // Important for callback URL
+ *   providers: {
  *     discord: DiscordProvider({
  *       clientID: process.env.DISCORD_CLIENT_ID,
  *       clientSecret: process.env.DISCORD_CLIENT_SECRET,

@@ -8,8 +8,8 @@
  * import { GitlabProvider } from "@draftlab/auth/provider/gitlab"
  *
  * export default issuer({
- *   providers: {
  *   basePath: "/auth", // Important for callback URL
+ *   providers: {
  *     gitlab: GitlabProvider({
  *       clientID: process.env.GITLAB_CLIENT_ID,
  *       clientSecret: process.env.GITLAB_CLIENT_SECRET,

@@ -8,8 +8,8 @@
  * import { FacebookProvider } from "@draftlab/auth/provider/facebook"
  *
  * export default issuer({
- *   providers: {
  *   basePath: "/auth", // Important for callback URL
+ *   providers: {
  *     facebook: FacebookProvider({
  *       clientID: process.env.FACEBOOK_APP_ID,
  *       clientSecret: process.env.FACEBOOK_APP_SECRET,

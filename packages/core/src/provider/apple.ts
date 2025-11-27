@@ -8,8 +8,8 @@
  * import { AppleProvider } from "@draftlab/auth/provider/apple"
  *
  * export default issuer({
- *   providers: {
  *   basePath: "/auth", // Important for callback URL
+ *   providers: {
  *     apple: AppleProvider({
  *       clientID: process.env.APPLE_CLIENT_ID,
  *       clientSecret: process.env.APPLE_CLIENT_SECRET,

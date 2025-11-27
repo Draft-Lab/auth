@@ -8,8 +8,8 @@
  * import { SlackProvider } from "@draftlab/auth/provider/slack"
  *
  * export default issuer({
- *   providers: {
  *   basePath: "/auth", // Important for callback URL
+ *   providers: {
  *     slack: SlackProvider({
  *       clientID: process.env.SLACK_CLIENT_ID,
  *       clientSecret: process.env.SLACK_CLIENT_SECRET,
@@ -177,7 +177,7 @@ export const SlackProvider = (config: SlackConfig) => {
 		...config,
 		type: "slack",
 		endpoint: {
-			authorization: "https://slack.com/oauth_authorize",
+			authorization: "https://slack.com/oauth/v2/authorize",
 			token: "https://slack.com/api/oauth.v2.access"
 		}
 	})

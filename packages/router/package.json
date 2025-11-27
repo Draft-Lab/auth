@@ -1,6 +1,6 @@
 {
 	"name": "@draftlab/auth-router",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "Minimal http router implementation for @draftlab/auth",
 	"author": "Matheus Pergoli",
 	"license": "MIT",
@@ -44,7 +44,7 @@
 	},
 	"devDependencies": {
 		"@draftlab/tsconfig": "workspace:*",
-		"tsdown": "^0.16.6",
+		"tsdown": "^0.16.7",
 		"typescript": "^5.9.3"
 	},
 	"publishConfig": {

@@ -1,5 +1,11 @@
 # @draftlab/auth-router
 
+## 0.2.0
+
+### Minor Changes
+
+- some minor changes
+
 ## 0.1.0
 
 ### Minor Changes

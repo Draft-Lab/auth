@@ -25,6 +25,7 @@ import { Storage, type StorageAdapter } from "./storage/storage"
 import type { SubjectPayload, SubjectSchema } from "./subject"
 import { setTheme, type Theme } from "./themes/theme"
 import type {
+	AuthorizationState,
 	CodeStoragePayload,
 	RefreshTokenStoragePayload,
 	TokenGenerationResult
@@ -82,27 +83,6 @@ export interface OnSuccessResponder<T extends { type: string; properties: unknow
 			subject?: string
 		}
 	): Promise<Response>
-}
-
-/**
- * Authorization state for OAuth 2.0 flows.
- */
-export interface AuthorizationState {
-	/** OAuth redirect URI */
-	redirect_uri: string
-	/** OAuth response type */
-	response_type: string
-	/** OAuth state parameter for CSRF protection */
-	state: string
-	/** OAuth client identifier */
-	client_id: string
-	/** OAuth audience parameter */
-	audience: string
-	/** PKCE challenge data for code verification */
-	pkce?: {
-		challenge: string
-		method: "S256"
-	}
 }
 
 /**
@@ -350,8 +330,8 @@ export const issuer = <
 				clientID: value.clientID,
 				subject: value.subject,
 				ttl: value.ttl,
-				nextToken: generateSecureToken()
-				// timeUsed: value.timeUsed
+				nextToken: generateSecureToken(),
+				timeUsed: value.timeUsed
 			}
 
 			const refreshKey = ["oauth:refresh", value.subject, refreshToken]
@@ -489,6 +469,7 @@ export const issuer = <
 							subject,
 							redirectURI: authorization.redirect_uri,
 							clientID: authorization.client_id,
+							scopes: authorization.scopes,
 							pkce: authorization.pkce,
 							ttl: {
 								access: subjectOpts?.ttl?.access ?? ttlAccess,
@@ -901,6 +882,7 @@ export const issuer = <
 		handler: async (c) => {
 			const form = await c.formData()
 			const token = form.get("token")?.toString()
+			const tokenTypeHint = form.get("token_type_hint")?.toString()
 
 			if (!token) {
 				const error = new OauthError("invalid_request", "Missing token parameter")
@@ -908,18 +890,52 @@ export const issuer = <
 			}
 
 			try {
-				// Revoke the token
-				// Calculate expiry time: tokens are valid until their natural expiration
-				// For this endpoint, we assume tokens expire based on their grant type
-				// Access tokens: ttlAccess seconds
-				// Refresh tokens: ttlRefresh seconds
-				// We'll use a reasonable default (refresh token TTL) since we don't know the grant type
-				const expiresAt = Date.now() + ttlRefresh * 1000
+				// Optimize token lookup based on token_type_hint
+				if (tokenTypeHint === "refresh_token") {
+					// Try to revoke as refresh token first
+					const splits = token.split(":")
+					const tokenPart = splits.pop()
+					if (tokenPart && splits.length > 0) {
+						const subject = splits.join(":")
+						const key = ["oauth:refresh", subject, tokenPart]
+						const payload = await Storage.get(storage, key)
 
+						if (payload) {
+							await Storage.remove(storage, key)
+							const expiresAt = Date.now() + ttlRefreshRetention * 1000
+							await Revocation.revoke(storage, token, expiresAt)
+							return c.json({})
+						}
+					}
+				} else if (tokenTypeHint === "access_token") {
+					// Revoke access token (just add to revocation list)
+					const expiresAt = Date.now() + ttlAccess * 1000
+					await Revocation.revoke(storage, token, expiresAt)
+					return c.json({})
+				}
+
+				// Fallback: no hint provided or hint was wrong
+				// Try refresh token format first (contains ":")
+				const splits = token.split(":")
+				const tokenPart = splits.pop()
+				if (tokenPart && splits.length > 0) {
+					const subject = splits.join(":")
+					const key = ["oauth:refresh", subject, tokenPart]
+					const payload = await Storage.get(storage, key)
+
+					if (payload) {
+						await Storage.remove(storage, key)
+						const expiresAt = Date.now() + ttlRefreshRetention * 1000
+						await Revocation.revoke(storage, token, expiresAt)
+						return c.json({})
+					}
+				}
+
+				// Otherwise assume it's an access token
+				const expiresAt = Date.now() + ttlAccess * 1000
 				await Revocation.revoke(storage, token, expiresAt)
 
 				// RFC 7009: Successful revocation returns 200 with empty body
-				// or 200 with 'application/x-www-form-urlencoded' body
 				return c.json({})
 			} catch (_err) {
 				return c.json(
@@ -943,6 +959,7 @@ export const issuer = <
 		const code_challenge = c.query("code_challenge")
 		const code_challenge_method = c.query("code_challenge_method")
 		const scope = c.query("scope")
+		const scopes = scope ? scope.split(" ").filter(Boolean) : undefined
 		const authorization: AuthorizationState = {
 			response_type,
 			redirect_uri,
@@ -950,6 +967,7 @@ export const issuer = <
 			client_id,
 			audience,
 			scope,
+			scopes,
 			...(code_challenge &&
 				code_challenge_method && {
 					pkce: {

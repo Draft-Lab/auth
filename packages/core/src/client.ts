@@ -720,7 +720,10 @@ export const createClient = (input: ClientInput): Client => {
 					mode: "access"
 					type: keyof T
 					properties: StandardSchemaV1.InferInput<T[keyof T]>
-				}>(token, jwks, { issuer })
+				}>(token, jwks, {
+					issuer: options?.issuer ?? issuer,
+					...(options?.audience && { audience: options.audience })
+				})
 
 				const validated = await subjects[jwtResult.payload.type]?.["~standard"].validate(
 					jwtResult.payload.properties

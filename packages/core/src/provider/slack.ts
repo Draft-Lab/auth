@@ -9,6 +9,7 @@
  *
  * export default issuer({
  *   providers: {
+ *   basePath: "/auth", // Important for callback URL
  *     slack: SlackProvider({
  *       clientID: process.env.SLACK_CLIENT_ID,
  *       clientSecret: process.env.SLACK_CLIENT_SECRET,
@@ -17,6 +18,12 @@
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/slack/callback`
+ * - Production: `https://yourapp.com/auth/slack/callback`
+ *
+ * Register this URL in your Slack App settings.
  *
  * ## Common Scopes
  *
@@ -158,6 +165,12 @@ export interface SlackConfig extends Oauth2WrappedConfig {
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/slack/callback`
+ * - Production: `https://yourapp.com/auth/slack/callback`
+ *
+ * Register this URL in your Slack App settings.
  */
 export const SlackProvider = (config: SlackConfig) => {
 	return Oauth2Provider({

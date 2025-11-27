@@ -8,8 +8,8 @@
 	},
 	"dependencies": {
 		"@draftlab/auth": "workspace:*",
-		"@tanstack/react-router": "^1.139.7",
-		"@tanstack/react-start": "^1.139.8",
+		"@tanstack/react-router": "^1.139.10",
+		"@tanstack/react-start": "^1.139.10",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
 		"vite": "^7.2.4",

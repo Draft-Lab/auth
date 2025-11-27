@@ -9,6 +9,7 @@
  *
  * export default issuer({
  *   providers: {
+ *   basePath: "/auth", // Important for callback URL
  *     twitch: TwitchProvider({
  *       clientID: process.env.TWITCH_CLIENT_ID,
  *       clientSecret: process.env.TWITCH_CLIENT_SECRET,
@@ -17,6 +18,12 @@
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/twitch/callback`
+ * - Production: `https://yourapp.com/auth/twitch/callback`
+ *
+ * Register this URL in your Twitch Developer Console.
  *
  * ## Common Scopes
  *
@@ -150,6 +157,12 @@ export interface TwitchConfig extends Oauth2WrappedConfig {
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/twitch/callback`
+ * - Production: `https://yourapp.com/auth/twitch/callback`
+ *
+ * Register this URL in your Twitch Developer Console.
  */
 export const TwitchProvider = (config: TwitchConfig) => {
 	return Oauth2Provider({

@@ -8,6 +8,7 @@
  * import { GoogleProvider } from "@draftlab/auth/provider/google"
  *
  * export default issuer({
+ *   basePath: "/auth", // Important for callback URL
  *   providers: {
  *     google: GoogleProvider({
  *       clientID: process.env.GOOGLE_CLIENT_ID,
@@ -17,6 +18,12 @@
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/google/callback`
+ * - Production: `https://yourapp.com/auth/google/callback`
+ *
+ * Register this URL in your Google Cloud Console OAuth 2.0 credentials.
  *
  * ## Configuration Options
  *

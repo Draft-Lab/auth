@@ -9,6 +9,7 @@
  *
  * export default issuer({
  *   providers: {
+ *   basePath: "/auth", // Important for callback URL
  *     reddit: RedditProvider({
  *       clientID: process.env.REDDIT_CLIENT_ID,
  *       clientSecret: process.env.REDDIT_CLIENT_SECRET,
@@ -17,6 +18,12 @@
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/reddit/callback`
+ * - Production: `https://yourapp.com/auth/reddit/callback`
+ *
+ * Register this URL in your Reddit App Preferences.
  *
  * ## Common Scopes
  *
@@ -146,6 +153,12 @@ export interface RedditConfig extends Oauth2WrappedConfig {
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/reddit/callback`
+ * - Production: `https://yourapp.com/auth/reddit/callback`
+ *
+ * Register this URL in your Reddit App Preferences.
  */
 export const RedditProvider = (config: RedditConfig) => {
 	return Oauth2Provider({

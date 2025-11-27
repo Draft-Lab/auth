@@ -9,6 +9,7 @@
  *
  * export default issuer({
  *   providers: {
+ *   basePath: "/auth", // Important for callback URL
  *     discord: DiscordProvider({
  *       clientID: process.env.DISCORD_CLIENT_ID,
  *       clientSecret: process.env.DISCORD_CLIENT_SECRET,
@@ -17,6 +18,12 @@
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/discord/callback`
+ * - Production: `https://yourapp.com/auth/discord/callback`
+ *
+ * Register this URL in your Discord Developer Portal.
  *
  * ## Common Scopes
  *
@@ -194,6 +201,12 @@ export interface DiscordConfig extends Oauth2WrappedConfig {
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/discord/callback`
+ * - Production: `https://yourapp.com/auth/discord/callback`
+ *
+ * Register this URL in your Discord Developer Portal.
  */
 export const DiscordProvider = (config: DiscordConfig) => {
 	return Oauth2Provider({

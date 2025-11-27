@@ -9,6 +9,7 @@
  *
  * export default issuer({
  *   providers: {
+ *   basePath: "/auth", // Important for callback URL
  *     facebook: FacebookProvider({
  *       clientID: process.env.FACEBOOK_APP_ID,
  *       clientSecret: process.env.FACEBOOK_APP_SECRET,
@@ -17,6 +18,12 @@
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/facebook/callback`
+ * - Production: `https://yourapp.com/auth/facebook/callback`
+ *
+ * Register this URL in your Facebook App Dashboard.
  *
  * ## Configuration Options
  *
@@ -188,6 +195,12 @@ export interface FacebookConfig extends Oauth2WrappedConfig {
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/facebook/callback`
+ * - Production: `https://yourapp.com/auth/facebook/callback`
+ *
+ * Register this URL in your Facebook App Dashboard.
  */
 export const FacebookProvider = (config: FacebookConfig) => {
 	return Oauth2Provider({

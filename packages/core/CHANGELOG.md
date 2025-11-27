@@ -1,5 +1,16 @@
 # @draftlab/auth
 
+## 0.10.0
+
+### Minor Changes
+
+- improve docs for providers and add vercel provider
+
+### Patch Changes
+
+- Updated dependencies
+  - @draftlab/auth-router@0.3.0
+
 ## 0.9.0
 
 ### Minor Changes

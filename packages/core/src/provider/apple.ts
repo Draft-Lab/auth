@@ -9,6 +9,7 @@
  *
  * export default issuer({
  *   providers: {
+ *   basePath: "/auth", // Important for callback URL
  *     apple: AppleProvider({
  *       clientID: process.env.APPLE_CLIENT_ID,
  *       clientSecret: process.env.APPLE_CLIENT_SECRET,
@@ -17,6 +18,12 @@
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/apple/callback`
+ * - Production: `https://yourapp.com/auth/apple/callback`
+ *
+ * Register this URL in your Apple Developer Portal.
  *
  * ## Setup Instructions
  *
@@ -184,6 +191,12 @@ export interface AppleConfig extends Oauth2WrappedConfig {
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/apple/callback`
+ * - Production: `https://yourapp.com/auth/apple/callback`
+ *
+ * Register this URL in your Apple Developer Portal.
  */
 export const AppleProvider = (config: AppleConfig) => {
 	return Oauth2Provider({

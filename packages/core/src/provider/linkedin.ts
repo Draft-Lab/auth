@@ -9,6 +9,7 @@
  *
  * export default issuer({
  *   providers: {
+ *   basePath: "/auth", // Important for callback URL
  *     linkedin: LinkedInProvider({
  *       clientID: process.env.LINKEDIN_CLIENT_ID,
  *       clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
@@ -17,6 +18,12 @@
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/linkedin/callback`
+ * - Production: `https://yourapp.com/auth/linkedin/callback`
+ *
+ * Register this URL in your LinkedIn Developer Portal.
  *
  * ## Common Scopes
  *
@@ -178,6 +185,12 @@ export interface LinkedInConfig extends Oauth2WrappedConfig {
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/linkedin/callback`
+ * - Production: `https://yourapp.com/auth/linkedin/callback`
+ *
+ * Register this URL in your LinkedIn Developer Portal.
  */
 export const LinkedInProvider = (config: LinkedInConfig) => {
 	return Oauth2Provider({

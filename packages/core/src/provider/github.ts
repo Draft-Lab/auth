@@ -8,6 +8,7 @@
  * import { GithubProvider } from "@draftlab/auth/provider/github"
  *
  * export default issuer({
+ *   basePath: "/auth", // Important for callback URL
  *   providers: {
  *     github: GithubProvider({
  *       clientID: process.env.GITHUB_CLIENT_ID,
@@ -17,6 +18,12 @@
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/github/callback`
+ * - Production: `https://yourapp.com/auth/github/callback`
+ *
+ * Register this URL in your GitHub App/OAuth App settings.
  *
  * ## GitHub App vs OAuth App
  *

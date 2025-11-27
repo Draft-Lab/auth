@@ -9,6 +9,7 @@
  *
  * export default issuer({
  *   providers: {
+ *   basePath: "/auth", // Important for callback URL
  *     gitlab: GitlabProvider({
  *       clientID: process.env.GITLAB_CLIENT_ID,
  *       clientSecret: process.env.GITLAB_CLIENT_SECRET,
@@ -17,6 +18,12 @@
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/gitlab/callback`
+ * - Production: `https://yourapp.com/auth/gitlab/callback`
+ *
+ * Register this URL in your GitLab Application settings.
  *
  * ## Common Scopes
  *
@@ -43,6 +50,12 @@
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/gitlab/callback`
+ * - Production: `https://yourapp.com/auth/gitlab/callback`
+ *
+ * Register this URL in your GitLab Application settings.
  *
  * ## User Data Access
  *
@@ -161,6 +174,12 @@ export interface GitlabConfig extends Oauth2WrappedConfig {
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/gitlab/callback`
+ * - Production: `https://yourapp.com/auth/gitlab/callback`
+ *
+ * Register this URL in your GitLab Application settings.
  */
 export const GitlabProvider = (config: GitlabConfig) => {
 	return Oauth2Provider({

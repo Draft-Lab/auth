@@ -16,8 +16,8 @@
 		"deploy": "turbo run build && changeset publish"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.3.7",
-		"@changesets/cli": "^2.29.7",
+		"@biomejs/biome": "^2.3.8",
+		"@changesets/cli": "^2.29.8",
 		"@turbo/gen": "^2.6.1",
 		"turbo": "^2.6.1",
 		"typescript": "^5.9.3"

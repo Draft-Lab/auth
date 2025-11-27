@@ -340,7 +340,10 @@ export const Oauth2Provider = (config: Oauth2Config): Provider<Oauth2UserData> =
 				try {
 					const jwks = createRemoteJWKSet(new URL(config.endpoint.jwks))
 					await jwtVerify(tokenData.id_token, jwks, {
-						issuer: config.endpoint.authorization.split("/").slice(0, 3).join("/")
+						issuer: config.endpoint.authorization.split("/").slice(0, 3).join("/"),
+						// Add 60 seconds clock tolerance for nbf/exp claims
+						// Handles minor time drift between servers
+						clockTolerance: 60
 					})
 				} catch (error) {
 					throw new OauthError(

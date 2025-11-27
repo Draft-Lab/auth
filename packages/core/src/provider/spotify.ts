@@ -9,6 +9,7 @@
  *
  * export default issuer({
  *   providers: {
+ *   basePath: "/auth", // Important for callback URL
  *     spotify: SpotifyProvider({
  *       clientID: process.env.SPOTIFY_CLIENT_ID,
  *       clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
@@ -17,6 +18,12 @@
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/spotify/callback`
+ * - Production: `https://yourapp.com/auth/spotify/callback`
+ *
+ * Register this URL in your Spotify Developer Dashboard.
  *
  * ## Common Scopes
  *
@@ -155,6 +162,12 @@ export interface SpotifyConfig extends Oauth2WrappedConfig {
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/spotify/callback`
+ * - Production: `https://yourapp.com/auth/spotify/callback`
+ *
+ * Register this URL in your Spotify Developer Dashboard.
  */
 export const SpotifyProvider = (config: SpotifyConfig) => {
 	return Oauth2Provider({

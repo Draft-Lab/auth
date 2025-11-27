@@ -10,6 +10,7 @@
  *
  * export default issuer({
  *   providers: {
+ *   basePath: "/auth", // Important for callback URL
  *     microsoft: MicrosoftProvider({
  *       tenant: "common", // or specific tenant ID
  *       clientID: process.env.MICROSOFT_CLIENT_ID,
@@ -19,6 +20,12 @@
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/microsoft/callback`
+ * - Production: `https://yourapp.com/auth/microsoft/callback`
+ *
+ * Register this URL in your Azure Portal App Registration.
  *
  * ## Tenant Configuration
  *
@@ -236,6 +243,12 @@ export interface MicrosoftConfig extends Oauth2WrappedConfig {
  *   }
  * })
  * ```
+ *
+ * **Callback URL Pattern**: `{baseURL}{basePath}/{provider}/callback`
+ * - Development: `http://localhost:3000/auth/microsoft/callback`
+ * - Production: `https://yourapp.com/auth/microsoft/callback`
+ *
+ * Register this URL in your Azure Portal App Registration.
  */
 export const MicrosoftProvider = (config: MicrosoftConfig) => {
 	return Oauth2Provider({

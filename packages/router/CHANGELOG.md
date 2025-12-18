@@ -1,5 +1,11 @@
 # @draftlab/auth-router
 
+## 0.3.1
+
+### Patch Changes
+
+- fix some router context errors
+
 ## 0.3.0
 
 ### Minor Changes

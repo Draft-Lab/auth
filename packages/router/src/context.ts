@@ -72,6 +72,9 @@ export class ContextBuilder<TVariables extends VariableMap = VariableMap> {
 	private readonly responseHeaders = new Headers()
 	private status: number = 200
 	private finalized = false
+	private cachedFormData: FormData | null = null
+	private formDataPromise: Promise<FormData> | null = null
+	private bodyText: string | null = null
 
 	constructor(
 		request: Request,
@@ -102,20 +105,59 @@ export class ContextBuilder<TVariables extends VariableMap = VariableMap> {
 			header: (key) => this.request.headers.get(key) ?? undefined,
 			cookie: (key) => this.cookies.get(key),
 
-			formData: () => {
-				if (this.request.bodyUsed) {
-					throw new Error("Request body has already been consumed.")
+			formData: async () => {
+				// Return cached formData if already parsed
+				if (this.cachedFormData) {
+					return this.cachedFormData
 				}
 
-				return this.request.formData()
+				// If a request is already in flight, return the same promise
+				if (this.formDataPromise) {
+					return this.formDataPromise
+				}
+
+				// Clone the request to avoid consuming the body
+				this.formDataPromise = (async () => {
+					try {
+						const formData = await this.request.clone().formData()
+						this.cachedFormData = formData
+						return formData
+					} catch {
+						// If clone fails (body already consumed), try direct access
+						if (!this.request.bodyUsed) {
+							const formData = await this.request.formData()
+							this.cachedFormData = formData
+							return formData
+						}
+						throw new Error("Request body has already been consumed and cannot be read.")
+					}
+				})()
+
+				return this.formDataPromise
 			},
 
 			parseJson: async <T>() => {
-				if (this.request.bodyUsed) {
-					throw new Error("Request body has already been consumed.")
-				}
 				try {
-					const text = await this.request.text()
+					// Use cached body text if available
+					if (this.bodyText !== null) {
+						if (!this.bodyText) throw new Error("Request body is empty.")
+						return JSON.parse(this.bodyText) as T
+					}
+
+					// Clone the request to avoid consuming the body
+					let text: string
+					try {
+						text = await this.request.clone().text()
+					} catch {
+						// If clone fails (body already consumed), try direct access
+						if (!this.request.bodyUsed) {
+							text = await this.request.text()
+						} else {
+							throw new Error("Request body has already been consumed.")
+						}
+					}
+
+					this.bodyText = text
 					if (!text) throw new Error("Request body is empty.")
 					return JSON.parse(text) as T
 				} catch (error) {

@@ -1,5 +1,11 @@
 # @draftlab/auth-router
 
+## 0.4.0
+
+### Minor Changes
+
+- create safe requests for clones and multiple reads
+
 ## 0.3.1
 
 ### Patch Changes

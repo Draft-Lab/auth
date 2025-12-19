@@ -81,7 +81,9 @@ export class ContextBuilder<TVariables extends VariableMap = VariableMap> {
 		matchedParams: Record<string, string>,
 		initialVariables?: Partial<TVariables>
 	) {
-		if (!(request instanceof Request)) {
+		// Verify request has required properties instead of instanceof check
+		// This allows SafeRequest and other Request implementations to work
+		if (!request || typeof request !== "object" || !request.url || !request.method) {
 			throw new Error("Invalid request object provided to ContextBuilder.")
 		}
 
@@ -116,20 +118,17 @@ export class ContextBuilder<TVariables extends VariableMap = VariableMap> {
 					return this.formDataPromise
 				}
 
-				// Clone the request to avoid consuming the body
+				// Read form data directly and cache it
+				// Some Request implementations don't support clone()
 				this.formDataPromise = (async () => {
 					try {
-						const formData = await this.request.clone().formData()
+						const formData = await this.request.formData()
 						this.cachedFormData = formData
 						return formData
-					} catch {
-						// If clone fails (body already consumed), try direct access
-						if (!this.request.bodyUsed) {
-							const formData = await this.request.formData()
-							this.cachedFormData = formData
-							return formData
-						}
-						throw new Error("Request body has already been consumed and cannot be read.")
+					} catch (error) {
+						throw new Error(
+							`Failed to read form data: ${error instanceof Error ? error.message : "Unknown error"}`
+						)
 					}
 				})()
 
@@ -144,20 +143,11 @@ export class ContextBuilder<TVariables extends VariableMap = VariableMap> {
 						return JSON.parse(this.bodyText) as T
 					}
 
-					// Clone the request to avoid consuming the body
-					let text: string
-					try {
-						text = await this.request.clone().text()
-					} catch {
-						// If clone fails (body already consumed), try direct access
-						if (!this.request.bodyUsed) {
-							text = await this.request.text()
-						} else {
-							throw new Error("Request body has already been consumed.")
-						}
-					}
-
+					// Read the request body directly
+					// Some Request implementations don't support clone()
+					const text = await this.request.text()
 					this.bodyText = text
+
 					if (!text) throw new Error("Request body is empty.")
 					return JSON.parse(text) as T
 				} catch (error) {

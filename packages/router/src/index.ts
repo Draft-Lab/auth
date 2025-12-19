@@ -1,5 +1,6 @@
 import { ContextBuilder } from "./context"
 import { RouteMatcher } from "./matcher"
+import { makeSafeRequest } from "./safe-request"
 import type {
 	AnyHandler,
 	ErrorHandler,
@@ -122,9 +123,11 @@ export class Router<TEnvironment extends RouterEnvironment = RouterEnvironment> 
 		request: Request,
 		initialVariables?: Partial<TEnvironment["Variables"]>
 	): Promise<Response> {
+		const safeRequest = await makeSafeRequest(request)
+
 		try {
-			const url = new URL(request.url)
-			const method = request.method.toUpperCase() as HttpMethod
+			const url = new URL(safeRequest.url)
+			const method = safeRequest.method.toUpperCase() as HttpMethod
 			const pathname = this.matcher.normalizePath(url.pathname)
 
 			const methodRoutes = this.routes.get(method)
@@ -136,7 +139,7 @@ export class Router<TEnvironment extends RouterEnvironment = RouterEnvironment> 
 				const match = this.matcher.match(route.pattern, pathname)
 				if (match) {
 					const contextBuilder = new ContextBuilder<TEnvironment["Variables"]>(
-						request,
+						safeRequest,
 						match.params,
 						initialVariables
 					)
@@ -168,7 +171,7 @@ export class Router<TEnvironment extends RouterEnvironment = RouterEnvironment> 
 			if (this.errorHandler) {
 				try {
 					const contextBuilder = new ContextBuilder<TEnvironment["Variables"]>(
-						request,
+						safeRequest,
 						{},
 						initialVariables
 					)

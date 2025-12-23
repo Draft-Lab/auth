@@ -1,5 +1,4 @@
 import { createFileRoute, redirect } from "@tanstack/react-router"
-import { json } from "@tanstack/react-start"
 import { setCookie } from "@tanstack/react-start/server"
 import { client, getAuthCookieOptions } from "@/libs/auth"
 
@@ -9,9 +8,13 @@ export const Route = createFileRoute("/auth/callback")({
 			GET: async ({ request }) => {
 				const url = new URL(request.url)
 				const code = url.searchParams.get("code")
-				if (!code) return json({ error: "no_code" }, { status: 400 })
+				if (!code) {
+					return Response.json({ error: "no_code" }, { status: 400 })
+				}
 				const exchanged = await client.exchange(code, `${url.origin}/auth/callback`)
-				if (!exchanged.success) return json(exchanged.error, { status: 400 })
+				if (!exchanged.success) {
+					return Response.json(exchanged.error, { status: 400 })
+				}
 
 				const cookieOptions = getAuthCookieOptions()
 				setCookie("access_token", exchanged.data.access, cookieOptions)

@@ -14,10 +14,10 @@ export const getAuthCookieOptions = () => {
 	const isProduction = process.env.NODE_ENV === "production"
 
 	return {
+		path: "/",
 		httpOnly: true,
 		secure: isProduction,
 		sameSite: "lax" as const,
-		path: "/",
 		maxAge: 60 * 60 * 24 * 7
 	}
 }
@@ -37,13 +37,17 @@ export const $auth = createServerFn().handler(async () => {
 	const accessToken = getCookie("access_token")
 	const refreshToken = getCookie("refresh_token")
 
-	if (!accessToken) return null
+	if (!accessToken) {
+		return null
+	}
 
 	const verified = await client.verify(subjects, accessToken, {
 		refresh: refreshToken
 	})
 
-	if (!verified.success) return null
+	if (!verified.success) {
+		return null
+	}
 
 	if (verified.data.tokens) {
 		const cookieOptions = getAuthCookieOptions()
@@ -76,7 +80,9 @@ export const $login = createServerFn({ method: "POST" }).handler(async () => {
 	const protocol = host?.includes("localhost") ? "http" : "https"
 	const result = await client.authorize(`${protocol}://${host}/auth/callback`, "code")
 
-	if (result.success) throw redirect({ href: result.data.url })
+	if (result.success) {
+		throw redirect({ href: result.data.url })
+	}
 
 	throw redirect({ to: "/" })
 })

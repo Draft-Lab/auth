@@ -8,6 +8,7 @@ import {
 	importSPKI,
 	type JWK
 } from "jose"
+import { Mutex } from "./mutex"
 import { generateSecureToken } from "./random"
 import { Storage, type StorageAdapter } from "./storage/storage"
 
@@ -21,6 +22,10 @@ const signingAlg = "ES256"
 
 /** RSA algorithm used for token encryption operations */
 const encryptionAlg = "RSA-OAEP-512"
+
+/** Mutex to prevent concurrent key generation (race condition with eventually consistent storage) */
+const signingKeyMutex = new Mutex()
+const encryptionKeyMutex = new Mutex()
 
 /**
  * Serialized key pair format for persistent storage.
@@ -82,70 +87,72 @@ export interface KeyPair {
  * ```
  */
 export const signingKeys = async (storage: StorageAdapter): Promise<KeyPair[]> => {
-	const results: KeyPair[] = []
-	const scanner = Storage.scan<SerializedKeyPair>(storage, ["signing:key"])
+	return signingKeyMutex.runExclusive(async () => {
+		const results: KeyPair[] = []
+		const scanner = Storage.scan<SerializedKeyPair>(storage, ["signing:key"])
 
-	for await (const [, value] of scanner) {
-		try {
-			const publicKey = await importSPKI(value.publicKey, value.alg, {
-				extractable: true
-			})
-			const privateKey = await importPKCS8(value.privateKey, value.alg)
-			const jwk = await exportJWK(publicKey)
-			jwk.kid = value.id
-			jwk.use = "sig"
+		for await (const [, value] of scanner) {
+			try {
+				const publicKey = await importSPKI(value.publicKey, value.alg, {
+					extractable: true
+				})
+				const privateKey = await importPKCS8(value.privateKey, value.alg)
+				const jwk = await exportJWK(publicKey)
+				jwk.kid = value.id
+				jwk.use = "sig"
 
-			results.push({
-				id: value.id,
-				alg: signingAlg,
-				created: new Date(value.created),
-				expired: value.expired ? new Date(value.expired) : undefined,
-				public: publicKey,
-				private: privateKey,
-				jwk
-			})
-		} catch {}
-	}
+				results.push({
+					id: value.id,
+					alg: signingAlg,
+					created: new Date(value.created),
+					expired: value.expired ? new Date(value.expired) : undefined,
+					public: publicKey,
+					private: privateKey,
+					jwk
+				})
+			} catch {}
+		}
 
-	// Sort by creation date (newest first)
-	results.sort((a, b) => b.created.getTime() - a.created.getTime())
+		// Sort by creation date (newest first)
+		results.sort((a, b) => b.created.getTime() - a.created.getTime())
 
-	// Return existing keys if any are still valid
-	if (results.filter((item) => !item.expired).length) {
-		return results
-	}
+		// Return existing keys if any are still valid
+		if (results.filter((item) => !item.expired).length) {
+			return results
+		}
 
-	// Generate new signing key if none available
-	const key = await generateKeyPair(signingAlg, {
-		extractable: true
+		// Generate new signing key if none available
+		const key = await generateKeyPair(signingAlg, {
+			extractable: true
+		})
+
+		const serialized: SerializedKeyPair = {
+			id: generateSecureToken(16),
+			publicKey: await exportSPKI(key.publicKey),
+			privateKey: await exportPKCS8(key.privateKey),
+			created: Date.now(),
+			alg: signingAlg
+		}
+
+		await Storage.set(storage, ["signing:key", serialized.id], serialized)
+
+		// Return the newly created key directly (prevents race condition with eventually consistent storage)
+		const jwk = await exportJWK(key.publicKey)
+		jwk.kid = serialized.id
+		jwk.use = "sig"
+
+		const newKeyPair: KeyPair = {
+			id: serialized.id,
+			alg: signingAlg,
+			created: new Date(serialized.created),
+			expired: serialized.expired ? new Date(serialized.expired) : undefined,
+			public: key.publicKey,
+			private: key.privateKey,
+			jwk
+		}
+
+		return [newKeyPair, ...results]
 	})
-
-	const serialized: SerializedKeyPair = {
-		id: generateSecureToken(16),
-		publicKey: await exportSPKI(key.publicKey),
-		privateKey: await exportPKCS8(key.privateKey),
-		created: Date.now(),
-		alg: signingAlg
-	}
-
-	await Storage.set(storage, ["signing:key", serialized.id], serialized)
-
-	// Return the newly created key
-	const jwk = await exportJWK(key.publicKey)
-	jwk.kid = serialized.id
-	jwk.use = "sig"
-
-	const newKeyPair: KeyPair = {
-		id: serialized.id,
-		alg: signingAlg,
-		created: new Date(serialized.created),
-		expired: serialized.expired ? new Date(serialized.expired) : undefined,
-		public: key.publicKey,
-		private: key.privateKey,
-		jwk
-	}
-
-	return [newKeyPair, ...results]
 }
 
 /**
@@ -168,66 +175,68 @@ export const signingKeys = async (storage: StorageAdapter): Promise<KeyPair[]> =
  * ```
  */
 export const encryptionKeys = async (storage: StorageAdapter): Promise<KeyPair[]> => {
-	const results: KeyPair[] = []
-	const scanner = Storage.scan<SerializedKeyPair>(storage, ["encryption:key"])
+	return encryptionKeyMutex.runExclusive(async () => {
+		const results: KeyPair[] = []
+		const scanner = Storage.scan<SerializedKeyPair>(storage, ["encryption:key"])
 
-	for await (const [, value] of scanner) {
-		try {
-			const publicKey = await importSPKI(value.publicKey, value.alg, {
-				extractable: true
-			})
-			const privateKey = await importPKCS8(value.privateKey, value.alg)
-			const jwk = await exportJWK(publicKey)
-			jwk.kid = value.id
+		for await (const [, value] of scanner) {
+			try {
+				const publicKey = await importSPKI(value.publicKey, value.alg, {
+					extractable: true
+				})
+				const privateKey = await importPKCS8(value.privateKey, value.alg)
+				const jwk = await exportJWK(publicKey)
+				jwk.kid = value.id
 
-			results.push({
-				id: value.id,
-				alg: encryptionAlg,
-				created: new Date(value.created),
-				expired: value.expired ? new Date(value.expired) : undefined,
-				public: publicKey,
-				private: privateKey,
-				jwk
-			})
-		} catch {}
-	}
+				results.push({
+					id: value.id,
+					alg: encryptionAlg,
+					created: new Date(value.created),
+					expired: value.expired ? new Date(value.expired) : undefined,
+					public: publicKey,
+					private: privateKey,
+					jwk
+				})
+			} catch {}
+		}
 
-	// Sort by creation date (newest first)
-	results.sort((a, b) => b.created.getTime() - a.created.getTime())
+		// Sort by creation date (newest first)
+		results.sort((a, b) => b.created.getTime() - a.created.getTime())
 
-	// Return existing keys if any are still valid
-	if (results.filter((item) => !item.expired).length) {
-		return results
-	}
+		// Return existing keys if any are still valid
+		if (results.filter((item) => !item.expired).length) {
+			return results
+		}
 
-	// Generate new encryption key if none available
-	const key = await generateKeyPair(encryptionAlg, {
-		extractable: true
+		// Generate new encryption key if none available
+		const key = await generateKeyPair(encryptionAlg, {
+			extractable: true
+		})
+
+		const serialized: SerializedKeyPair = {
+			id: generateSecureToken(16),
+			publicKey: await exportSPKI(key.publicKey),
+			privateKey: await exportPKCS8(key.privateKey),
+			created: Date.now(),
+			alg: encryptionAlg
+		}
+
+		await Storage.set(storage, ["encryption:key", serialized.id], serialized)
+
+		// Return the newly created key directly (prevents race condition with eventually consistent storage)
+		const jwk = await exportJWK(key.publicKey)
+		jwk.kid = serialized.id
+
+		const newKeyPair: KeyPair = {
+			id: serialized.id,
+			alg: encryptionAlg,
+			created: new Date(serialized.created),
+			expired: serialized.expired ? new Date(serialized.expired) : undefined,
+			public: key.publicKey,
+			private: key.privateKey,
+			jwk
+		}
+
+		return [newKeyPair, ...results]
 	})
-
-	const serialized: SerializedKeyPair = {
-		id: generateSecureToken(16),
-		publicKey: await exportSPKI(key.publicKey),
-		privateKey: await exportPKCS8(key.privateKey),
-		created: Date.now(),
-		alg: encryptionAlg
-	}
-
-	await Storage.set(storage, ["encryption:key", serialized.id], serialized)
-
-	// Return the newly created key
-	const jwk = await exportJWK(key.publicKey)
-	jwk.kid = serialized.id
-
-	const newKeyPair: KeyPair = {
-		id: serialized.id,
-		alg: encryptionAlg,
-		created: new Date(serialized.created),
-		expired: serialized.expired ? new Date(serialized.expired) : undefined,
-		public: key.publicKey,
-		private: key.privateKey,
-		jwk
-	}
-
-	return [newKeyPair, ...results]
 }

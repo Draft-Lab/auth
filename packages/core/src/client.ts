@@ -282,6 +282,7 @@ export interface VerifyOptions {
 	issuer?: string
 	/**
 	 * Expected audience for validation.
+	 * Defaults to clientID for security. Override only if you know what you're doing.
 	 * @internal
 	 */
 	audience?: string
@@ -722,7 +723,7 @@ export const createClient = (input: ClientInput): Client => {
 					properties: StandardSchemaV1.InferInput<T[keyof T]>
 				}>(token, jwks, {
 					issuer: options?.issuer ?? issuer,
-					...(options?.audience && { audience: options.audience })
+					audience: options?.audience ?? input.clientID
 				})
 
 				const validated = await subjects[jwtResult.payload.type]?.["~standard"].validate(

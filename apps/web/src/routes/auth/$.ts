@@ -17,6 +17,12 @@ import { subjects } from "@/libs/auth"
 export const auth = issuer({
 	subjects,
 	basePath: "/auth",
+	ttl: {
+		reuse: 0,
+		access: 3600,
+		refresh: 604800,
+		retention: 1209600
+	},
 	select: Select({
 		copy: { button_provider: " " },
 		displays: {

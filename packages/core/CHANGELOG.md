@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.10.4
+
+### Patch Changes
+
+- add some fix to race conditions and mutexes
+
 ## 0.10.3
 
 ### Patch Changes

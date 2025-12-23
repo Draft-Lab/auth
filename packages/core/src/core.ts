@@ -725,6 +725,7 @@ export const issuer = <
 
 				const response: Record<string, string | number> = {
 					access_token: tokens.access,
+					token_type: "Bearer",
 					expires_in: tokens.expiresIn,
 					refresh_token: tokens.refresh
 				}
@@ -852,6 +853,7 @@ export const issuer = <
 
 				const response: Record<string, string | number> = {
 					access_token: tokens.access,
+					token_type: "Bearer",
 					refresh_token: tokens.refresh,
 					expires_in: tokens.expiresIn
 				}
@@ -982,6 +984,17 @@ export const issuer = <
 		// Parameter validation
 		if (!redirect_uri) {
 			return c.text("Missing redirect_uri", { status: 400 })
+		}
+
+		// Validate redirect_uri format to prevent bypass attacks
+		try {
+			const uri = new URL(redirect_uri)
+			// Ensure proper scheme://host format (prevent "https:evil.com" attacks)
+			if (!uri.protocol || !uri.host) {
+				return c.text("Invalid redirect_uri format", { status: 400 })
+			}
+		} catch {
+			return c.text("Invalid redirect_uri format", { status: 400 })
 		}
 
 		if (!response_type) {

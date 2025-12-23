@@ -1,5 +1,13 @@
 # @draftlab/auth
 
+## 0.10.3
+
+### Patch Changes
+
+- fix some issues with router safe request
+- Updated dependencies
+  - @draftlab/auth-router@0.4.1
+
 ## 0.10.2
 
 ### Patch Changes

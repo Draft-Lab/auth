@@ -115,7 +115,12 @@ export class ContextBuilder<TVariables extends VariableMap = VariableMap> {
 
 				// If a request is already in flight, return the same promise
 				if (this.formDataPromise) {
-					return this.formDataPromise
+					try {
+						return await this.formDataPromise
+					} catch {
+						// Reset promise on failure to allow retry
+						this.formDataPromise = null
+					}
 				}
 
 				// Read form data directly and cache it
@@ -126,6 +131,8 @@ export class ContextBuilder<TVariables extends VariableMap = VariableMap> {
 						this.cachedFormData = formData
 						return formData
 					} catch (error) {
+						// Reset promise on error to allow retry
+						this.formDataPromise = null
 						throw new Error(
 							`Failed to read form data: ${error instanceof Error ? error.message : "Unknown error"}`
 						)

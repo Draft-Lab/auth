@@ -19,6 +19,7 @@ interface SafeRequestOptions {
 export class SafeRequest implements Request {
 	private cachedBody: ReadableStream<Uint8Array> | null = null
 	private bodyBuffer: ArrayBuffer | null = null
+	private readonly textDecoder = new TextDecoder()
 
 	readonly cache: RequestCache
 	readonly credentials: RequestCredentials
@@ -86,7 +87,7 @@ export class SafeRequest implements Request {
 
 	async text(): Promise<string> {
 		const buffer = await this.arrayBuffer()
-		return new TextDecoder().decode(buffer)
+		return this.textDecoder.decode(buffer)
 	}
 
 	async bytes(): Promise<Uint8Array<ArrayBuffer>> {

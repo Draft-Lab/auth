@@ -1,5 +1,16 @@
 # @draftlab/auth
 
+## 0.11.0
+
+### Minor Changes
+
+- remove plugin system
+
+### Patch Changes
+
+- Updated dependencies
+  - @draftlab/auth-router@0.5.0
+
 ## 0.10.4
 
 ### Patch Changes

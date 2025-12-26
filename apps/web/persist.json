@@ -1,73 +1,92 @@
 [
-	[
-		"email\u001fmatheus@email.com\u001fpassword",
-		{
-			"value": {
-				"hash": "bG7Eb8penZ7OAQ+j7g/pqlbhlUzuoKVaW81SkG3EfQM=",
-				"salt": "3gBtkzDhB15h33JpRzzVRA==",
-				"N": 16384,
-				"r": 8,
-				"p": 1
-			}
-		}
-	],
-	[
-		"email\u001fmatheus@email.com\u001fsubject",
-		{
-			"value": "user:30e16a2659c8bbb2"
-		}
-	],
-	[
-		"encryption:key\u001fJZeAf-6VnDIiz5PUGPMMNw",
-		{
-			"value": {
-				"id": "JZeAf-6VnDIiz5PUGPMMNw",
-				"publicKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxgBYuMg36/nZsC6gZ2pH\n4N3YxZJ8FpfScmvoJwHaw7f0EHLaPFES2Gt+gT9lgbf2GAiMJdrjoB193c0p9rm5\nj134LzZhDur4GQtz9wpMvtRbJWPErcmrHEVMEY6ZQMAmGzwnD31cffPOAEuGsyyA\nvk85cWTolhd+H83l1JRi2NkOp54vxLRIR8LwWYMzw3mh+y8SR2Xnan5sWQ3fuoma\ncwQSaO4LhceSI4XMtHHUBZI7G0IGOMMWA4cPxXW/A//FyUrJqsRn8gJ4lFGcPxee\nKLuqe81B12yRSas+bkNu6SD9kWfu0uOddyif2t9F/10tVMQJVvYZn10WxGe/OYvs\niQIDAQAB\n-----END PUBLIC KEY-----",
-				"privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDGAFi4yDfr+dmw\nLqBnakfg3djFknwWl9Jya+gnAdrDt/QQcto8URLYa36BP2WBt/YYCIwl2uOgHX3d\nzSn2ubmPXfgvNmEO6vgZC3P3Cky+1FslY8StyascRUwRjplAwCYbPCcPfVx9884A\nS4azLIC+TzlxZOiWF34fzeXUlGLY2Q6nni/EtEhHwvBZgzPDeaH7LxJHZedqfmxZ\nDd+6iZpzBBJo7guFx5Ijhcy0cdQFkjsbQgY4wxYDhw/Fdb8D/8XJSsmqxGfyAniU\nUZw/F54ou6p7zUHXbJFJqz5uQ27pIP2RZ+7S4513KJ/a30X/XS1UxAlW9hmfXRbE\nZ785i+yJAgMBAAECggEADLDL/vfyQaEvdy/d3xL8TWjasnsbkfUkK2pIJGvlgiLh\ntUYvP6twmkd1gcI29tP8JXkyxmBbs5EAVr2GIYaw4oQC2r/RA7xCr5RA2AYkehyx\nRNm6qurgmTzFzeBGaVSHfLpjxIXj7jy4qOMuXICPNeNtCpwNnkUeM9qmDvR9y2kt\nEA5WEc4K3CMB07Pcb42dgq4Zq0Ui2dJ/hyFno9nHkYYUkkjdfWn8R+f2cRJisSmk\ny5WTI7VDdmvOwSl4SXz/NSmbVJzWRVO4RlJBf1wgcuUpB6PuzhkdgaJWZO/njsuS\ndkFtCf50gevyJxaCZdMwombvtIz8n4neBZuDsY/hAQKBgQD8Ijkl9kv7EE+Pvt2Q\nHVLA0XeYsk9IekTwKoaM4w4nqWx2SbGGaab9P3aars0hqCeXkqCtMxDzKwnTT+kN\nrgEslMNgrEUrp55GVM7L0YF4lw2FcKhQzZBUCBVheK97N+Ec9hloPmD1tpSzouCB\nvr/JpWVx2Csi5hezJR1zE2hyQQKBgQDJCZ8M5+f4vFmCJD/p1SMwQHFGfN/if6M7\n6ENSpLB5v0iO57ghYvo8OOkdLTzcUpvaxD4VwIdvBAxqgUxeRS/Uhoq7aLbTFtzk\nU8X8mzJE9FgA2rH4zqBigknFeoq/4HldCWFmlrw3xenSAqC6qeRkl/ZWrlF9Ucls\nTvZbkD1YSQKBgQDJtGM9oG0me+T6XToJCbxjLu/bg4JzvAUckRi06wwu5JY1hzzz\nB+Ckprmug3rtmwWZd579EGZV8q9Ykowh+ntL+/LVituHUgAHyd7qJT/LhiQ2BWtR\nwTHeV90q7g6Mp6Z6sdKfl4+f4qHRl9K9WSk7Gwst6T6RG7wIAAAwSG19QQKBgQC9\nAbWuHY3jNbl1eH06a29E2yFkYtzehp/CH/DDjyB3phYifMqJYRPgcKUCEFjqzyPG\nfr/cFYF/JzBBJcTV0HhSeBeQcLeKKDGO3RAEGSke2Rav3ux5/lGdq96NslMmaHXR\nuZMAL3FPglv9XQkd1cJrrM8l2Ye1qaIUmPxXQ3nZOQKBgQCrajm2Li4Ii659bkeJ\nf/kZBg3O64M4Qsc/Evf4EfttfL48jZHELeaO740HgTwIV1Gl4QZUdVvuz9YkLrR5\nS05QjTSOlesjYKvN95g1Eovw+dfBBy+owdgOQVXfNp8/PsR6vCoVEG4afEWRmAjq\nmj4C9yuQB0ZErYV2Dm85JJjYLw==\n-----END PRIVATE KEY-----",
-				"created": 1766521248305,
-				"alg": "RSA-OAEP-512"
-			}
-		}
-	],
-	[
-		"oauth:refresh\u001fuser:30e16a2659c8bbb2\u001f_jDEnhJmmwLWDvi-2IUXPA4YAKOAhxY_a0bcDMqV-C0",
-		{
-			"value": {
-				"type": "user",
-				"properties": {
-					"email": "matheus@email.com"
-				},
-				"clientID": "example",
-				"subject": "user:30e16a2659c8bbb2",
-				"ttl": {
-					"access": 3600,
-					"refresh": 604800
-				},
-				"nextToken": "wTsaNY-dXJsoKY5cpFC3qPjWFhRSuYd3ecTVUGh1v7M"
-			},
-			"expiry": 1767126167326
-		}
-	],
-	[
-		"revocation:token\u001f0474c7bbd13de5b93b2410cc50aea62fc8caa90407308d7194c10f2eacee53cb",
-		{
-			"value": {
-				"revokedAt": 1766521353813,
-				"expiresAt": 1767730953813
-			},
-			"expiry": 1767730953813
-		}
-	],
-	[
-		"signing:key\u001fXUobA-kViv6-v_zwvZSG5Q",
-		{
-			"value": {
-				"id": "XUobA-kViv6-v_zwvZSG5Q",
-				"publicKey": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEMxWBrPPu9lLcmYA6Py3LnDIvMd1K\nqnUlCtpFGBtrI02ncxk2flYU84iPvo3n0jGQZmUD0jKpDWTuO4QbcscpjA==\n-----END PUBLIC KEY-----",
-				"privateKey": "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgIwdVxFV6oQ/N/AUO\nexzg6xey9IXHDrZE05OZSD/5P0qhRANCAAQzFYGs8+72UtyZgDo/LcucMi8x3Uqq\ndSUK2kUYG2sjTadzGTZ+VhTziI++jefSMZBmZQPSMqkNZO47hBtyxymM\n-----END PRIVATE KEY-----",
-				"created": 1766521247242,
-				"alg": "ES256"
-			}
-		}
-	]
+  [
+    "email\u001fmatheus@email.com\u001fpassword",
+    {
+      "value": {
+        "hash": "bG7Eb8penZ7OAQ+j7g/pqlbhlUzuoKVaW81SkG3EfQM=",
+        "salt": "3gBtkzDhB15h33JpRzzVRA==",
+        "N": 16384,
+        "r": 8,
+        "p": 1
+      }
+    }
+  ],
+  [
+    "email\u001fmatheus@email.com\u001fsubject",
+    {
+      "value": "user:30e16a2659c8bbb2"
+    }
+  ],
+  [
+    "encryption:key\u001fJZeAf-6VnDIiz5PUGPMMNw",
+    {
+      "value": {
+        "id": "JZeAf-6VnDIiz5PUGPMMNw",
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxgBYuMg36/nZsC6gZ2pH\n4N3YxZJ8FpfScmvoJwHaw7f0EHLaPFES2Gt+gT9lgbf2GAiMJdrjoB193c0p9rm5\nj134LzZhDur4GQtz9wpMvtRbJWPErcmrHEVMEY6ZQMAmGzwnD31cffPOAEuGsyyA\nvk85cWTolhd+H83l1JRi2NkOp54vxLRIR8LwWYMzw3mh+y8SR2Xnan5sWQ3fuoma\ncwQSaO4LhceSI4XMtHHUBZI7G0IGOMMWA4cPxXW/A//FyUrJqsRn8gJ4lFGcPxee\nKLuqe81B12yRSas+bkNu6SD9kWfu0uOddyif2t9F/10tVMQJVvYZn10WxGe/OYvs\niQIDAQAB\n-----END PUBLIC KEY-----",
+        "privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDGAFi4yDfr+dmw\nLqBnakfg3djFknwWl9Jya+gnAdrDt/QQcto8URLYa36BP2WBt/YYCIwl2uOgHX3d\nzSn2ubmPXfgvNmEO6vgZC3P3Cky+1FslY8StyascRUwRjplAwCYbPCcPfVx9884A\nS4azLIC+TzlxZOiWF34fzeXUlGLY2Q6nni/EtEhHwvBZgzPDeaH7LxJHZedqfmxZ\nDd+6iZpzBBJo7guFx5Ijhcy0cdQFkjsbQgY4wxYDhw/Fdb8D/8XJSsmqxGfyAniU\nUZw/F54ou6p7zUHXbJFJqz5uQ27pIP2RZ+7S4513KJ/a30X/XS1UxAlW9hmfXRbE\nZ785i+yJAgMBAAECggEADLDL/vfyQaEvdy/d3xL8TWjasnsbkfUkK2pIJGvlgiLh\ntUYvP6twmkd1gcI29tP8JXkyxmBbs5EAVr2GIYaw4oQC2r/RA7xCr5RA2AYkehyx\nRNm6qurgmTzFzeBGaVSHfLpjxIXj7jy4qOMuXICPNeNtCpwNnkUeM9qmDvR9y2kt\nEA5WEc4K3CMB07Pcb42dgq4Zq0Ui2dJ/hyFno9nHkYYUkkjdfWn8R+f2cRJisSmk\ny5WTI7VDdmvOwSl4SXz/NSmbVJzWRVO4RlJBf1wgcuUpB6PuzhkdgaJWZO/njsuS\ndkFtCf50gevyJxaCZdMwombvtIz8n4neBZuDsY/hAQKBgQD8Ijkl9kv7EE+Pvt2Q\nHVLA0XeYsk9IekTwKoaM4w4nqWx2SbGGaab9P3aars0hqCeXkqCtMxDzKwnTT+kN\nrgEslMNgrEUrp55GVM7L0YF4lw2FcKhQzZBUCBVheK97N+Ec9hloPmD1tpSzouCB\nvr/JpWVx2Csi5hezJR1zE2hyQQKBgQDJCZ8M5+f4vFmCJD/p1SMwQHFGfN/if6M7\n6ENSpLB5v0iO57ghYvo8OOkdLTzcUpvaxD4VwIdvBAxqgUxeRS/Uhoq7aLbTFtzk\nU8X8mzJE9FgA2rH4zqBigknFeoq/4HldCWFmlrw3xenSAqC6qeRkl/ZWrlF9Ucls\nTvZbkD1YSQKBgQDJtGM9oG0me+T6XToJCbxjLu/bg4JzvAUckRi06wwu5JY1hzzz\nB+Ckprmug3rtmwWZd579EGZV8q9Ykowh+ntL+/LVituHUgAHyd7qJT/LhiQ2BWtR\nwTHeV90q7g6Mp6Z6sdKfl4+f4qHRl9K9WSk7Gwst6T6RG7wIAAAwSG19QQKBgQC9\nAbWuHY3jNbl1eH06a29E2yFkYtzehp/CH/DDjyB3phYifMqJYRPgcKUCEFjqzyPG\nfr/cFYF/JzBBJcTV0HhSeBeQcLeKKDGO3RAEGSke2Rav3ux5/lGdq96NslMmaHXR\nuZMAL3FPglv9XQkd1cJrrM8l2Ye1qaIUmPxXQ3nZOQKBgQCrajm2Li4Ii659bkeJ\nf/kZBg3O64M4Qsc/Evf4EfttfL48jZHELeaO740HgTwIV1Gl4QZUdVvuz9YkLrR5\nS05QjTSOlesjYKvN95g1Eovw+dfBBy+owdgOQVXfNp8/PsR6vCoVEG4afEWRmAjq\nmj4C9yuQB0ZErYV2Dm85JJjYLw==\n-----END PRIVATE KEY-----",
+        "created": 1766521248305,
+        "alg": "RSA-OAEP-512"
+      }
+    }
+  ],
+  [
+    "oauth:refresh\u001fuser:30e16a2659c8bbb2\u001f_jDEnhJmmwLWDvi-2IUXPA4YAKOAhxY_a0bcDMqV-C0",
+    {
+      "value": {
+        "type": "user",
+        "properties": {
+          "email": "matheus@email.com"
+        },
+        "clientID": "example",
+        "subject": "user:30e16a2659c8bbb2",
+        "ttl": {
+          "access": 3600,
+          "refresh": 604800
+        },
+        "nextToken": "wTsaNY-dXJsoKY5cpFC3qPjWFhRSuYd3ecTVUGh1v7M"
+      },
+      "expiry": 1767126167326
+    }
+  ],
+  [
+    "oauth:refresh\u001fuser:30e16a2659c8bbb2\u001fFNPtcYmixn1aoR-NQ6w7oh6slKJXHSOW2yyW1j3Wb7k",
+    {
+      "value": {
+        "type": "user",
+        "properties": {
+          "email": "matheus@email.com"
+        },
+        "clientID": "example",
+        "subject": "user:30e16a2659c8bbb2",
+        "ttl": {
+          "access": 3600,
+          "refresh": 604800
+        },
+        "nextToken": "9lX8KZ7_CFXeXcHP5ioe9L57SgyhzeJNO-4qINU6fB8"
+      },
+      "expiry": 1767386802697
+    }
+  ],
+  [
+    "revocation:token\u001f0474c7bbd13de5b93b2410cc50aea62fc8caa90407308d7194c10f2eacee53cb",
+    {
+      "value": {
+        "revokedAt": 1766521353813,
+        "expiresAt": 1767730953813
+      },
+      "expiry": 1767730953813
+    }
+  ],
+  [
+    "signing:key\u001fXUobA-kViv6-v_zwvZSG5Q",
+    {
+      "value": {
+        "id": "XUobA-kViv6-v_zwvZSG5Q",
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEMxWBrPPu9lLcmYA6Py3LnDIvMd1K\nqnUlCtpFGBtrI02ncxk2flYU84iPvo3n0jGQZmUD0jKpDWTuO4QbcscpjA==\n-----END PUBLIC KEY-----",
+        "privateKey": "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgIwdVxFV6oQ/N/AUO\nexzg6xey9IXHDrZE05OZSD/5P0qhRANCAAQzFYGs8+72UtyZgDo/LcucMi8x3Uqq\ndSUK2kUYG2sjTadzGTZ+VhTziI++jefSMZBmZQPSMqkNZO47hBtyxymM\n-----END PRIVATE KEY-----",
+        "created": 1766521247242,
+        "alg": "ES256"
+      }
+    }
+  ]
 ]

@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.13.1
+
+### Patch Changes
+
+- remove unused copy from password
+
 ## 0.13.0
 
 ### Minor Changes

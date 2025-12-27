@@ -23,7 +23,6 @@ interface PasswordUICopy {
 	readonly error_invalid_email: string
 	readonly error_invalid_password: string
 	readonly error_password_mismatch: string
-	readonly error_validation_error: string
 
 	// Page titles and descriptions
 	readonly register_title: string
@@ -63,7 +62,6 @@ const DEFAULT_COPY: PasswordUICopy = {
 	error_invalid_email: "Email is not valid.",
 	error_invalid_password: "Password is incorrect.",
 	error_password_mismatch: "Passwords do not match.",
-	error_validation_error: "Password does not meet requirements.",
 
 	// Page titles and descriptions
 	register_title: "Welcome to the app",

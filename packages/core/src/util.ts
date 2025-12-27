@@ -132,3 +132,27 @@ export const lazy = <T>(fn: () => T): (() => T) => {
 		return value
 	}
 }
+
+/**
+ * Utility function to immediately invoke a function and return its result.
+ * Useful for complex conditional rendering logic in JSX/TSX where you want
+ * to use if/else statements instead of ternary operators.
+ *
+ * @template T - The return type of the function
+ * @param fn - Function to execute immediately
+ * @returns The result of executing the function
+ *
+ * @example
+ * ```tsx
+ * return (
+ *   <div>
+ *     {run(() => {
+ *       if (state === "loading") return <Spinner />
+ *       if (state === "error") return <Error />
+ *       return <Content />
+ *     })}
+ *   </div>
+ * )
+ * ```
+ */
+export const run = <T>(fn: () => T): T => fn()

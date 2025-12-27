@@ -5,6 +5,7 @@
 
 import type { ComponentChildren } from "preact"
 import type { MagicLinkConfig, MagicLinkError, MagicLinkState } from "../provider/magiclink"
+import { run } from "../util"
 import { Layout, renderToHTML } from "./base"
 import { FormAlert } from "./form"
 
@@ -128,11 +129,12 @@ export const MagicLinkUI = <Claims extends Record<string, string> = Record<strin
 		return (
 			<Layout>
 				<form data-component="form" method="post">
-					{success ? (
-						<FormAlert message={success.message} color="success" />
-					) : (
-						<FormAlert message={getErrorMessage(error, copy)} />
-					)}
+					{run(() => {
+						if (success) {
+							return <FormAlert message={success.message} color="success" />
+						}
+						return <FormAlert message={getErrorMessage(error, copy)} />
+					})}
 
 					<input
 						data-component="input"
@@ -171,11 +173,12 @@ export const MagicLinkUI = <Claims extends Record<string, string> = Record<strin
 				<form data-component="form" method="post">
 					<h2 data-component="title">Check your email</h2>
 
-					{success ? (
-						<FormAlert message={success.message} color="success" />
-					) : (
-						<FormAlert message={getErrorMessage(error, copy)} />
-					)}
+					{run(() => {
+						if (success) {
+							return <FormAlert message={success.message} color="success" />
+						}
+						return <FormAlert message={getErrorMessage(error, copy)} />
+					})}
 
 					<p data-component="description">Click the link in your email to sign in.</p>
 

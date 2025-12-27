@@ -10,6 +10,7 @@ import type {
 	PasswordLoginError,
 	PasswordRegisterError
 } from "../provider/password"
+import { run } from "../util"
 import { Layout, renderToHTML } from "./base"
 import { FormAlert } from "./form"
 
@@ -192,100 +193,106 @@ export const PasswordUI = (options: PasswordUIOptions): PasswordConfig => {
 
 		return (
 			<Layout>
-				{state.type === "start" ? (
-					<form data-component="form" method="post">
-						<FormAlert message={getErrorMessage(error)} />
+				{run(() => {
+					if (state.type === "start") {
+						return (
+							<form data-component="form" method="post">
+								<FormAlert message={getErrorMessage(error)} />
 
-						<input name="action" type="hidden" value="register" />
+								<input name="action" type="hidden" value="register" />
 
-						<input
-							type="email"
-							name="email"
-							placeholder={copy.input_email}
-							value={emailError ? "" : form?.get("email")?.toString() || ""}
-							autoComplete="email"
-							data-component="input"
-							required
-						/>
+								<input
+									type="email"
+									name="email"
+									placeholder={copy.input_email}
+									value={emailError ? "" : form?.get("email")?.toString() || ""}
+									autoComplete="email"
+									data-component="input"
+									required
+								/>
 
-						<input
-							type="password"
-							name="password"
-							placeholder={copy.input_password}
-							value={passwordError ? "" : form?.get("password")?.toString() || ""}
-							autoComplete="new-password"
-							data-component="input"
-							required
-						/>
+								<input
+									type="password"
+									name="password"
+									placeholder={copy.input_password}
+									value={passwordError ? "" : form?.get("password")?.toString() || ""}
+									autoComplete="new-password"
+									data-component="input"
+									required
+								/>
 
-						<input
-							type="password"
-							name="repeat"
-							placeholder={copy.input_repeat}
-							autoComplete="new-password"
-							data-component="input"
-							required
-						/>
+								<input
+									type="password"
+									name="repeat"
+									placeholder={copy.input_repeat}
+									autoComplete="new-password"
+									data-component="input"
+									required
+								/>
 
-						<button data-component="button" type="submit">
-							{copy.button_continue}
-						</button>
-
-						<div data-component="form-footer">
-							<span>
-								{copy.login_prompt}{" "}
-								<a data-component="link" href="./authorize">
-									{copy.login}
-								</a>
-							</span>
-						</div>
-					</form>
-				) : (
-					<>
-						<form data-component="form" method="post">
-							<FormAlert message={getErrorMessage(error)} />
-
-							<input name="action" type="hidden" value="verify" />
-
-							<input
-								type="text"
-								name="code"
-								placeholder={copy.input_code}
-								aria-label="6-digit verification code"
-								autoComplete="one-time-code"
-								data-component="input"
-								inputMode="numeric"
-								maxLength={6}
-								minLength={6}
-								pattern="[0-9]{6}"
-								required
-							/>
-
-							<button data-component="button" type="submit">
-								{copy.button_continue}
-							</button>
-						</form>
-
-						<form method="post">
-							<input name="action" type="hidden" value="register" />
-							<input name="email" type="hidden" value={state.email} />
-							<input name="password" type="hidden" value="" />
-							<input name="repeat" type="hidden" value="" />
-
-							<div data-component="form-footer">
-								<span>
-									{copy.code_return}{" "}
-									<a data-component="link" href="./authorize">
-										{copy.login}
-									</a>
-								</span>
-								<button type="submit" data-component="link">
-									{copy.code_resend}
+								<button data-component="button" type="submit">
+									{copy.button_continue}
 								</button>
-							</div>
-						</form>
-					</>
-				)}
+
+								<div data-component="form-footer">
+									<span>
+										{copy.login_prompt}{" "}
+										<a data-component="link" href="./authorize">
+											{copy.login}
+										</a>
+									</span>
+								</div>
+							</form>
+						)
+					}
+
+					return (
+						<>
+							<form data-component="form" method="post">
+								<FormAlert message={getErrorMessage(error)} />
+
+								<input name="action" type="hidden" value="verify" />
+
+								<input
+									type="text"
+									name="code"
+									placeholder={copy.input_code}
+									aria-label="6-digit verification code"
+									autoComplete="one-time-code"
+									data-component="input"
+									inputMode="numeric"
+									maxLength={6}
+									minLength={6}
+									pattern="[0-9]{6}"
+									required
+								/>
+
+								<button data-component="button" type="submit">
+									{copy.button_continue}
+								</button>
+							</form>
+
+							<form method="post">
+								<input name="action" type="hidden" value="register" />
+								<input name="email" type="hidden" value={state.email} />
+								<input name="password" type="hidden" value="" />
+								<input name="repeat" type="hidden" value="" />
+
+								<div data-component="form-footer">
+									<span>
+										{copy.code_return}{" "}
+										<a data-component="link" href="./authorize">
+											{copy.login}
+										</a>
+									</span>
+									<button type="submit" data-component="link">
+										{copy.code_resend}
+									</button>
+								</div>
+							</form>
+						</>
+					)
+				})}
 			</Layout>
 		)
 	}
@@ -306,53 +313,110 @@ export const PasswordUI = (options: PasswordUIOptions): PasswordConfig => {
 
 		return (
 			<Layout>
-				{state.type === "start" ? (
-					<form data-component="form" method="post">
-						<FormAlert message={getErrorMessage(error)} />
+				{run(() => {
+					if (state.type === "start") {
+						return (
+							<form data-component="form" method="post">
+								<FormAlert message={getErrorMessage(error)} />
 
-						<input name="action" type="hidden" value="code" />
+								<input name="action" type="hidden" value="code" />
 
-						<input
-							type="email"
-							name="email"
-							placeholder={copy.input_email}
-							value={form?.get("email")?.toString() || ""}
-							autoComplete="email"
-							data-component="input"
-							required
-						/>
+								<input
+									type="email"
+									name="email"
+									placeholder={copy.input_email}
+									value={form?.get("email")?.toString() || ""}
+									autoComplete="email"
+									data-component="input"
+									required
+								/>
 
-						<button data-component="button" type="submit">
-							{copy.button_continue}
-						</button>
+								<button data-component="button" type="submit">
+									{copy.button_continue}
+								</button>
 
-						<div data-component="form-footer">
-							<span>
-								{copy.code_return}{" "}
-								<a data-component="link" href="./authorize">
-									{copy.login}
-								</a>
-							</span>
-						</div>
-					</form>
-				) : state.type === "code" ? (
-					<>
+								<div data-component="form-footer">
+									<span>
+										{copy.code_return}{" "}
+										<a data-component="link" href="./authorize">
+											{copy.login}
+										</a>
+									</span>
+								</div>
+							</form>
+						)
+					}
+
+					if (state.type === "code") {
+						return (
+							<>
+								<form data-component="form" method="post">
+									<FormAlert message={getErrorMessage(error)} />
+
+									<input name="action" type="hidden" value="verify" />
+
+									<input
+										type="text"
+										name="code"
+										placeholder={copy.input_code}
+										aria-label="6-digit verification code"
+										autoComplete="one-time-code"
+										inputMode="numeric"
+										maxLength={6}
+										minLength={6}
+										data-component="input"
+										pattern="[0-9]{6}"
+										required
+									/>
+
+									<button data-component="button" type="submit">
+										{copy.button_continue}
+									</button>
+								</form>
+
+								<form method="post">
+									<input name="action" type="hidden" value="code" />
+									<input name="email" type="hidden" value={state.email} />
+
+									<div data-component="form-footer">
+										<span>
+											{copy.code_return}{" "}
+											<a data-component="link" href="./authorize">
+												{copy.login}
+											</a>
+										</span>
+										<button type="submit" data-component="link">
+											{copy.code_resend}
+										</button>
+									</div>
+								</form>
+							</>
+						)
+					}
+
+					return (
 						<form data-component="form" method="post">
 							<FormAlert message={getErrorMessage(error)} />
 
-							<input name="action" type="hidden" value="verify" />
+							<input name="action" type="hidden" value="update" />
 
 							<input
-								type="text"
-								name="code"
-								placeholder={copy.input_code}
-								aria-label="6-digit verification code"
-								autoComplete="one-time-code"
-								inputMode="numeric"
-								maxLength={6}
-								minLength={6}
+								type="password"
+								name="password"
+								placeholder={copy.input_password}
+								value={passwordError ? "" : form?.get("password")?.toString() || ""}
+								autoComplete="new-password"
 								data-component="input"
-								pattern="[0-9]{6}"
+								required
+							/>
+
+							<input
+								type="password"
+								name="repeat"
+								placeholder={copy.input_repeat}
+								value={passwordError ? "" : form?.get("repeat")?.toString() || ""}
+								autoComplete="new-password"
+								data-component="input"
 								required
 							/>
 
@@ -360,55 +424,8 @@ export const PasswordUI = (options: PasswordUIOptions): PasswordConfig => {
 								{copy.button_continue}
 							</button>
 						</form>
-
-						<form method="post">
-							<input name="action" type="hidden" value="code" />
-							<input name="email" type="hidden" value={state.email} />
-
-							<div data-component="form-footer">
-								<span>
-									{copy.code_return}{" "}
-									<a data-component="link" href="./authorize">
-										{copy.login}
-									</a>
-								</span>
-								<button type="submit" data-component="link">
-									{copy.code_resend}
-								</button>
-							</div>
-						</form>
-					</>
-				) : (
-					<form data-component="form" method="post">
-						<FormAlert message={getErrorMessage(error)} />
-
-						<input name="action" type="hidden" value="update" />
-
-						<input
-							type="password"
-							name="password"
-							placeholder={copy.input_password}
-							value={passwordError ? "" : form?.get("password")?.toString() || ""}
-							autoComplete="new-password"
-							data-component="input"
-							required
-						/>
-
-						<input
-							type="password"
-							name="repeat"
-							placeholder={copy.input_repeat}
-							value={passwordError ? "" : form?.get("repeat")?.toString() || ""}
-							autoComplete="new-password"
-							data-component="input"
-							required
-						/>
-
-						<button data-component="button" type="submit">
-							{copy.button_continue}
-						</button>
-					</form>
-				)}
+					)
+				})}
 			</Layout>
 		)
 	}

@@ -9,6 +9,7 @@ import type {
 	CodeProviderOptions,
 	CodeProviderState
 } from "../provider/code"
+import { run } from "../util"
 import { Layout, renderToHTML } from "./base"
 import { FormAlert } from "./form"
 
@@ -133,11 +134,12 @@ export const CodeUI = (options: CodeUIOptions): CodeProviderOptions => {
 		return (
 			<Layout>
 				<form data-component="form" method="post">
-					{success ? (
-						<FormAlert message={success.message} color="success" />
-					) : (
-						<FormAlert message={getErrorMessage(error, copy)} />
-					)}
+					{run(() => {
+						if (success) {
+							return <FormAlert message={success.message} color="success" />
+						}
+						return <FormAlert message={getErrorMessage(error, copy)} />
+					})}
 
 					<input
 						data-component="input"
@@ -174,11 +176,12 @@ export const CodeUI = (options: CodeUIOptions): CodeProviderOptions => {
 		return (
 			<Layout>
 				<form data-component="form" method="post">
-					{success ? (
-						<FormAlert message={success.message} color="success" />
-					) : (
-						<FormAlert message={getErrorMessage(error, copy)} />
-					)}
+					{run(() => {
+						if (success) {
+							return <FormAlert message={success.message} color="success" />
+						}
+						return <FormAlert message={getErrorMessage(error, copy)} />
+					})}
 
 					<input name="action" type="hidden" value="verify" />
 

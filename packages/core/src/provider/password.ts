@@ -660,6 +660,15 @@ export const PasswordProvider = (config: PasswordConfig): Provider<PasswordUserD
 						)
 					}
 
+					// Check if email exists before sending reset code
+					const existingPassword = await Storage.get(ctx.storage, ["email", email, "password"])
+					if (!existingPassword) {
+						return transition(
+							{ type: "start", redirect: provider.redirect },
+							{ type: "invalid_email" }
+						)
+					}
+
 					const code = generateCode()
 
 					// Check if this is a resend (provider already has code) or first send
@@ -704,6 +713,11 @@ export const PasswordProvider = (config: PasswordConfig): Provider<PasswordUserD
 					if (!password) {
 						return transition(provider, { type: "invalid_password" })
 					}
+
+					if (!repeat) {
+						return transition(provider, { type: "invalid_password" })
+					}
+
 					if (password !== repeat) {
 						return transition(provider, { type: "password_mismatch" })
 					}

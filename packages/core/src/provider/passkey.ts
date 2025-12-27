@@ -393,7 +393,10 @@ export const PasskeyProvider = (
 						authenticatorSelection: authenticatorSelection ?? {
 							residentKey: "preferred",
 							userVerification: "preferred",
-							authenticatorAttachment: otherDevice ? "cross-platform" : "platform"
+							// When otherDevice is true, we don't specify authenticatorAttachment.
+							// This lets the browser/OS decide which options to show the user.
+							// When otherDevice is false, we use "platform" to force the current device's authenticator (Windows Hello, Touch ID, etc.)
+							authenticatorAttachment: otherDevice ? undefined : "platform"
 						},
 						timeout
 					})

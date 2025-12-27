@@ -279,6 +279,13 @@ export const MagicLinkProvider = <
 					return transition(c, { type: "start" }, undefined, { type: "invalid_link" })
 				}
 
+				// Check if authorization state still exists
+				// If not, the authentication flow was already completed
+				const authorization = await ctx.get(c, "authorization")
+				if (!authorization) {
+					return transition(c, { type: "start" }, undefined, { type: "invalid_link" })
+				}
+
 				// Magic link verification successful - complete authentication
 				await ctx.unset(c, "provider")
 				return await ctx.success(c, {

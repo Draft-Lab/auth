@@ -21,6 +21,15 @@ interface PasskeyUICopy {
 
 	// Input placeholders
 	readonly input_email: string
+
+	// Error messages - Registration
+	readonly error_register_already_registered: string
+	readonly error_register_cancelled: string
+	readonly error_register_failed: string
+
+	// Error messages - Authentication
+	readonly error_auth_cancelled: string
+	readonly error_auth_failed: string
 }
 
 const DEFAULT_COPY: PasskeyUICopy = {
@@ -33,7 +42,17 @@ const DEFAULT_COPY: PasskeyUICopy = {
 	button_continue: "Continue",
 
 	// Input placeholders
-	input_email: "Email"
+	input_email: "Email",
+
+	// Error messages - Registration
+	error_register_already_registered:
+		"This device is already registered. Please use the login page or try a different device.",
+	error_register_cancelled: "Registration was cancelled or timed out. Please try again.",
+	error_register_failed: "Registration failed. Please try again.",
+
+	// Error messages - Authentication
+	error_auth_cancelled: "Authentication was cancelled or timed out. Please try again.",
+	error_auth_failed: "Authentication failed. Please try again."
 }
 
 interface PasskeyUIOptions
@@ -94,8 +113,17 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 											// Pass the options to the authenticator and wait for a response
 											attResp = await startAuthentication({ optionsJSON });
 										} catch (error) {
-											message.textContent = error;
-											throw error;
+											// Handle WebAuthn errors with friendly messages
+											const errorName = error.name;
+											if (errorName === "NotAllowedError") {
+												message.textContent = "${copy.error_auth_cancelled}";
+											} else if (errorName === "InvalidStateError") {
+												message.textContent = "${copy.error_auth_failed}";
+											} else {
+												message.textContent = error.message || "${copy.error_auth_failed}";
+											}
+											console.error(error);
+											return;
 										}
 										
 										const verificationResp = await fetch(
@@ -181,6 +209,7 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 								window.addEventListener("load", async () => {
 									const { startRegistration } = SimpleWebAuthnBrowser;
 									const registerForm = document.getElementById("registerForm");
+									const btnOtherDevice = document.getElementById("btnOtherDevice");
 									const message = document.querySelector("[data-slot='message']");
 									const origin = window.location.origin;
 									const rpID = window.location.hostname;
@@ -215,8 +244,17 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 											// Pass the options to the authenticator and wait for a response
 											attResp = await startRegistration({ optionsJSON });
 										} catch (error) {
-											message.textContent = error;
-											throw error;
+											// Handle WebAuthn errors with friendly messages
+											const errorName = error.name;
+											if (errorName === "InvalidStateError") {
+												message.textContent = "${copy.error_register_already_registered}";
+											} else if (errorName === "NotAllowedError") {
+												message.textContent = "${copy.error_register_cancelled}";
+											} else {
+												message.textContent = error.message || "${copy.error_register_failed}";
+											}
+											console.error(error);
+											return;
 										}
 
 										// POST the response to the endpoint that calls
@@ -265,6 +303,11 @@ export const PasskeyUI = (options: PasskeyUIOptions): PasskeyProviderConfig => {
 									registerForm.addEventListener("submit", (e) => {
 										e.preventDefault();
 										register();
+									});
+									
+									btnOtherDevice.addEventListener("click", (e) => {
+										e.preventDefault();
+										register(true);
 									});
 								});
 							`

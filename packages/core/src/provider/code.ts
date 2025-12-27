@@ -410,6 +410,17 @@ export const CodeProvider = <Claims extends Record<string, string> = Record<stri
 						)
 					}
 
+					// Check if authorization state still exists
+					// If not, the authentication flow was already completed
+					const authorization = await ctx.get(c, "authorization")
+					if (!authorization) {
+						return transition(c, { type: "start" }, formData, {
+							type: "invalid_claim",
+							key: "session",
+							value: "Authentication session expired"
+						})
+					}
+
 					// PIN verification successful - complete authentication
 					await ctx.unset(c, "provider")
 					return await ctx.success(c, {

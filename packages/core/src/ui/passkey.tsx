@@ -18,9 +18,6 @@ interface PasskeyUICopy {
 	readonly register_prompt: string
 	readonly login_prompt: string
 	readonly login: string
-	readonly change_prompt: string
-	readonly code_resend: string
-	readonly code_return: string
 
 	// Input placeholders
 	readonly input_email: string
@@ -34,9 +31,6 @@ const DEFAULT_COPY: PasskeyUICopy = {
 	login_prompt: "Already have an account?",
 	login: "Login",
 	button_continue: "Continue",
-	change_prompt: "Forgot password?",
-	code_resend: "Resend code",
-	code_return: "Back to",
 
 	// Input placeholders
 	input_email: "Email"

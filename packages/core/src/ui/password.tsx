@@ -24,12 +24,6 @@ interface PasswordUICopy {
 	readonly error_invalid_password: string
 	readonly error_password_mismatch: string
 
-	// Page titles and descriptions
-	readonly register_title: string
-	readonly register_description: string
-	readonly login_title: string
-	readonly login_description: string
-
 	// Action buttons and links
 	readonly register: string
 	readonly register_prompt: string
@@ -62,12 +56,6 @@ const DEFAULT_COPY: PasswordUICopy = {
 	error_invalid_email: "Email is not valid.",
 	error_invalid_password: "Password is incorrect.",
 	error_password_mismatch: "Passwords do not match.",
-
-	// Page titles and descriptions
-	register_title: "Welcome to the app",
-	register_description: "Sign in with your email",
-	login_title: "Welcome to the app",
-	login_description: "Sign in with your email",
 
 	// Action buttons and links
 	register: "Register",
@@ -337,6 +325,15 @@ export const PasswordUI = (options: PasswordUIOptions): PasswordConfig => {
 						<button data-component="button" type="submit">
 							{copy.button_continue}
 						</button>
+
+						<div data-component="form-footer">
+							<span>
+								{copy.code_return}{" "}
+								<a data-component="link" href="./authorize">
+									{copy.login}
+								</a>
+							</span>
+						</div>
 					</form>
 				) : state.type === "code" ? (
 					<>

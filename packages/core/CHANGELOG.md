@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.12.0
+
+### Minor Changes
+
+- add toolkit
+
 ## 0.11.0
 
 ### Minor Changes

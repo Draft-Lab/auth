@@ -60,8 +60,8 @@ export const auth = issuer({
 		),
 		password: PasswordProvider(
 			PasswordUI({
-				async sendCode(email, code) {
-					console.log(email, code)
+				async sendCode(email, code, context) {
+					console.log(`[${context}] Code for ${email}: ${code}`)
 				}
 			})
 		),

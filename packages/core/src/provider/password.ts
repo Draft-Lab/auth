@@ -194,22 +194,53 @@ export interface PasswordConfig {
 	 * Callback for sending verification codes to users via email.
 	 * Implement this to integrate with your email service provider.
 	 *
+	 * The context parameter indicates why the code is being sent:
+	 * - "register": User is registering for the first time
+	 * - "register:resend": User requested to resend registration code
+	 * - "reset": User is resetting their password
+	 * - "reset:resend": User requested to resend password reset code
+	 *
 	 * @param email - The recipient's email address
 	 * @param code - The verification code to send
+	 * @param context - The context of why the code is being sent
 	 * @returns Promise that resolves when email is sent
 	 *
 	 * @example
 	 * ```ts
-	 * sendCode: async (email, code) => {
+	 * sendCode: async (email, code, context) => {
+	 *   const templates = {
+	 *     "register": {
+	 *       subject: "Welcome! Verify your email",
+	 *       body: `Welcome! Your verification code is: ${code}`
+	 *     },
+	 *     "register:resend": {
+	 *       subject: "Your verification code (resent)",
+	 *       body: `Here's your code again: ${code}`
+	 *     },
+	 *     "reset": {
+	 *       subject: "Reset your password",
+	 *       body: `Your password reset code is: ${code}`
+	 *     },
+	 *     "reset:resend": {
+	 *       subject: "Password reset code (resent)",
+	 *       body: `Here's your reset code again: ${code}`
+	 *     }
+	 *   }
+	 *
+	 *   const template = templates[context]
 	 *   await emailService.send({
 	 *     to: email,
-	 *     subject: 'Your verification code',
-	 *     text: `Your verification code is: ${code}`
+	 *     subject: template.subject,
+	 *     text: template.body
 	 *   })
 	 * }
 	 * ```
 	 */
-	sendCode: (email: string, code: string) => Promise<void>
+	sendCode: (
+		email: string,
+		code: string,
+		context: "register" | "register:resend" | "reset" | "reset:resend"
+	) => Promise<void>
 
 	/**
 	 * Optional password validation function or schema.
@@ -535,7 +566,7 @@ export const PasswordProvider = (config: PasswordConfig): Provider<PasswordUserD
 
 					// Generate verification code and send email
 					const code = generateCode()
-					await config.sendCode(email, code)
+					await config.sendCode(email, code, "register")
 
 					return transition({
 						type: "code",
@@ -548,7 +579,7 @@ export const PasswordProvider = (config: PasswordConfig): Provider<PasswordUserD
 				if (action === "register" && provider.type === "code") {
 					// Resend verification code
 					const code = generateCode()
-					await config.sendCode(provider.email, code)
+					await config.sendCode(provider.email, code, "register:resend")
 					return transition({
 						type: "code",
 						code,
@@ -591,7 +622,7 @@ export const PasswordProvider = (config: PasswordConfig): Provider<PasswordUserD
 			 * GET /change - Display password change form
 			 */
 			routes.get("/change", async (c) => {
-				const redirect = c.query("redirect_uri") || getRelativeUrl(c, "/authorize")
+				const redirect = c.query("redirect_uri") || getRelativeUrl(c, "./authorize")
 				const state: PasswordChangeState = {
 					type: "start",
 					redirect
@@ -630,7 +661,11 @@ export const PasswordProvider = (config: PasswordConfig): Provider<PasswordUserD
 					}
 
 					const code = generateCode()
-					await config.sendCode(email, code)
+
+					// Check if this is a resend (provider already has code) or first send
+					const context =
+						provider.type === "code" && provider.email === email ? "reset:resend" : "reset"
+					await config.sendCode(email, code, context)
 
 					return transition({
 						type: "code",

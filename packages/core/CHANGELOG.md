@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.13.0
+
+### Minor Changes
+
+- add context aware to sendCode for password provider and fix redirect
+
 ## 0.12.0
 
 ### Minor Changes

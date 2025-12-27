@@ -255,29 +255,50 @@ export const PasswordUI = (options: PasswordUIOptions): PasswordConfig => {
 						</div>
 					</form>
 				) : (
-					<form data-component="form" method="post">
-						<FormAlert message={getErrorMessage(error)} />
+					<>
+						<form data-component="form" method="post">
+							<FormAlert message={getErrorMessage(error)} />
 
-						<input name="action" type="hidden" value="verify" />
+							<input name="action" type="hidden" value="verify" />
 
-						<input
-							type="text"
-							name="code"
-							placeholder={copy.input_code}
-							aria-label="6-digit verification code"
-							autoComplete="one-time-code"
-							data-component="input"
-							inputMode="numeric"
-							maxLength={6}
-							minLength={6}
-							pattern="[0-9]{6}"
-							required
-						/>
+							<input
+								type="text"
+								name="code"
+								placeholder={copy.input_code}
+								aria-label="6-digit verification code"
+								autoComplete="one-time-code"
+								data-component="input"
+								inputMode="numeric"
+								maxLength={6}
+								minLength={6}
+								pattern="[0-9]{6}"
+								required
+							/>
 
-						<button data-component="button" type="submit">
-							{copy.button_continue}
-						</button>
-					</form>
+							<button data-component="button" type="submit">
+								{copy.button_continue}
+							</button>
+						</form>
+
+						<form method="post">
+							<input name="action" type="hidden" value="register" />
+							<input name="email" type="hidden" value={state.email} />
+							<input name="password" type="hidden" value="" />
+							<input name="repeat" type="hidden" value="" />
+
+							<div data-component="form-footer">
+								<span>
+									{copy.code_return}{" "}
+									<a data-component="link" href="./authorize">
+										{copy.login}
+									</a>
+								</span>
+								<button type="submit" data-component="link">
+									{copy.code_resend}
+								</button>
+							</div>
+						</form>
+					</>
 				)}
 			</Layout>
 		)

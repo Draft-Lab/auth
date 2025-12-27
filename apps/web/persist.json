@@ -3,8 +3,8 @@
     "email\u001fmatheus@email.com\u001fpassword",
     {
       "value": {
-        "hash": "bG7Eb8penZ7OAQ+j7g/pqlbhlUzuoKVaW81SkG3EfQM=",
-        "salt": "3gBtkzDhB15h33JpRzzVRA==",
+        "hash": "ieF0PqCLDgXNf3TYjN5HtqWhj0AcssyLxReSIfG1Ujk=",
+        "salt": "PZTjzqB42VSQgKN1YXN9BA==",
         "N": 16384,
         "r": 8,
         "p": 1
@@ -18,6 +18,18 @@
     }
   ],
   [
+    "email\u001fzapeia@email.com\u001fpassword",
+    {
+      "value": {
+        "hash": "LEyvzFCX4Y2Kr2y2+xuVNvHdLRIUlvBA8yGfSdW8HWM=",
+        "salt": "9YQEZS381eMscdU7XtvaEQ==",
+        "N": 16384,
+        "r": 8,
+        "p": 1
+      }
+    }
+  ],
+  [
     "encryption:key\u001fJZeAf-6VnDIiz5PUGPMMNw",
     {
       "value": {
@@ -27,25 +39,6 @@
         "created": 1766521248305,
         "alg": "RSA-OAEP-512"
       }
-    }
-  ],
-  [
-    "oauth:refresh\u001fuser:30e16a2659c8bbb2\u001f_jDEnhJmmwLWDvi-2IUXPA4YAKOAhxY_a0bcDMqV-C0",
-    {
-      "value": {
-        "type": "user",
-        "properties": {
-          "email": "matheus@email.com"
-        },
-        "clientID": "example",
-        "subject": "user:30e16a2659c8bbb2",
-        "ttl": {
-          "access": 3600,
-          "refresh": 604800
-        },
-        "nextToken": "wTsaNY-dXJsoKY5cpFC3qPjWFhRSuYd3ecTVUGh1v7M"
-      },
-      "expiry": 1767126167326
     }
   ],
   [
@@ -68,25 +61,6 @@
     }
   ],
   [
-    "oauth:refresh\u001fuser:30e16a2659c8bbb2\u001fXUcwI09bJfTmkniI5qzQTL95_4s8Eyrao59rcQmtI7E",
-    {
-      "value": {
-        "type": "user",
-        "properties": {
-          "email": "matheus@email.com"
-        },
-        "clientID": "example",
-        "subject": "user:30e16a2659c8bbb2",
-        "ttl": {
-          "access": 3600,
-          "refresh": 604800
-        },
-        "nextToken": "ufztWlSMr0DhtUiD0-IQE2W2EYGVNIzBCY5-PpC2MC0"
-      },
-      "expiry": 1767436077222
-    }
-  ],
-  [
     "revocation:token\u001f0474c7bbd13de5b93b2410cc50aea62fc8caa90407308d7194c10f2eacee53cb",
     {
       "value": {
@@ -94,6 +68,26 @@
         "expiresAt": 1767730953813
       },
       "expiry": 1767730953813
+    }
+  ],
+  [
+    "revocation:token\u001f78146d1215e8e18070a25b09abfc7608a27800f8b00d50ffba5102a0b7ce24f8",
+    {
+      "value": {
+        "revokedAt": 1766839984532,
+        "expiresAt": 1768049584532
+      },
+      "expiry": 1768049584532
+    }
+  ],
+  [
+    "revocation:token\u001f7eff62f3918a17e679a18957403fc84c21cb6d9dac0423c322f63c695e5ab9a8",
+    {
+      "value": {
+        "revokedAt": 1766839584621,
+        "expiresAt": 1768049184621
+      },
+      "expiry": 1768049184621
     }
   ],
   [

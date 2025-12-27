@@ -68,6 +68,25 @@
     }
   ],
   [
+    "oauth:refresh\u001fuser:30e16a2659c8bbb2\u001fXUcwI09bJfTmkniI5qzQTL95_4s8Eyrao59rcQmtI7E",
+    {
+      "value": {
+        "type": "user",
+        "properties": {
+          "email": "matheus@email.com"
+        },
+        "clientID": "example",
+        "subject": "user:30e16a2659c8bbb2",
+        "ttl": {
+          "access": 3600,
+          "refresh": 604800
+        },
+        "nextToken": "ufztWlSMr0DhtUiD0-IQE2W2EYGVNIzBCY5-PpC2MC0"
+      },
+      "expiry": 1767436077222
+    }
+  ],
+  [
     "revocation:token\u001f0474c7bbd13de5b93b2410cc50aea62fc8caa90407308d7194c10f2eacee53cb",
     {
       "value": {

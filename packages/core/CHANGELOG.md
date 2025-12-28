@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.14.0
+
+### Minor Changes
+
+- improve providers and copy
+
 ## 0.13.1
 
 ### Patch Changes

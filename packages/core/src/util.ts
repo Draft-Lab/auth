@@ -1,4 +1,4 @@
-import type { RouterContext } from "@draftlab/auth-router/types"
+import type { RouterContext } from "./router/types"
 
 /**
  * Utility type that flattens complex types for better IntelliSense display.

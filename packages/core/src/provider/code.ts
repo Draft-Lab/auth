@@ -82,8 +82,8 @@
  * @packageDocumentation
  */
 
-import type { RouterContext } from "@draftlab/auth-router/types"
 import { generateUnbiasedDigits, timingSafeCompare } from "../random"
+import type { RouterContext } from "../router/types"
 import type { Provider } from "./provider"
 
 /**

@@ -8,12 +8,12 @@
 	},
 	"dependencies": {
 		"@draftlab/auth": "workspace:*",
-		"@tanstack/react-router": "^1.144.0",
-		"@tanstack/react-start": "^1.145.0",
+		"@tanstack/react-router": "^1.146.2",
+		"@tanstack/react-start": "^1.146.2",
 		"react": "^19.2.3",
 		"react-dom": "^19.2.3",
-		"vite": "^7.3.0",
-		"zod": "^4.2.1"
+		"vite": "^7.3.1",
+		"zod": "^4.3.5"
 	},
 	"devDependencies": {
 		"@types/react": "^19.2.7",

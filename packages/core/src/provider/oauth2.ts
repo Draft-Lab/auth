@@ -56,11 +56,11 @@
  * @packageDocumentation
  */
 
-import type { RouterContext } from "@draftlab/auth-router/types"
 import { createRemoteJWKSet, jwtVerify } from "jose"
 import { OauthError, type OauthErrorType } from "../error"
 import { generatePKCE } from "../pkce"
 import { generateSecureToken, timingSafeCompare } from "../random"
+import type { RouterContext } from "../router/types"
 import { getRelativeUrl } from "../util"
 import type { Provider } from "./provider"
 

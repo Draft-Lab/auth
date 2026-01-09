@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.15.0
+
+### Minor Changes
+
+- migrate router to core package
+
 ## 0.14.0
 
 ### Minor Changes

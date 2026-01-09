@@ -1,5 +1,17 @@
 [
 	[
+		"email\u001fmatheus@email.com\u001fpassword",
+		{
+			"value": {
+				"hash": "d6vskY7oIz5sYvW6fScYBhOYqLYMdY0Z1pHc9FPlAEk=",
+				"salt": "z77GiDkHHqotI3B5e9S5Dg==",
+				"N": 16384,
+				"r": 8,
+				"p": 1
+			}
+		}
+	],
+	[
 		"encryption:key\u001f6hUKCbTF_9rJNZjZAbrE0A",
 		{
 			"value": {
@@ -10,5 +22,28 @@
 				"alg": "RSA-OAEP-512"
 			}
 		}
+	],
+	[
+		"revocation:token\u001f6544765f964911ced41f2ecef4a160611a071157f297b7345d1c688bff16a15d",
+		{
+			"value": {
+				"revokedAt": 1767932361157,
+				"expiresAt": 1769141961157
+			},
+			"expiry": 1769141961157
+		}
+	],
+	[
+		"signing:key\u001ftjDN3WSqWiK8efA3d9bJ2A",
+		{
+			"value": {
+				"id": "tjDN3WSqWiK8efA3d9bJ2A",
+				"publicKey": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE5LWiSzMmosXbLO9EdcKjYsA6EU2a\n+7/MpvqCvtLJ9Do92CacEIix/lmpb/ZEuY3O3WK3vxFwmoBVVdTY0Zx8fw==\n-----END PUBLIC KEY-----",
+				"privateKey": "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQgkG+7Ilv9dvhxHkN4\nwVqmXiS/EBOUkIeE6WiLeOUxit6hRANCAATktaJLMyaixdss70R1wqNiwDoRTZr7\nv8ym+oK+0sn0Oj3YJpwQiLH+Walv9kS5jc7dYre/EXCagFVV1NjRnHx/\n-----END PRIVATE KEY-----",
+				"created": 1767932332340,
+				"alg": "ES256"
+			}
+		}
 	]
 ]
+

@@ -2,10 +2,6 @@
  * Core issuer implementation.
  */
 
-import { Router } from "@draftlab/auth-router"
-import { deleteCookie, getCookie, setCookie } from "@draftlab/auth-router/cookies"
-import { cors } from "@draftlab/auth-router/middleware/cors"
-import type { RouterContext } from "@draftlab/auth-router/types"
 import { CompactEncrypt, compactDecrypt, SignJWT } from "jose"
 import { type AllowCheckInput, defaultAllowCheck } from "./allow"
 import {
@@ -19,6 +15,10 @@ import { validatePKCE } from "./pkce"
 import type { Provider, ProviderOptions, ProviderRoute } from "./provider/provider"
 import { generateSecureToken } from "./random"
 import { Revocation } from "./revocation"
+import { Router } from "./router"
+import { deleteCookie, getCookie, setCookie } from "./router/cookies"
+import { cors } from "./router/middleware/cors"
+import type { RouterContext } from "./router/types"
 import { Storage, type StorageAdapter } from "./storage/storage"
 import type { SubjectPayload, SubjectSchema } from "./subject"
 import { setTheme, type Theme } from "./themes/theme"

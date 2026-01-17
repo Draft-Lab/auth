@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.15.1
+
+### Patch Changes
+
+- expose sub to client api
+
 ## 0.15.0
 
 ### Minor Changes

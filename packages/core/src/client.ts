@@ -308,6 +308,13 @@ export interface VerifyResult<T extends SubjectSchema> {
 	 */
 	aud: string
 	/**
+	 * Unique subject identifier.
+	 *
+	 * This is a stable, consistent identifier derived from the subject type and properties.
+	 * Format: `{type}:{hash}` (e.g., `user:30e16a2659c8bbb2`)
+	 */
+	sub: string
+	/**
 	 * Decoded subject information from the access token.
 	 *
 	 * Contains user data that was encoded when the token was issued.
@@ -735,6 +742,7 @@ export const createClient = (input: ClientInput): Client => {
 						success: true,
 						data: {
 							aud: jwtResult.payload.aud as string,
+							sub: jwtResult.payload.sub as string,
 							subject: {
 								type: jwtResult.payload.type,
 								properties: validated?.value

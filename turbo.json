@@ -1,15 +1,11 @@
 {
-	"$schema": "https://turbo.build/schema.json",
+	"$schema": "https://turborepo.com/schema.json",
 	"ui": "tui",
 	"tasks": {
 		"build": {
 			"dependsOn": ["^build"],
-			"outputs": ["dist/**", ".dist/**"],
-			"inputs": ["$TURBO_DEFAULT$", ".env*"]
-		},
-		"start": {
-			"cache": false,
-			"persistent": true
+			"inputs": ["$TURBO_DEFAULT$"],
+			"outputs": ["dist/**"]
 		},
 		"dev": {
 			"cache": false,

@@ -1,5 +1,4 @@
-import type { Router } from "../router"
-import type { RouterContext } from "../router/types"
+import type { Context, Hono } from "hono"
 import type { StorageAdapter } from "../storage/storage"
 
 /**
@@ -44,7 +43,7 @@ import type { StorageAdapter } from "../storage/storage"
  * Router instance used for provider route definitions.
  * Providers use this to register their authorization and callback endpoints.
  */
-export type ProviderRoute = Router
+export type ProviderRoute = Hono<{ Variables: { provider: string } }>
 
 /**
  * Authentication provider interface that handles OAuth flows.
@@ -65,7 +64,7 @@ export interface Provider<Properties = Record<string, unknown>> {
 	 * Initializes the provider by registering required routes.
 	 * Called during issuer setup to configure authorization and callback endpoints.
 	 *
-	 * @param route - Router instance for registering provider endpoints
+	 * @param route - Hono router instance for registering provider endpoints
 	 * @param options - Provider utilities and configuration
 	 *
 	 * @example
@@ -104,7 +103,7 @@ export interface ProviderOptions<Properties> {
 	 * Completes the authentication flow with user data.
 	 * Called when the provider successfully authenticates a user.
 	 *
-	 * @param ctx - Router request context
+	 * @param ctx - Hono request context
 	 * @param properties - User data extracted from the provider
 	 * @param opts - Optional utilities for session management
 	 * @returns Response that completes the OAuth flow
@@ -116,7 +115,7 @@ export interface ProviderOptions<Properties> {
 	 * ```
 	 */
 	success: (
-		ctx: RouterContext,
+		ctx: Context,
 		properties: Properties,
 		opts?: {
 			/** Function to invalidate existing user sessions */
@@ -128,17 +127,17 @@ export interface ProviderOptions<Properties> {
 	 * Forwards a response through the provider context.
 	 * Used for redirects and custom responses within the OAuth flow.
 	 *
-	 * @param ctx - Router request context
+	 * @param ctx - Hono request context
 	 * @param response - Response to forward
 	 * @returns Forwarded response
 	 */
-	forward: (ctx: RouterContext, response: Response) => Response
+	forward: (ctx: Context, response: Response) => Response
 
 	/**
 	 * Stores a temporary value with expiration for the current session.
 	 * Useful for storing OAuth state, PKCE verifiers, and other temporary data.
 	 *
-	 * @param ctx - Router request context
+	 * @param ctx - Hono request context
 	 * @param key - Storage key identifier
 	 * @param maxAge - TTL in seconds
 	 * @param value - Value to store
@@ -149,12 +148,12 @@ export interface ProviderOptions<Properties> {
 	 * await ctx.set(c, "oauth_state", 600, { state, redirectUri })
 	 * ```
 	 */
-	set: <T>(ctx: RouterContext, key: string, maxAge: number, value: T) => Promise<void>
+	set: <T>(ctx: Context, key: string, maxAge: number, value: T) => Promise<void>
 
 	/**
 	 * Retrieves a previously stored temporary value.
 	 *
-	 * @param ctx - Router request context
+	 * @param ctx - Hono request context
 	 * @param key - Storage key identifier
 	 * @returns Promise resolving to the stored value or undefined if not found/expired
 	 *
@@ -166,12 +165,12 @@ export interface ProviderOptions<Properties> {
 	 * }
 	 * ```
 	 */
-	get: <T>(ctx: RouterContext, key: string) => Promise<T | undefined>
+	get: <T>(ctx: Context, key: string) => Promise<T | undefined>
 
 	/**
 	 * Removes a stored temporary value.
 	 *
-	 * @param ctx - Router request context
+	 * @param ctx - Hono request context
 	 * @param key - Storage key identifier
 	 *
 	 * @example
@@ -180,7 +179,7 @@ export interface ProviderOptions<Properties> {
 	 * await ctx.unset(c, "oauth_state")
 	 * ```
 	 */
-	unset: (ctx: RouterContext, key: string) => Promise<void>
+	unset: (ctx: Context, key: string) => Promise<void>
 
 	/**
 	 * Invalidates all sessions for a given subject (user).

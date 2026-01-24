@@ -3,13 +3,6 @@
  * Provides consistent styling and iconography for user feedback in authentication forms.
  */
 
-import type { ComponentChildren } from "preact"
-
-/**
- * Alert color variant determining the visual style and icon.
- */
-export type FormAlertColor = "danger" | "success"
-
 /**
  * Props for the FormAlert component.
  */
@@ -23,16 +16,15 @@ export interface FormAlertProps {
 	 * Visual style variant for the alert.
 	 * @default "danger"
 	 */
-	readonly color?: FormAlertColor
+	readonly color?: "danger" | "success"
 }
 
 /**
  * Form alert component that displays error or success messages.
  */
-export const FormAlert = ({
-	message,
-	color = "danger"
-}: FormAlertProps): ComponentChildren => {
+export function FormAlert(props: FormAlertProps) {
+	const { message, color = "danger" } = props
+
 	return (
 		<div data-component="form-alert" data-color={color}>
 			<svg

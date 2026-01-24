@@ -3,10 +3,10 @@
  * Provides a complete interface for collecting user claims and sending magic links
  */
 
-import type { ComponentChildren } from "preact"
+import { UnknownStateError } from "../error"
 import type { MagicLinkConfig, MagicLinkError, MagicLinkState } from "../provider/magiclink"
 import { run } from "../util"
-import { Layout, renderToHTML } from "./base"
+import { Layout } from "./base"
 import { FormAlert } from "./form"
 
 /**
@@ -116,109 +116,90 @@ export const MagicLinkUI = <Claims extends Record<string, string> = Record<strin
 
 	const mode = options.mode || "email"
 
-	/**
-	 * Renders the start form for collecting contact information
-	 */
-	const renderStart = (
-		form: FormData | undefined,
-		error: MagicLinkError | undefined,
-		state?: MagicLinkState
-	): ComponentChildren => {
-		const success = getSuccessMessage(state || { type: "start" }, copy, mode)
-
-		return (
-			<Layout>
-				<form data-component="form" method="post">
-					{run(() => {
-						if (success) {
-							return <FormAlert message={success.message} color="success" />
-						}
-						return <FormAlert message={getErrorMessage(error, copy)} />
-					})}
-
-					<input
-						data-component="input"
-						type={mode === "email" ? "email" : "tel"}
-						name={mode}
-						placeholder={copy.email_placeholder}
-						value={form?.get(mode)?.toString() || ""}
-						autoComplete={mode}
-						required
-					/>
-
-					<input type="hidden" name="action" value="request" />
-					<button data-component="button" type="submit">
-						{copy.button_continue}
-					</button>
-
-					<p data-component="description">{copy.link_info}</p>
-				</form>
-			</Layout>
-		)
-	}
-
-	/**
-	 * Renders the "check your email" page after magic link is sent
-	 */
-	const renderSent = (
-		_form: FormData | undefined,
-		error: MagicLinkError | undefined,
-		state: MagicLinkState
-	): ComponentChildren => {
-		const success = getSuccessMessage(state, copy, mode)
-		const contact = state.type === "sent" ? (state.claims?.[mode] as string) || "" : ""
-
-		return (
-			<Layout>
-				<form data-component="form" method="post">
-					<h2 data-component="title">Check your email</h2>
-
-					{run(() => {
-						if (success) {
-							return <FormAlert message={success.message} color="success" />
-						}
-						return <FormAlert message={getErrorMessage(error, copy)} />
-					})}
-
-					<p data-component="description">Click the link in your email to sign in.</p>
-
-					<input name="action" type="hidden" value="resend" />
-					<input name={mode} type="hidden" value={contact} />
-
-					<div data-component="form-footer">
-						<span>
-							{copy.link_didnt_get}{" "}
-							<button type="submit" data-component="link">
-								{copy.link_resend}
-							</button>
-						</span>
-					</div>
-				</form>
-			</Layout>
-		)
-	}
-
 	return {
 		sendLink: options.sendLink,
 
 		/**
 		 * Renders the appropriate UI based on current state
 		 */
-		request: async (
-			_req: Request,
-			state: MagicLinkState,
-			form?: FormData,
-			error?: MagicLinkError
-		): Promise<Response> => {
-			const html = renderToHTML(
-				state.type === "start"
-					? renderStart(form, error, state)
-					: renderSent(form, error, state)
-			)
+		request: async (_req, state, form, error): Promise<Response> => {
+			if (state.type === "start") {
+				const success = getSuccessMessage(state || { type: "start" }, copy, mode)
 
-			return new Response(html, {
-				headers: { "Content-Type": "text/html" }
-			})
+				const jsx = (
+					<Layout>
+						<form data-component="form" method="post">
+							{run(() => {
+								if (success) {
+									return <FormAlert message={success.message} color="success" />
+								}
+								return <FormAlert message={getErrorMessage(error, copy)} />
+							})}
+
+							<input
+								data-component="input"
+								type={mode === "email" ? "email" : "tel"}
+								name={mode}
+								placeholder={copy.email_placeholder}
+								value={form?.get(mode)?.toString() || ""}
+								autoComplete={mode}
+								required
+							/>
+
+							<input type="hidden" name="action" value="request" />
+							<button data-component="button" type="submit">
+								{copy.button_continue}
+							</button>
+
+							<p data-component="description">{copy.link_info}</p>
+						</form>
+					</Layout>
+				)
+
+				return new Response(jsx.toString(), {
+					headers: { "Content-Type": "text/html" }
+				})
+			}
+
+			if (state.type === "sent") {
+				const success = getSuccessMessage(state, copy, mode)
+				const contact = state.type === "sent" ? (state.claims?.[mode] as string) || "" : ""
+
+				const jsx = (
+					<Layout>
+						<form data-component="form" method="post">
+							<h2 data-component="title">Check your email</h2>
+
+							{run(() => {
+								if (success) {
+									return <FormAlert message={success.message} color="success" />
+								}
+								return <FormAlert message={getErrorMessage(error, copy)} />
+							})}
+
+							<p data-component="description">Click the link in your email to sign in.</p>
+
+							<input name="action" type="hidden" value="resend" />
+							<input name={mode} type="hidden" value={contact} />
+
+							<div data-component="form-footer">
+								<span>
+									{copy.link_didnt_get}{" "}
+									<button type="submit" data-component="link">
+										{copy.link_resend}
+									</button>
+								</span>
+							</div>
+						</form>
+					</Layout>
+				)
+
+				return new Response(jsx.toString(), {
+					headers: { "Content-Type": "text/html" }
+				})
+			}
+
+			throw new UnknownStateError()
 		}
 	}
 }

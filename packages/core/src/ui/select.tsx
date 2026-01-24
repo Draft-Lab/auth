@@ -2,9 +2,9 @@
  * Provider selection UI component
  */
 
-import type { ComponentChildren } from "preact"
+import type { Child } from "hono/jsx"
 import type { Theme } from "../themes/theme"
-import { Layout, renderToHTML } from "./base"
+import { Layout } from "./base"
 import {
 	ICON_APPLE,
 	ICON_DISCORD,
@@ -50,8 +50,9 @@ export interface SelectProps {
 /**
  * Icon components for providers
  */
-const PROVIDER_ICONS: Record<string, () => ComponentChildren> = {
+const PROVIDER_ICONS: Record<string, () => Child> = {
 	apple: ICON_APPLE,
+	code: ICON_EMAIL,
 	discord: ICON_DISCORD,
 	email: ICON_EMAIL,
 	facebook: ICON_FACEBOOK,
@@ -81,7 +82,6 @@ const DEFAULT_DISPLAYS: Record<string, string> = {
 	google: "Google",
 	linkedin: "LinkedIn",
 	microsoft: "Microsoft",
-	passkey: "Passkey",
 	password: "Password",
 	reddit: "Reddit",
 	slack: "Slack",
@@ -127,11 +127,7 @@ const ProviderSelect = ({
 							data-color="ghost"
 							aria-label={`${buttonText} ${displayName}`}
 						>
-							{IconComponent && (
-								<i data-slot="icon">
-									<IconComponent />
-								</i>
-							)}
+							{IconComponent && <i data-slot="icon">{IconComponent()}</i>}
 							{buttonText} {displayName}
 						</a>
 					)
@@ -146,11 +142,9 @@ const ProviderSelect = ({
  */
 export const Select = (props: SelectProps = {}) => {
 	return async (providers: Record<string, string>): Promise<Response> => {
-		const html = renderToHTML(
-			<ProviderSelect providers={providers} config={props} theme={props.theme} />
-		)
+		const jsx = <ProviderSelect providers={providers} config={props} theme={props.theme} />
 
-		return new Response(html, {
+		return new Response(jsx.toString(), {
 			headers: { "Content-Type": "text/html" }
 		})
 	}

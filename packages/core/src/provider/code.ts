@@ -82,8 +82,8 @@
  * @packageDocumentation
  */
 
+import type { Context } from "hono"
 import { generateUnbiasedDigits, timingSafeCompare } from "../random"
-import type { RouterContext } from "../router/types"
 import type { Provider } from "./provider"
 
 /**
@@ -143,38 +143,19 @@ export interface CodeProviderConfig<
 	 *
 	 * @param claims - User claims containing contact information
 	 * @param code - The generated PIN code to send
-	 * @returns Promise resolving to undefined on success, or error object on failure
 	 *
 	 * @example
 	 * ```ts
 	 * sendCode: async (claims, code) => {
-	 *   try {
-	 *     if (claims.email) {
-	 *       await emailService.send({
-	 *         to: claims.email,
-	 *         subject: 'Your verification code',
-	 *         text: `Your PIN code is: ${code}`
-	 *       })
-	 *     } else if (claims.phone) {
-	 *       await smsService.send(claims.phone, `PIN: ${code}`)
-	 *     } else {
-	 *       return {
-	 *         type: "invalid_claim",
-	 *         key: "email",
-	 *         value: "Email or phone number is required"
-	 *       }
-	 *     }
-	 *   } catch (error) {
-	 *     return {
-	 *       type: "invalid_claim",
-	 *       key: "delivery",
-	 *       value: "Failed to send code"
-	 *     }
-	 *   }
+	 *   await emailService.send({
+	 *     to: claims.email,
+	 *     subject: 'Your verification code',
+	 *     text: `Your PIN code is: ${code}`
+	 *   })
 	 * }
 	 * ```
 	 */
-	sendCode: (claims: Claims, code: string) => Promise<CodeProviderError | undefined>
+	sendCode: (claims: Claims, code: string) => Promise<void>
 }
 
 /**
@@ -339,13 +320,13 @@ export const CodeProvider = <Claims extends Record<string, string> = Record<stri
 			 * Transitions between authentication states and renders the appropriate UI.
 			 */
 			const transition = async (
-				c: RouterContext,
+				c: Context,
 				nextState: CodeProviderState,
 				formData?: FormData,
 				error?: CodeProviderError
 			) => {
 				await ctx.set<CodeProviderState>(c, "provider", 60 * 60 * 24, nextState)
-				const response = await config.request(c.request, nextState, formData, error)
+				const response = await config.request(c.req.raw, nextState, formData, error)
 				return ctx.forward(c, response)
 			}
 
@@ -360,7 +341,7 @@ export const CodeProvider = <Claims extends Record<string, string> = Record<stri
 			 * POST /authorize - Handle form submissions and state transitions
 			 */
 			routes.post("/authorize", async (c) => {
-				const formData = await c.formData()
+				const formData = await c.req.formData()
 				const currentState = await ctx.get<CodeProviderState>(c, "provider")
 				const action = formData.get("action")?.toString()
 
@@ -370,11 +351,8 @@ export const CodeProvider = <Claims extends Record<string, string> = Record<stri
 					const formEntries = Object.fromEntries(formData)
 					const { action: _, ...claims } = formEntries as Claims & { action?: string }
 
-					// Send PIN code and handle any errors
-					const sendError = await config.sendCode(claims as Claims, code)
-					if (sendError) {
-						return transition(c, { type: "start" }, formData, sendError)
-					}
+					// Send PIN code
+					await config.sendCode(claims as Claims, code)
 
 					return transition(
 						c,

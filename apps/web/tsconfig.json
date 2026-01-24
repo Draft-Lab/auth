@@ -7,9 +7,7 @@
 		"strictNullChecks": true,
 		"moduleResolution": "Bundler",
 		"paths": {
-			"@/*": ["./src/*"],
-			"@draftlab/auth": ["../../packages/core/src/index.ts"],
-			"@draftlab/auth/*": ["../../packages/core/src/*"]
+			"@/*": ["./src/*"]
 		}
 	}
 }

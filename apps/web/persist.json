@@ -12,6 +12,12 @@
 		}
 	],
 	[
+		"email\u001fmatheus@email.com\u001fsubject",
+		{
+			"value": "user:30e16a2659c8bbb2"
+		}
+	],
+	[
 		"encryption:key\u001f6hUKCbTF_9rJNZjZAbrE0A",
 		{
 			"value": {
@@ -24,6 +30,35 @@
 		}
 	],
 	[
+		"oauth:refresh\u001fuser:30e16a2659c8bbb2\u001fuUHxkvKV0ks9PZXFIyJUhIV4O_hUoNr2lTpBa4G9KAY",
+		{
+			"value": {
+				"type": "user",
+				"properties": {
+					"email": "matheus@email.com"
+				},
+				"clientID": "example",
+				"subject": "user:30e16a2659c8bbb2",
+				"ttl": {
+					"access": 3600,
+					"refresh": 604800
+				},
+				"nextToken": "gE03wGKJ7QiCtn7yPpRqt1_I0ndN6-PWlPn1Grl2uek"
+			},
+			"expiry": 1769872386583
+		}
+	],
+	[
+		"revocation:token\u001f5391da61521f5a24a93a8cb2f9d56eae135e19f5164a6f613c6a1c93c3a18647",
+		{
+			"value": {
+				"revokedAt": 1769269013817,
+				"expiresAt": 1770478613817
+			},
+			"expiry": 1770478613817
+		}
+	],
+	[
 		"revocation:token\u001f6544765f964911ced41f2ecef4a160611a071157f297b7345d1c688bff16a15d",
 		{
 			"value": {
@@ -31,6 +66,16 @@
 				"expiresAt": 1769141961157
 			},
 			"expiry": 1769141961157
+		}
+	],
+	[
+		"revocation:token\u001f6c8658fd9e747fbdb07b06d882cd1897078834293e9ba1373cf40964ead3844a",
+		{
+			"value": {
+				"revokedAt": 1769263947026,
+				"expiresAt": 1770473547025
+			},
+			"expiry": 1770473547026
 		}
 	],
 	[

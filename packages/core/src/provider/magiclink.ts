@@ -56,8 +56,8 @@
  * @packageDocumentation
  */
 
+import type { Context } from "hono"
 import { generateUnbiasedDigits, timingSafeCompare } from "../random"
-import type { RouterContext } from "../router/types"
 import type { Provider } from "./provider"
 
 /**
@@ -99,9 +99,8 @@ export interface MagicLinkConfig<
 	 *
 	 * @param claims - User claims containing contact information
 	 * @param magicUrl - The magic link URL to send
-	 * @returns Promise resolving to undefined on success, or error object on failure
 	 */
-	sendLink: (claims: Claims, magicUrl: string) => Promise<MagicLinkError | undefined>
+	sendLink: (claims: Claims, magicUrl: string) => Promise<void>
 }
 
 /**
@@ -181,13 +180,13 @@ export const MagicLinkProvider = <
 			 * Transitions between authentication states and renders the appropriate UI.
 			 */
 			const transition = async (
-				c: RouterContext,
+				c: Context,
 				nextState: MagicLinkState,
 				formData?: FormData,
 				error?: MagicLinkError
 			) => {
 				await ctx.set<MagicLinkState>(c, "provider", 60 * 60 * 24, nextState)
-				const response = await config.request(c.request, nextState, formData, error)
+				const response = await config.request(c.req.raw, nextState, formData, error)
 				return ctx.forward(c, response)
 			}
 
@@ -202,7 +201,7 @@ export const MagicLinkProvider = <
 			 * POST /authorize - Handle form submissions and state transitions
 			 */
 			routes.post("/authorize", async (c) => {
-				const formData = await c.formData()
+				const formData = await c.req.formData()
 				const action = formData.get("action")?.toString()
 
 				// Handle claim submission and link generation
@@ -212,7 +211,7 @@ export const MagicLinkProvider = <
 					const { action: _, ...claims } = formEntries as Claims & { action?: string }
 
 					// Build magic link URL
-					const baseUrl = new URL(c.request.url).origin
+					const baseUrl = new URL(c.req.url).origin
 					const magicUrl = new URL(`/auth/${ctx.name}/verify`, baseUrl)
 					magicUrl.searchParams.set("token", token)
 					for (const [key, value] of Object.entries(claims as Record<string, string>)) {
@@ -221,11 +220,8 @@ export const MagicLinkProvider = <
 						}
 					}
 
-					// Send magic link and handle any errors
-					const sendError = await config.sendLink(claims as Claims, magicUrl.toString())
-					if (sendError) {
-						return transition(c, { type: "start" }, formData, sendError)
-					}
+					// Send magic link
+					await config.sendLink(claims as Claims, magicUrl.toString())
 
 					return transition(
 						c,
@@ -247,7 +243,7 @@ export const MagicLinkProvider = <
 			 * GET /verify - Handle magic link clicks
 			 */
 			routes.get("/verify", async (c) => {
-				const url = new URL(c.request.url)
+				const url = new URL(c.req.url)
 				const token = url.searchParams.get("token")
 				const storedState = await ctx.get<MagicLinkState>(c, "provider")
 

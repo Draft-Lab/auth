@@ -56,11 +56,11 @@
  * @packageDocumentation
  */
 
+import type { Context } from "hono"
 import { createRemoteJWKSet, jwtVerify } from "jose"
 import { OauthError, type OauthErrorType } from "../error"
 import { generatePKCE } from "../pkce"
 import { generateSecureToken, timingSafeCompare } from "../random"
-import type { RouterContext } from "../router/types"
 import { getRelativeUrl } from "../util"
 import type { Provider } from "./provider"
 
@@ -287,11 +287,11 @@ export const Oauth2Provider = (config: Oauth2Config): Provider<Oauth2UserData> =
 	 * Exchanges the authorization code for tokens and processes the response.
 	 */
 	const handleCallbackLogic = async (
-		c: RouterContext,
+		c: Context,
 		ctx: {
-			get: <T>(c: RouterContext, key: string) => Promise<T | undefined>
-			set: <T>(c: RouterContext, key: string, ttl: number, value: T) => Promise<void>
-			success: (c: RouterContext, data: Oauth2UserData) => Promise<Response>
+			get: <T>(c: Context, key: string) => Promise<T | undefined>
+			set: <T>(c: Context, key: string, ttl: number, value: T) => Promise<void>
+			success: (c: Context, data: Oauth2UserData) => Promise<Response>
 		},
 		provider: ProviderState,
 		code: string | undefined
@@ -428,13 +428,13 @@ export const Oauth2Provider = (config: Oauth2Config): Provider<Oauth2UserData> =
 			 */
 			routes.get("/callback", async (c) => {
 				const provider = (await ctx.get(c, "provider")) as ProviderState
-				const code = c.query("code")
-				const state = c.query("state")
-				const error = c.query("error")
+				const code = c.req.query("code")
+				const state = c.req.query("state")
+				const error = c.req.query("error")
 
 				// Check for OAuth errors
 				if (error) {
-					throw new OauthError(error as OauthErrorType, c.query("error_description") || "")
+					throw new OauthError(error as OauthErrorType, c.req.query("error_description") || "")
 				}
 
 				// Validate state and presence of required parameters
@@ -455,7 +455,7 @@ export const Oauth2Provider = (config: Oauth2Config): Provider<Oauth2UserData> =
 			 */
 			routes.post("/callback", async (c) => {
 				const provider = (await ctx.get(c, "provider")) as ProviderState
-				const formData = await c.formData()
+				const formData = await c.req.formData()
 
 				const code = formData.get("code")?.toString()
 				const state = formData.get("state")?.toString()

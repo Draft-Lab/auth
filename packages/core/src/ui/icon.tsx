@@ -5,12 +5,12 @@
  * @packageDocumentation
  */
 
-import type { ComponentChildren } from "preact"
+import type { Child } from "hono/jsx"
 
 /**
  * GitHub brand icon with official logo design.
  */
-export const ICON_GITHUB = (): ComponentChildren => (
+export const ICON_GITHUB = (): Child => (
 	<svg
 		role="img"
 		viewBox="0 0 256 250"
@@ -28,7 +28,7 @@ export const ICON_GITHUB = (): ComponentChildren => (
 /**
  * Google brand icon with official multicolor logo design.
  */
-export const ICON_GOOGLE = (): ComponentChildren => (
+export const ICON_GOOGLE = (): Child => (
 	<svg
 		role="img"
 		width="256"
@@ -60,7 +60,7 @@ export const ICON_GOOGLE = (): ComponentChildren => (
 /**
  * Email envelope icon for email-related authentication flows.
  */
-export const ICON_EMAIL = (): ComponentChildren => (
+export const ICON_EMAIL = (): Child => (
 	<svg
 		role="img"
 		xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +81,7 @@ export const ICON_EMAIL = (): ComponentChildren => (
 /**
  * Apple brand icon for Sign in with Apple.
  */
-export const ICON_APPLE = (): ComponentChildren => (
+export const ICON_APPLE = (): Child => (
 	<svg
 		role="img"
 		xmlns="http://www.w3.org/2000/svg"
@@ -96,7 +96,7 @@ export const ICON_APPLE = (): ComponentChildren => (
 /**
  * Discord brand icon.
  */
-export const ICON_DISCORD = (): ComponentChildren => (
+export const ICON_DISCORD = (): Child => (
 	<svg
 		role="img"
 		viewBox="0 0 24 24"
@@ -111,7 +111,7 @@ export const ICON_DISCORD = (): ComponentChildren => (
 /**
  * Facebook brand icon with gradient.
  */
-export const ICON_FACEBOOK = (): ComponentChildren => (
+export const ICON_FACEBOOK = (): Child => (
 	<svg
 		role="img"
 		xmlns="http://www.w3.org/2000/svg"
@@ -136,7 +136,7 @@ export const ICON_FACEBOOK = (): ComponentChildren => (
 /**
  * LinkedIn brand icon.
  */
-export const ICON_LINKEDIN = (): ComponentChildren => (
+export const ICON_LINKEDIN = (): Child => (
 	<svg
 		role="img"
 		xmlns="http://www.w3.org/2000/svg"
@@ -151,7 +151,7 @@ export const ICON_LINKEDIN = (): ComponentChildren => (
 /**
  * Microsoft brand icon with four color squares.
  */
-export const ICON_MICROSOFT = (): ComponentChildren => (
+export const ICON_MICROSOFT = (): Child => (
 	<svg
 		role="img"
 		xmlns="http://www.w3.org/2000/svg"
@@ -169,7 +169,7 @@ export const ICON_MICROSOFT = (): ComponentChildren => (
 /**
  * Slack brand icon.
  */
-export const ICON_SLACK = (): ComponentChildren => (
+export const ICON_SLACK = (): Child => (
 	<svg
 		role="img"
 		xmlns="http://www.w3.org/2000/svg"
@@ -201,7 +201,7 @@ export const ICON_SLACK = (): ComponentChildren => (
 /**
  * GitLab brand icon.
  */
-export const ICON_GITLAB = (): ComponentChildren => (
+export const ICON_GITLAB = (): Child => (
 	<svg
 		role="img"
 		xmlns="http://www.w3.org/2000/svg"
@@ -216,7 +216,7 @@ export const ICON_GITLAB = (): ComponentChildren => (
 /**
  * Reddit brand icon.
  */
-export const ICON_REDDIT = (): ComponentChildren => (
+export const ICON_REDDIT = (): Child => (
 	<svg
 		role="img"
 		xmlns="http://www.w3.org/2000/svg"
@@ -231,7 +231,7 @@ export const ICON_REDDIT = (): ComponentChildren => (
 /**
  * Spotify brand icon.
  */
-export const ICON_SPOTIFY = (): ComponentChildren => (
+export const ICON_SPOTIFY = (): Child => (
 	<svg
 		role="img"
 		xmlns="http://www.w3.org/2000/svg"
@@ -246,7 +246,7 @@ export const ICON_SPOTIFY = (): ComponentChildren => (
 /**
  * Twitch brand icon.
  */
-export const ICON_TWITCH = (): ComponentChildren => (
+export const ICON_TWITCH = (): Child => (
 	<svg
 		role="img"
 		xmlns="http://www.w3.org/2000/svg"

@@ -11,8 +11,11 @@
 			"**",
 			"!**/dist",
 			"!**/.dist",
+			"!**/.cache",
 			"!**/.turbo",
 			"!node_modules",
+			"!**/.tanstack",
+			"!**/.typescript",
 			"!**/routeTree.gen.ts"
 		]
 	},
@@ -20,10 +23,27 @@
 		"enabled": true,
 		"indentStyle": "tab"
 	},
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"style": {
+				"useNodejsImportProtocol": "off"
+			},
+			"correctness": {
+				"useExhaustiveDependencies": "info"
+			},
+			"nursery": {
+				"noFloatingPromises": "error",
+				"useExhaustiveSwitchCases": "error"
+			}
 		}
 	},
 	"javascript": {

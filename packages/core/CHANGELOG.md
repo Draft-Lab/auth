@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.16.0
+
+### Minor Changes
+
+- change router to hono
+
 ## 0.15.1
 
 ### Patch Changes

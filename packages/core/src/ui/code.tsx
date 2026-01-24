@@ -3,14 +3,14 @@
  * Provides a complete interface for collecting user claims and verifying PIN codes
  */
 
-import type { ComponentChildren } from "preact"
+import { UnknownStateError } from "../error"
 import type {
 	CodeProviderError,
 	CodeProviderOptions,
 	CodeProviderState
 } from "../provider/code"
 import { run } from "../util"
-import { Layout, renderToHTML } from "./base"
+import { Layout } from "./base"
 import { FormAlert } from "./form"
 
 /**
@@ -121,127 +121,111 @@ export const CodeUI = (options: CodeUIOptions): CodeProviderOptions => {
 
 	const mode = options.mode || "email"
 
-	/**
-	 * Renders the start form for collecting contact information
-	 */
-	const renderStart = (
-		form: FormData | undefined,
-		error: CodeProviderError | undefined,
-		state?: CodeProviderState
-	): ComponentChildren => {
-		const success = getSuccessMessage(state || { type: "start" }, copy)
-
-		return (
-			<Layout>
-				<form data-component="form" method="post">
-					{run(() => {
-						if (success) {
-							return <FormAlert message={success.message} color="success" />
-						}
-						return <FormAlert message={getErrorMessage(error, copy)} />
-					})}
-
-					<input
-						data-component="input"
-						type={mode === "email" ? "email" : "tel"}
-						name={mode}
-						placeholder={copy.email_placeholder}
-						value={form?.get(mode)?.toString() || ""}
-						autoComplete={mode}
-						required
-					/>
-
-					<input type="hidden" name="action" value="request" />
-					<button data-component="button" type="submit">
-						{copy.button_continue}
-					</button>
-
-					<p data-component="description">{copy.code_info}</p>
-				</form>
-			</Layout>
-		)
-	}
-
-	/**
-	 * Renders the code verification form
-	 */
-	const renderCode = (
-		_form: FormData | undefined,
-		error: CodeProviderError | undefined,
-		state: CodeProviderState
-	): ComponentChildren => {
-		const success = getSuccessMessage(state, copy)
-		const contact = state.type === "code" ? (state.claims?.[mode] as string) || "" : ""
-
-		return (
-			<Layout>
-				<form data-component="form" method="post">
-					{run(() => {
-						if (success) {
-							return <FormAlert message={success.message} color="success" />
-						}
-						return <FormAlert message={getErrorMessage(error, copy)} />
-					})}
-
-					<input name="action" type="hidden" value="verify" />
-
-					<input
-						data-component="input"
-						type="text"
-						name="code"
-						placeholder={copy.code_placeholder}
-						aria-label="6-digit verification code"
-						autoComplete="one-time-code"
-						inputMode="numeric"
-						maxLength={6}
-						minLength={6}
-						pattern="[0-9]{6}"
-						required
-					/>
-
-					<button data-component="button" type="submit">
-						{copy.button_continue}
-					</button>
-				</form>
-
-				<form method="post">
-					<input name="action" type="hidden" value="resend" />
-					<input name={mode} type="hidden" value={contact} />
-
-					<div data-component="form-footer">
-						<span>
-							{copy.code_didnt_get}{" "}
-							<button type="submit" data-component="link">
-								{copy.code_resend}
-							</button>
-						</span>
-					</div>
-				</form>
-			</Layout>
-		)
-	}
-
 	return {
 		sendCode: options.sendCode,
 
 		/**
 		 * Renders the appropriate UI based on current state
 		 */
-		request: async (
-			_req: Request,
-			state: CodeProviderState,
-			form?: FormData,
-			error?: CodeProviderError
-		): Promise<Response> => {
-			const html = renderToHTML(
-				state.type === "start"
-					? renderStart(form, error, state)
-					: renderCode(form, error, state)
-			)
+		request: async (_req, state, form, error): Promise<Response> => {
+			if (state.type === "start") {
+				const success = getSuccessMessage(state || { type: "start" }, copy)
+				const jsx = (
+					<Layout>
+						<form data-component="form" method="post">
+							{run(() => {
+								if (success) {
+									return <FormAlert message={success.message} color="success" />
+								}
+								return <FormAlert message={getErrorMessage(error, copy)} />
+							})}
 
-			return new Response(html, {
-				headers: { "Content-Type": "text/html" }
-			})
+							<input
+								data-component="input"
+								type={mode === "email" ? "email" : "tel"}
+								name={mode}
+								placeholder={copy.email_placeholder}
+								value={form?.get(mode)?.toString() || ""}
+								autoComplete={mode}
+								required
+							/>
+
+							<input type="hidden" name="action" value="request" />
+							<button data-component="button" type="submit">
+								{copy.button_continue}
+							</button>
+
+							<p data-component="description">{copy.code_info}</p>
+						</form>
+					</Layout>
+				)
+
+				return new Response(jsx.toString(), {
+					headers: {
+						"Content-Type": "text/html"
+					}
+				})
+			}
+
+			if (state.type === "code") {
+				const success = getSuccessMessage(state, copy)
+				const contact = state.type === "code" ? (state.claims?.[mode] as string) || "" : ""
+
+				const jsx = (
+					<Layout>
+						<form data-component="form" method="post">
+							{run(() => {
+								if (success) {
+									return <FormAlert message={success.message} color="success" />
+								}
+								return <FormAlert message={getErrorMessage(error, copy)} />
+							})}
+
+							<input name="action" type="hidden" value="verify" />
+
+							<input
+								data-component="input"
+								type="text"
+								name="code"
+								placeholder={copy.code_placeholder}
+								aria-label="6-digit verification code"
+								autoComplete="one-time-code"
+								inputMode="numeric"
+								maxLength={6}
+								minLength={6}
+								pattern="[0-9]{6}"
+								required
+							/>
+
+							<button data-component="button" type="submit">
+								{copy.button_continue}
+							</button>
+						</form>
+
+						<form method="post">
+							<input name="action" type="hidden" value="resend" />
+							<input name={mode} type="hidden" value={contact} />
+
+							<div data-component="form-footer">
+								<span>
+									{copy.code_didnt_get}{" "}
+									<button type="submit" data-component="link">
+										{copy.code_resend}
+									</button>
+								</span>
+							</div>
+						</form>
+					</Layout>
+				)
+
+				return new Response(jsx.toString(), {
+					headers: {
+						"Content-Type": "text/html"
+					}
+				})
+			}
+
+			throw new UnknownStateError()
 		}
 	}
 }

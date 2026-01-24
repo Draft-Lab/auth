@@ -1,4 +1,4 @@
-import type { RouterContext } from "./router/types"
+import type { Context } from "hono"
 
 /**
  * Utility type that flattens complex types for better IntelliSense display.
@@ -21,21 +21,21 @@ export type Prettify<T> = {
  * Handles proxy headers (x-forwarded-*) to ensure correct URL generation
  * in containerized and load-balanced environments.
  *
- * @param ctx - Router context containing request information
+ * @param c - Hono context containing request information
  * @param path - Relative path to append to the base URL
  * @returns Complete URL string with proper protocol, host, and port
  *
  * @example
  * ```ts
- * const callbackUrl = getRelativeUrl(ctx, "/callback")
+ * const callbackUrl = getRelativeUrl(c, "/callback")
  * // Returns: "https://myapp.com/auth/callback"
  * ```
  */
-export const getRelativeUrl = (ctx: RouterContext, path: string): string => {
-	const result = new URL(path, ctx.request.url)
-	result.host = ctx.header("x-forwarded-host") || result.host
-	result.protocol = ctx.header("x-forwarded-proto") || result.protocol
-	result.port = ctx.header("x-forwarded-port") || result.port
+export const getRelativeUrl = (c: Context, path: string): string => {
+	const result = new URL(path, c.req.url)
+	result.host = c.req.header("x-forwarded-host") || result.host
+	result.protocol = c.req.header("x-forwarded-proto") || result.protocol
+	result.port = c.req.header("x-forwarded-port") || result.port
 	return result.toString()
 }
 

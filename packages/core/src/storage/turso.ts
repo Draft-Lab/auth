@@ -67,26 +67,32 @@ export const TursoStorage = (client: Client): StorageAdapter => {
 	const TABLE_NAME = "__draftauth__kv_storage"
 
 	// Initialize the storage table with optimized schema
-	client.execute(`
+	client
+		.execute(`
 		CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (
 			key TEXT PRIMARY KEY, 
 			value TEXT NOT NULL, 
 			expiry INTEGER
 		)
 	`)
+		.catch(() => console.log(`Failed to create storage table: ${TABLE_NAME}`))
 
 	// Create index for efficient prefix scanning
-	client.execute(`
+	client
+		.execute(`
 		CREATE INDEX IF NOT EXISTS idx_${TABLE_NAME}_key_prefix 
 		ON ${TABLE_NAME} (key)
 	`)
+		.catch(() => console.log(`Failed to create index prefix for table: ${TABLE_NAME}`))
 
 	// Create index for efficient expiry-based cleanup
-	client.execute(`
+	client
+		.execute(`
 		CREATE INDEX IF NOT EXISTS idx_${TABLE_NAME}_expiry 
 		ON ${TABLE_NAME} (expiry) 
 		WHERE expiry IS NOT NULL
 	`)
+		.catch(() => console.log(`Failed to create index expiry-based for table: ${TABLE_NAME}`))
 
 	return {
 		async get(key: string[]): Promise<Record<string, unknown> | undefined> {

@@ -442,16 +442,16 @@ export const PasswordProvider = (config: PasswordConfig): Provider<PasswordUserD
 			/**
 			 * GET /authorize - Display login form
 			 */
-			routes.get("/authorize", async (c) => ctx.forward(c, await config.login(c.request)))
+			routes.get("/authorize", async (c) => ctx.forward(c, await config.login(c.req.raw)))
 
 			/**
 			 * POST /authorize - Process login attempt
 			 */
 			routes.post("/authorize", async (c) => {
-				const formData = await c.formData()
+				const formData = await c.req.formData()
 
 				const error = async (err: PasswordLoginError): Promise<Response> => {
-					return ctx.forward(c, await config.login(c.request, formData, err))
+					return ctx.forward(c, await config.login(c.req.raw, formData, err))
 				}
 
 				const email = formData.get("email")?.toString()?.toLowerCase()
@@ -487,14 +487,14 @@ export const PasswordProvider = (config: PasswordConfig): Provider<PasswordUserD
 			routes.get("/register", async (c) => {
 				const state: PasswordRegisterState = { type: "start" }
 				await ctx.set(c, "provider", 60 * 60 * 24, state)
-				return ctx.forward(c, await config.register(c.request, state))
+				return ctx.forward(c, await config.register(c.req.raw, state))
 			})
 
 			/**
 			 * POST /register - Process registration steps
 			 */
 			routes.post("/register", async (c) => {
-				const formData = await c.formData()
+				const formData = await c.req.formData()
 				const email = formData.get("email")?.toString()?.toLowerCase()
 				const action = formData.get("action")?.toString()
 
@@ -509,7 +509,7 @@ export const PasswordProvider = (config: PasswordConfig): Provider<PasswordUserD
 						// Set provider to the newly created state so processing continues below
 						provider = state
 					} else {
-						return ctx.forward(c, await config.register(c.request, state))
+						return ctx.forward(c, await config.register(c.req.raw, state))
 					}
 				}
 
@@ -518,7 +518,7 @@ export const PasswordProvider = (config: PasswordConfig): Provider<PasswordUserD
 					err?: PasswordRegisterError
 				): Promise<Response> => {
 					await ctx.set<PasswordRegisterState>(c, "provider", 60 * 60 * 24, next)
-					return ctx.forward(c, await config.register(c.request, next, formData, err))
+					return ctx.forward(c, await config.register(c.req.raw, next, formData, err))
 				}
 
 				if (action === "register" && provider.type === "start") {
@@ -622,20 +622,20 @@ export const PasswordProvider = (config: PasswordConfig): Provider<PasswordUserD
 			 * GET /change - Display password change form
 			 */
 			routes.get("/change", async (c) => {
-				const redirect = c.query("redirect_uri") || getRelativeUrl(c, "./authorize")
+				const redirect = c.req.query("redirect_uri") || getRelativeUrl(c, "./authorize")
 				const state: PasswordChangeState = {
 					type: "start",
 					redirect
 				}
 				await ctx.set(c, "provider", 60 * 60 * 24, state)
-				return ctx.forward(c, await config.change(c.request, state))
+				return ctx.forward(c, await config.change(c.req.raw, state))
 			})
 
 			/**
 			 * POST /change - Process password change steps
 			 */
 			routes.post("/change", async (c) => {
-				const formData = await c.formData()
+				const formData = await c.req.formData()
 				const action = formData.get("action")?.toString()
 				const provider = await ctx.get<PasswordChangeState>(c, "provider")
 
@@ -648,7 +648,7 @@ export const PasswordProvider = (config: PasswordConfig): Provider<PasswordUserD
 					err?: PasswordChangeError
 				): Promise<Response> => {
 					await ctx.set<PasswordChangeState>(c, "provider", 60 * 60 * 24, next)
-					return ctx.forward(c, await config.change(c.request, next, formData, err))
+					return ctx.forward(c, await config.change(c.req.raw, next, formData, err))
 				}
 
 				if (action === "code") {

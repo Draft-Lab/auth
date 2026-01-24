@@ -5,18 +5,17 @@
 	"private": true,
 	"scripts": {
 		"dev": "turbo run dev",
-		"start": "turbo run start",
+		"changeset": "changeset",
 		"build": "turbo run build",
+		"version": "changeset version",
 		"check": "biome check --write .",
 		"format": "biome format --write .",
-		"clean": "turbo run clean && rm -rf .turbo node_modules",
-		"changeset": "changeset",
 		"typecheck": "turbo run typecheck",
-		"version": "changeset version",
-		"deploy": "turbo run build && changeset publish"
+		"deploy": "turbo run build && changeset publish",
+		"clean": "turbo run clean && rm -rf .turbo node_modules"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.3.11",
+		"@biomejs/biome": "^2.3.12",
 		"@changesets/cli": "^2.29.8",
 		"@turbo/gen": "^2.7.5",
 		"turbo": "^2.7.5",

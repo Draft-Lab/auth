@@ -1,7 +1,11 @@
 /**
- * Core issuer implementation.
+ * Core issuer implementation using Hono.
  */
 
+import type { Context } from "hono"
+import { Hono } from "hono"
+import { deleteCookie, getCookie, setCookie } from "hono/cookie"
+import { cors } from "hono/cors"
 import { CompactEncrypt, compactDecrypt, SignJWT } from "jose"
 import { type AllowCheckInput, defaultAllowCheck } from "./allow"
 import {
@@ -12,13 +16,9 @@ import {
 } from "./error"
 import { encryptionKeys, signingKeys } from "./keys"
 import { validatePKCE } from "./pkce"
-import type { Provider, ProviderOptions, ProviderRoute } from "./provider/provider"
+import type { Provider, ProviderOptions } from "./provider/provider"
 import { generateSecureToken } from "./random"
 import { Revocation } from "./revocation"
-import { Router } from "./router"
-import { deleteCookie, getCookie, setCookie } from "./router/cookies"
-import { cors } from "./router/middleware/cors"
-import type { RouterContext } from "./router/types"
 import { Storage, type StorageAdapter } from "./storage/storage"
 import type { SubjectPayload, SubjectSchema } from "./subject"
 import { setTheme, type Theme } from "./themes/theme"
@@ -103,7 +103,7 @@ interface IssuerInput<
 	providers: Providers
 	/** Subject schemas for token validation */
 	subjects: Subjects
-	/** Base path for embedded scenarios */
+	/** Base path for embedded scenarios (e.g., "/auth" or "/api/auth") */
 	basePath?: string
 	/** Success callback for completed authentication */
 	success(
@@ -175,27 +175,17 @@ interface IssuerInput<
 /**
  * Determines if the incoming request is using HTTPS protocol.
  * Checks multiple proxy headers to handle load balancers and reverse proxies.
- *
- * @param ctx - Router context containing request headers and URL
- * @returns True if request is HTTPS, false otherwise
- *
- * @example
- * ```ts
- * if (isHttpsRequest(ctx)) {
- *   setCookie(ctx, 'secure-cookie', value, { secure: true })
- * }
- * ```
  */
-const isHttpsRequest = (ctx: RouterContext): boolean => {
+const isHttpsRequest = (c: Context): boolean => {
 	return (
-		ctx.header("x-forwarded-proto") === "https" ||
-		ctx.header("x-forwarded-ssl") === "on" ||
-		ctx.request.url.startsWith("https://")
+		c.req.header("x-forwarded-proto") === "https" ||
+		c.req.header("x-forwarded-ssl") === "on" ||
+		c.req.url.startsWith("https://")
 	)
 }
 
 /**
- * Create an Draft Auth server, a Router app that handles OAuth 2.0 flows.
+ * Create a Draft Auth server, a Hono app that handles OAuth 2.0 flows.
  */
 export const issuer = <
 	Providers extends Record<string, Provider<unknown>>,
@@ -207,7 +197,7 @@ export const issuer = <
 	}[keyof Providers]
 >(
 	input: IssuerInput<Providers, Subjects, Result>
-): Router<{ Variables: { authorization: AuthorizationState } }> => {
+): Hono<{ Variables: { authorization: AuthorizationState; provider: string } }> => {
 	// Configuration setup
 	const error =
 		input.error ??
@@ -235,12 +225,15 @@ export const issuer = <
 	const signingKey = lazy(() => allSigning().then((all) => all[0]))
 	const encryptionKey = lazy(() => allEncryption().then((all) => all[0]))
 
+	// Cookie path for basePath support
+	const cookiePath = input.basePath || "/"
+
 	/**
 	 * Resolves issuer URL from context.
 	 * Returns the base URL for the OAuth issuer, considering basePath configuration.
 	 */
-	const issuer = (ctx: RouterContext): string => {
-		const baseUrl = new URL(getRelativeUrl(ctx, "/"))
+	const issuerUrl = (c: Context): string => {
+		const baseUrl = new URL(getRelativeUrl(c, "/"))
 
 		if (input.basePath) {
 			// Ensure basePath starts with / and doesn't end with /
@@ -299,7 +292,7 @@ export const issuer = <
 	 * Generates access and refresh tokens for OAuth 2.0.
 	 */
 	const generateTokens = async (
-		ctx: RouterContext,
+		c: Context,
 		value: {
 			type: string
 			properties: unknown
@@ -314,12 +307,6 @@ export const issuer = <
 		const refreshToken = value.nextToken ?? generateSecureToken()
 
 		if (opts?.generateRefreshToken ?? true) {
-			/**
-			 * Generate and store the next refresh token after the one we are currently returning.
-			 * Reserving these in advance avoids concurrency issues with multiple refreshes.
-			 * Similar treatment should be given to any other values that may have race conditions,
-			 * for example if a jti claim was added to the access token.
-			 */
 			const refreshPayload = {
 				type: value.type,
 				properties: value.properties,
@@ -341,7 +328,6 @@ export const issuer = <
 
 		const now = Math.floor(Date.now() / 1000)
 
-		// client must be present and non-empty
 		if (!value.clientID.trim()) {
 			throw new Error("Invalid audience: client ID cannot be empty")
 		}
@@ -351,7 +337,7 @@ export const issuer = <
 			properties: value.properties,
 			sub: value.subject,
 			aud: value.clientID,
-			iss: issuer(ctx),
+			iss: issuerUrl(c),
 			exp: now + value.ttl.access,
 			iat: now,
 			mode: "access"
@@ -376,8 +362,8 @@ export const issuer = <
 	/**
 	 * Gets authorization state from context.
 	 */
-	const getAuthorization = async (ctx: RouterContext) => {
-		const match = (await auth.get(ctx, "authorization")) || ctx.get("authorization")
+	const getAuthorization = async (c: Context) => {
+		const match = (await auth.get(c, "authorization")) || c.get("authorization")
 		if (!match) {
 			throw new UnknownStateError()
 		}
@@ -388,9 +374,9 @@ export const issuer = <
 	 * Authentication utilities for providers.
 	 */
 	const auth: Omit<ProviderOptions<unknown>, "name"> = {
-		async success(ctx, properties, successOpts) {
-			const authorization = await getAuthorization(ctx)
-			const currentProvider = (ctx.get("provider") as string | undefined) || "unknown"
+		async success(c, properties, successOpts) {
+			const authorization = await getAuthorization(c)
+			const currentProvider = (c.get("provider") as string | undefined) || "unknown"
 
 			if (!authorization.client_id) {
 				throw new Error("client_id is required")
@@ -412,7 +398,7 @@ export const issuer = <
 								throw new Error("client_id is required")
 							}
 
-							const tokens = await generateTokens(ctx, {
+							const tokens = await generateTokens(c, {
 								type,
 								subject,
 								properties,
@@ -429,8 +415,8 @@ export const issuer = <
 								expires_in: tokens.expiresIn.toString(),
 								...(authorization.state && { state: authorization.state })
 							}).toString()
-							await auth.unset(ctx, "authorization")
-							return ctx.redirect(location.toString(), 302)
+							await auth.unset(c, "authorization")
+							return c.redirect(location.toString(), 302)
 						}
 
 						// Default: authorization code flow
@@ -466,42 +452,38 @@ export const issuer = <
 						if (authorization.state) {
 							location.searchParams.set("state", authorization.state)
 						}
-						await auth.unset(ctx, "authorization")
-						return ctx.redirect(location.toString(), 302)
+						await auth.unset(c, "authorization")
+						return c.redirect(location.toString(), 302)
 					}
 				},
 				{
 					provider: currentProvider,
 					...(properties && typeof properties === "object" ? properties : {})
 				} as Result,
-				ctx.request,
+				c.req.raw,
 				authorization.client_id
 			)
 		},
 
-		forward(ctx, response) {
-			return ctx.newResponse(response.body ?? undefined, {
-				status: response.status,
-				statusText: response.statusText,
-				headers: response.headers
-			})
+		forward(c, response) {
+			return c.newResponse(response.body, response)
 		},
 
-		async set(ctx, key, maxAge, value) {
-			const isHttps = isHttpsRequest(ctx)
+		async set(c, key, maxAge, value) {
+			const isHttps = isHttpsRequest(c)
 			const encryptedValue = await encrypt(value)
 
-			setCookie(ctx, key, encryptedValue, {
+			setCookie(c, key, encryptedValue, {
 				maxAge,
 				httpOnly: true,
 				secure: isHttps,
 				sameSite: isHttps ? "None" : "Lax",
-				path: input.basePath || "/"
+				path: cookiePath
 			})
 		},
 
-		async get<T>(ctx: RouterContext, key: string): Promise<T | undefined> {
-			const raw = getCookie(ctx, key)
+		async get<T>(c: Context, key: string): Promise<T | undefined> {
+			const raw = getCookie(c, key)
 			if (!raw) {
 				return undefined
 			}
@@ -510,16 +492,16 @@ export const issuer = <
 				return decrypted as T
 			} catch {
 				// If decryption fails, clear the invalid cookie
-				deleteCookie(ctx, key, {
-					path: input.basePath || "/"
+				deleteCookie(c, key, {
+					path: cookiePath
 				})
 				return undefined
 			}
 		},
 
-		async unset(ctx: RouterContext, key: string) {
-			deleteCookie(ctx, key, {
-				path: input.basePath || "/"
+		async unset(c: Context, key: string) {
+			deleteCookie(c, key, {
+				path: cookiePath
 			})
 		},
 
@@ -532,42 +514,44 @@ export const issuer = <
 		storage
 	}
 
-	// Create main router app
-	const app = new Router<{ Variables: { authorization: AuthorizationState } }>({
-		basePath: input.basePath
-	})
+	// Create main Hono app with basePath support
+	const app = new Hono<{ Variables: { authorization: AuthorizationState; provider: string } }>(
+		{
+			strict: false
+		}
+	).basePath(input.basePath || "/")
 
 	// Setup provider routes
 	for (const [name, value] of Object.entries(input.providers)) {
-		const route = new Router<{ Variables: { provider: string } }>()
+		const route = new Hono<{ Variables: { provider: string } }>()
 
 		route.use(async (c, next) => {
 			c.set("provider", name)
-			return await next()
+			await next()
 		})
 
-		value.init(route as unknown as ProviderRoute, {
+		value.init(route, {
 			name,
 			...auth
 		})
 
-		app.mount(`/${name}`, route)
+		app.route(`/${name}`, route)
 	}
 
-	app.get("/.well-known/jwks.json", {
-		middleware: [
-			cors({
-				origin: "*",
-				allowHeaders: ["*"],
-				allowMethods: ["GET"],
-				credentials: false
-			})
-		],
-		handler: async (c) => {
-			const signingKeys = await allSigning()
+	// JWKS endpoint
+	app.get(
+		"/.well-known/jwks.json",
+		cors({
+			origin: "*",
+			allowHeaders: ["*"],
+			allowMethods: ["GET"],
+			credentials: false
+		}),
+		async (c) => {
+			const signingKeysData = await allSigning()
 
 			const jwksDocument = {
-				keys: signingKeys.map((keyInfo) => ({
+				keys: signingKeysData.map((keyInfo) => ({
 					...keyInfo.jwk,
 					alg: keyInfo.alg,
 					exp: keyInfo.expired ? Math.floor(keyInfo.expired.getTime() / 1000) : undefined
@@ -576,19 +560,19 @@ export const issuer = <
 
 			return c.json(jwksDocument)
 		}
-	})
+	)
 
-	app.get("/.well-known/oauth-authorization-server", {
-		middleware: [
-			cors({
-				origin: "*",
-				allowHeaders: ["*"],
-				allowMethods: ["GET"],
-				credentials: false
-			})
-		],
-		handler: (c) => {
-			const iss = issuer(c)
+	// OAuth Authorization Server Metadata
+	app.get(
+		"/.well-known/oauth-authorization-server",
+		cors({
+			origin: "*",
+			allowHeaders: ["*"],
+			allowMethods: ["GET"],
+			credentials: false
+		}),
+		(c) => {
+			const iss = issuerUrl(c)
 
 			const oauth2Document = {
 				issuer: iss,
@@ -600,27 +584,27 @@ export const issuer = <
 
 			return c.json(oauth2Document)
 		}
-	})
+	)
 
-	app.post("/token", {
-		middleware: [
-			cors({
-				origin: "*",
-				allowHeaders: ["*"],
-				allowMethods: ["POST"],
-				credentials: false
-			})
-		],
-		handler: async (c) => {
-			const form = await c.formData()
+	// Token endpoint
+	app.post(
+		"/token",
+		cors({
+			origin: "*",
+			allowHeaders: ["*"],
+			allowMethods: ["POST"],
+			credentials: false
+		}),
+		async (c) => {
+			const form = await c.req.formData()
 			const grantType = form.get("grant_type")
 
 			// Authorization Code Grant
 			if (grantType === "authorization_code") {
 				const code = form.get("code")
 				if (!code) {
-					const error = new OauthError("invalid_request", "Missing code")
-					return c.json(error.toJSON(), { status: 400 })
+					const err = new OauthError("invalid_request", "Missing code")
+					return c.json(err.toJSON(), 400)
 				}
 
 				const key = ["oauth:code", code.toString()]
@@ -629,7 +613,6 @@ export const issuer = <
 				const { isValid, payload } = await normalizeTimingAsync(async () => {
 					const data = await Storage.get<CodeStoragePayload>(storage, key)
 
-					// Perform all validations to maintain consistent timing
 					const redirectUri = form.get("redirect_uri")
 					const clientId = form.get("client_id")
 
@@ -646,26 +629,26 @@ export const issuer = <
 				})
 
 				if (!isValid || !payload) {
-					const error = new OauthError(
+					const err = new OauthError(
 						"invalid_grant",
 						"Authorization code has been used or expired"
 					)
-					return c.json(error.toJSON(), { status: 400 })
+					return c.json(err.toJSON(), 400)
 				}
 
 				// PKCE validation
 				if (payload.pkce) {
 					const codeVerifier = form.get("code_verifier")?.toString()
 					if (!codeVerifier) {
-						const error = new OauthError("invalid_grant", "Missing code_verifier")
-						return c.json(error.toJSON(), { status: 400 })
+						const err = new OauthError("invalid_grant", "Missing code_verifier")
+						return c.json(err.toJSON(), 400)
 					}
 
 					if (
 						!(await validatePKCE(codeVerifier, payload.pkce.challenge, payload.pkce.method))
 					) {
-						const error = new OauthError("invalid_grant", "Code verifier does not match")
-						return c.json(error.toJSON(), { status: 400 })
+						const err = new OauthError("invalid_grant", "Code verifier does not match")
+						return c.json(err.toJSON(), 400)
 					}
 				}
 
@@ -688,8 +671,8 @@ export const issuer = <
 			if (grantType === "refresh_token") {
 				const refreshToken = form.get("refresh_token")
 				if (!refreshToken) {
-					const error = new OauthError("invalid_request", "Missing refresh_token")
-					return c.json(error.toJSON(), { status: 400 })
+					const err = new OauthError("invalid_request", "Missing refresh_token")
+					return c.json(err.toJSON(), 400)
 				}
 
 				const refreshTokenStr = refreshToken.toString()
@@ -697,8 +680,8 @@ export const issuer = <
 				// Check if refresh token has been revoked
 				const isRevoked = await Revocation.isRevoked(storage, refreshTokenStr)
 				if (isRevoked) {
-					const error = new OauthError("invalid_grant", "Refresh token has been revoked")
-					return c.json(error.toJSON(), { status: 400 })
+					const err = new OauthError("invalid_grant", "Refresh token has been revoked")
+					return c.json(err.toJSON(), 400)
 				}
 
 				const splits = refreshTokenStr.split(":")
@@ -711,11 +694,8 @@ export const issuer = <
 				const payload = await Storage.get<RefreshTokenStoragePayload>(storage, key)
 
 				if (!payload) {
-					const error = new OauthError(
-						"invalid_grant",
-						"Refresh token has been used or expired"
-					)
-					return c.json(error.toJSON(), { status: 400 })
+					const err = new OauthError("invalid_grant", "Refresh token has been used or expired")
+					return c.json(err.toJSON(), 400)
 				}
 
 				// Execute refresh callback if provided
@@ -729,7 +709,7 @@ export const issuer = <
 								clientID: payload.clientID,
 								scopes: payload.scopes
 							},
-							c.request
+							c.req.raw
 						)
 
 						if (!refreshResult) {
@@ -739,7 +719,7 @@ export const issuer = <
 									error: "invalid_grant",
 									error_description: "Refresh token is no longer valid"
 								},
-								{ status: 400 }
+								400
 							)
 						}
 
@@ -752,15 +732,13 @@ export const issuer = <
 						if (refreshResult.scopes) {
 							payload.scopes = refreshResult.scopes
 						}
-
-						// Update properties directly from refresh result
 					} catch {
 						return c.json(
 							{
 								error: "server_error",
 								error_description: "Internal server error during token refresh"
 							},
-							{ status: 500 }
+							500
 						)
 					}
 				}
@@ -768,20 +746,18 @@ export const issuer = <
 				// Handle refresh token reuse logic
 				const generateRefreshToken = !payload.timeUsed
 				if (ttlRefreshReuse <= 0) {
-					// No reuse interval, remove the refresh token immediately
 					await Storage.remove(storage, key)
 				} else if (!payload.timeUsed) {
 					payload.timeUsed = Date.now()
 					await Storage.set(storage, key, payload, ttlRefreshReuse + ttlRefreshRetention)
 				} else if (Date.now() > payload.timeUsed + ttlRefreshReuse * 1000) {
-					// Token was reused past the allowed interval
 					await auth.invalidate(subject)
 					return c.json(
 						{
 							error: "invalid_grant",
 							error_description: "Refresh token has been used or expired"
 						},
-						{ status: 400 }
+						400
 					)
 				}
 
@@ -818,34 +794,32 @@ export const issuer = <
 					error_description:
 						"The authorization grant type is not supported by the authorization server"
 				},
-				{ status: 400 }
+				400
 			)
 		}
-	})
+	)
 
-	app.post("/revoke", {
-		middleware: [
-			cors({
-				origin: "*",
-				allowHeaders: ["Content-Type"],
-				allowMethods: ["POST"],
-				credentials: false
-			})
-		],
-		handler: async (c) => {
-			const form = await c.formData()
+	// Revoke endpoint
+	app.post(
+		"/revoke",
+		cors({
+			origin: "*",
+			allowHeaders: ["Content-Type"],
+			allowMethods: ["POST"],
+			credentials: false
+		}),
+		async (c) => {
+			const form = await c.req.formData()
 			const token = form.get("token")?.toString()
 			const tokenTypeHint = form.get("token_type_hint")?.toString()
 
 			if (!token) {
-				const error = new OauthError("invalid_request", "Missing token parameter")
-				return c.json(error.toJSON(), { status: 400 })
+				const err = new OauthError("invalid_request", "Missing token parameter")
+				return c.json(err.toJSON(), 400)
 			}
 
 			try {
-				// Optimize token lookup based on token_type_hint
 				if (tokenTypeHint === "refresh_token") {
-					// Try to revoke as refresh token first
 					const splits = token.split(":")
 					const tokenPart = splits.pop()
 					if (tokenPart && splits.length > 0) {
@@ -861,14 +835,12 @@ export const issuer = <
 						}
 					}
 				} else if (tokenTypeHint === "access_token") {
-					// Revoke access token (just add to revocation list)
 					const expiresAt = Date.now() + ttlAccess * 1000
 					await Revocation.revoke(storage, token, expiresAt)
 					return c.json({})
 				}
 
-				// Fallback: no hint provided or hint was wrong
-				// Try refresh token format first (contains ":")
+				// Fallback: try refresh token format first
 				const splits = token.split(":")
 				const tokenPart = splits.pop()
 				if (tokenPart && splits.length > 0) {
@@ -888,31 +860,32 @@ export const issuer = <
 				const expiresAt = Date.now() + ttlAccess * 1000
 				await Revocation.revoke(storage, token, expiresAt)
 
-				// RFC 7009: Successful revocation returns 200 with empty body
 				return c.json({})
-			} catch (_err) {
+			} catch {
 				return c.json(
 					{
 						error: "server_error",
 						error_description: "Token revocation failed"
 					},
-					{ status: 500 }
+					500
 				)
 			}
 		}
-	})
+	)
 
+	// Authorize endpoint
 	app.get("/authorize", async (c) => {
-		const provider = c.query("provider")
-		const response_type = c.query("response_type")
-		const redirect_uri = c.query("redirect_uri")
-		const state = c.query("state")
-		const client_id = c.query("client_id")
-		const audience = c.query("audience")
-		const code_challenge = c.query("code_challenge")
-		const code_challenge_method = c.query("code_challenge_method")
-		const scope = c.query("scope")
+		const provider = c.req.query("provider")
+		const response_type = c.req.query("response_type")
+		const redirect_uri = c.req.query("redirect_uri")
+		const state = c.req.query("state")
+		const client_id = c.req.query("client_id")
+		const audience = c.req.query("audience")
+		const code_challenge = c.req.query("code_challenge")
+		const code_challenge_method = c.req.query("code_challenge_method")
+		const scope = c.req.query("scope")
 		const scopes = scope ? scope.split(" ").filter(Boolean) : undefined
+
 		const authorization: AuthorizationState = {
 			response_type,
 			redirect_uri,
@@ -934,18 +907,17 @@ export const issuer = <
 
 		// Parameter validation
 		if (!redirect_uri) {
-			return c.text("Missing redirect_uri", { status: 400 })
+			return c.text("Missing redirect_uri", 400)
 		}
 
-		// Validate redirect_uri format to prevent bypass attacks
+		// Validate redirect_uri format
 		try {
 			const uri = new URL(redirect_uri)
-			// Ensure proper scheme://host format (prevent "https:evil.com" attacks)
 			if (!uri.protocol || !uri.host) {
-				return c.text("Invalid redirect_uri format", { status: 400 })
+				return c.text("Invalid redirect_uri format", 400)
 			}
 		} catch {
-			return c.text("Invalid redirect_uri format", { status: 400 })
+			return c.text("Invalid redirect_uri format", 400)
 		}
 
 		if (!response_type) {
@@ -958,7 +930,7 @@ export const issuer = <
 
 		// Execute start callback
 		if (input.start) {
-			await input.start(c.request)
+			await input.start(c.req.raw)
 		}
 
 		// Client authorization check
@@ -969,14 +941,14 @@ export const issuer = <
 					redirectURI: redirect_uri,
 					audience
 				},
-				c.request
+				c.req.raw
 			))
 		) {
 			throw new UnauthorizedClientError(client_id, redirect_uri)
 		}
 
-		// Store authorization state
-		await auth.set(c, "authorization", 60 * 15, authorization) // 15 minutes for authorization state
+		// Store authorization state (15 minutes)
+		await auth.set(c, "authorization", 60 * 15, authorization)
 
 		// Handle provider selection
 		if (provider) {
@@ -995,7 +967,7 @@ export const issuer = <
 				Object.fromEntries(
 					Object.entries(input.providers).map(([key, value]) => [key, value.type])
 				),
-				c.request
+				c.req.raw
 			)
 		)
 	})
@@ -1003,7 +975,7 @@ export const issuer = <
 	// Error handling
 	app.onError(async (err, c) => {
 		if (err instanceof UnknownStateError) {
-			return auth.forward(c, await error(err, c.request))
+			return auth.forward(c, await error(err, c.req.raw))
 		}
 
 		try {
@@ -1026,7 +998,7 @@ export const issuer = <
 					error: "server_error",
 					error_description: err.message
 				},
-				{ status: 500 }
+				500
 			)
 		}
 	})

@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.17.0
+
+### Minor Changes
+
+- add another step to build
+
 ## 0.16.0
 
 ### Minor Changes

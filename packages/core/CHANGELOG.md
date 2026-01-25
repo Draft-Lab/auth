@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.18.0
+
+### Minor Changes
+
+- add infer subject types
+
 ## 0.17.0
 
 ### Minor Changes

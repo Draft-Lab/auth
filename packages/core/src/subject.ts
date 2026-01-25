@@ -88,6 +88,35 @@ export type SubjectPayload<T extends SubjectSchema> = Prettify<
 >
 
 /**
+ * Extracts the properties type for a specific subject from a subject schema.
+ * Useful for creating type aliases for your application's domain models.
+ *
+ * @template Schema - The subject schema
+ * @template Type - The subject type key to extract properties from
+ *
+ * @example
+ * ```ts
+ * import { createSubjects, InferSubjectProperties } from "@draftlab/auth/subject"
+ * import { object, string } from "valibot"
+ *
+ * const subjects = createSubjects({
+ *   user: object({
+ *     userID: string(),
+ *     email: string()
+ *   })
+ * })
+ *
+ * // Extract the user properties type
+ * type User = InferSubjectProperties<typeof subjects, "user">
+ * // Result: { userID: string; email: string }
+ * ```
+ */
+export type InferSubjectProperties<
+	Schema extends SubjectSchema,
+	Type extends keyof Schema & string
+> = Extract<SubjectPayload<Schema>, { type: Type }>["properties"]
+
+/**
  * Creates a strongly-typed subject schema that can be used throughout your application.
  * The returned schema maintains type information for excellent IDE support and runtime validation.
  *

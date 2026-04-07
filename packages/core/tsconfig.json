@@ -1,6 +1,7 @@
 {
 	"extends": "@draftlab/tsconfig/internal-package.json",
 	"compilerOptions": {
+		"rootDir": "./src",
 		"jsx": "react-jsx",
 		"jsxImportSource": "hono/jsx",
 		"types": ["@draftlab/tsconfig/reset"]

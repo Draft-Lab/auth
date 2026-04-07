@@ -310,8 +310,14 @@ export interface VerifyResult<T extends SubjectSchema> {
 	/**
 	 * Unique subject identifier.
 	 *
-	 * This is a stable, consistent identifier derived from the subject type and properties.
+	 * This identifier is derived from the subject type and properties via SHA-256 hash.
 	 * Format: `{type}:{hash}` (e.g., `user:30e16a2659c8bbb2`)
+	 *
+	 * **Important:** The hash changes if subject properties change. For a stable identifier,
+	 * pass a custom `subject` value to `ctx.subject()`:
+	 * ```ts
+	 * ctx.subject("user", { email }, { subject: "user:db-id-123" })
+	 * ```
 	 */
 	sub: string
 	/**

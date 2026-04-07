@@ -136,7 +136,7 @@ export const UnStorage = ({ driver }: { driver?: UnstorageDriver } = {}): Storag
 					try {
 						const entry = await store.getItem(keyPath)
 
-						if (!entry || !entry.value) continue
+						if (!entry?.value) continue
 
 						// Skip expired entries and clean them up
 						if (entry.expiry && now >= entry.expiry) {

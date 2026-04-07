@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.19.0
+
+### Minor Changes
+
+- update packages
+
 ## 0.18.0
 
 ### Minor Changes

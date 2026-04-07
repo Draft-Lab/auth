@@ -102,7 +102,7 @@ export const splitKey = (key: string): string[] => {
  */
 const encodeSegment = (segment: string): string => {
 	// Validate segment is not empty
-	if (!segment || !segment.trim()) {
+	if (!segment.trim()) {
 		throw new Error(`Storage key segment cannot be empty or whitespace-only: "${segment}"`)
 	}
 

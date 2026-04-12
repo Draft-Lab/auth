@@ -189,7 +189,7 @@ export interface ProviderOptions<Properties> {
 	 *
 	 * @example
 	 * ```ts
-	 * // Force logout on password change
+	 * // Force logout after a sensitive account event
 	 * await ctx.invalidate(userId)
 	 * ```
 	 */

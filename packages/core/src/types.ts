@@ -8,8 +8,8 @@
 export interface AuthorizationState {
 	/** OAuth redirect URI */
 	redirect_uri?: string
-	/** OAuth response type (code, token) */
-	response_type?: string
+	/** OAuth response type */
+	response_type?: "code"
 	/** OAuth state parameter for CSRF protection */
 	state?: string
 	/** OAuth client identifier */

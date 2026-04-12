@@ -18,7 +18,6 @@ import { encryptionKeys, signingKeys } from "./keys"
 import { validatePKCE } from "./pkce"
 import type { Provider, ProviderOptions } from "./provider/provider"
 import { generateSecureToken } from "./random"
-import { Revocation } from "./revocation"
 import { Storage, type StorageAdapter } from "./storage/storage"
 import type { SubjectPayload, SubjectSchema } from "./subject"
 import { setTheme, type Theme } from "./themes/theme"
@@ -137,7 +136,7 @@ interface IssuerInput<
 	 * refresh: async (payload, req) => {
 	 *   const user = await getUserBySubject(payload.subject)
 	 *   if (!user || !user.active) {
-	 *     return undefined // Revoke the token
+	 *     return undefined
 	 *   }
 	 *
 	 *   return {
@@ -387,39 +386,6 @@ export const issuer = <
 					async subject(type, properties, subjectOpts) {
 						const subject = subjectOpts?.subject ?? (await resolveSubject(type, properties))
 						await successOpts?.invalidate?.(await resolveSubject(type, properties))
-
-						// Handle different response types
-						if (authorization.response_type === "token") {
-							if (!authorization.redirect_uri) {
-								throw new Error("redirect_uri is required")
-							}
-							const location = new URL(authorization.redirect_uri)
-							if (!authorization.client_id) {
-								throw new Error("client_id is required")
-							}
-
-							const tokens = await generateTokens(c, {
-								type,
-								subject,
-								properties,
-								clientID: authorization.client_id,
-								ttl: {
-									access: subjectOpts?.ttl?.access ?? ttlAccess,
-									refresh: subjectOpts?.ttl?.refresh ?? ttlRefresh
-								}
-							})
-
-							location.hash = new URLSearchParams({
-								access_token: tokens.access,
-								token_type: "Bearer",
-								expires_in: tokens.expiresIn.toString(),
-								...(authorization.state && { state: authorization.state })
-							}).toString()
-							await auth.unset(c, "authorization")
-							return c.redirect(location.toString(), 302)
-						}
-
-						// Default: authorization code flow
 						if (!authorization.redirect_uri) {
 							throw new Error("redirect_uri is required")
 						}
@@ -579,7 +545,7 @@ export const issuer = <
 				authorization_endpoint: `${iss}/authorize`,
 				token_endpoint: `${iss}/token`,
 				jwks_uri: `${iss}/.well-known/jwks.json`,
-				response_types_supported: ["code", "token"]
+				response_types_supported: ["code"]
 			}
 
 			return c.json(oauth2Document)
@@ -676,13 +642,6 @@ export const issuer = <
 				}
 
 				const refreshTokenStr = refreshToken.toString()
-
-				// Check if refresh token has been revoked
-				const isRevoked = await Revocation.isRevoked(storage, refreshTokenStr)
-				if (isRevoked) {
-					const err = new OauthError("invalid_grant", "Refresh token has been revoked")
-					return c.json(err.toJSON(), 400)
-				}
 
 				const splits = refreshTokenStr.split(":")
 				const token = splits.pop()
@@ -799,80 +758,6 @@ export const issuer = <
 		}
 	)
 
-	// Revoke endpoint
-	app.post(
-		"/revoke",
-		cors({
-			origin: "*",
-			allowHeaders: ["Content-Type"],
-			allowMethods: ["POST"],
-			credentials: false
-		}),
-		async (c) => {
-			const form = await c.req.formData()
-			const token = form.get("token")?.toString()
-			const tokenTypeHint = form.get("token_type_hint")?.toString()
-
-			if (!token) {
-				const err = new OauthError("invalid_request", "Missing token parameter")
-				return c.json(err.toJSON(), 400)
-			}
-
-			try {
-				if (tokenTypeHint === "refresh_token") {
-					const splits = token.split(":")
-					const tokenPart = splits.pop()
-					if (tokenPart && splits.length > 0) {
-						const subject = splits.join(":")
-						const key = ["oauth:refresh", subject, tokenPart]
-						const payload = await Storage.get(storage, key)
-
-						if (payload) {
-							await Storage.remove(storage, key)
-							const expiresAt = Date.now() + ttlRefreshRetention * 1000
-							await Revocation.revoke(storage, token, expiresAt)
-							return c.json({})
-						}
-					}
-				} else if (tokenTypeHint === "access_token") {
-					const expiresAt = Date.now() + ttlAccess * 1000
-					await Revocation.revoke(storage, token, expiresAt)
-					return c.json({})
-				}
-
-				// Fallback: try refresh token format first
-				const splits = token.split(":")
-				const tokenPart = splits.pop()
-				if (tokenPart && splits.length > 0) {
-					const subject = splits.join(":")
-					const key = ["oauth:refresh", subject, tokenPart]
-					const payload = await Storage.get(storage, key)
-
-					if (payload) {
-						await Storage.remove(storage, key)
-						const expiresAt = Date.now() + ttlRefreshRetention * 1000
-						await Revocation.revoke(storage, token, expiresAt)
-						return c.json({})
-					}
-				}
-
-				// Otherwise assume it's an access token
-				const expiresAt = Date.now() + ttlAccess * 1000
-				await Revocation.revoke(storage, token, expiresAt)
-
-				return c.json({})
-			} catch {
-				return c.json(
-					{
-						error: "server_error",
-						error_description: "Token revocation failed"
-					},
-					500
-				)
-			}
-		}
-	)
-
 	// Authorize endpoint
 	app.get("/authorize", async (c) => {
 		const provider = c.req.query("provider")
@@ -922,6 +807,13 @@ export const issuer = <
 
 		if (!response_type) {
 			throw new MissingParameterError("response_type")
+		}
+
+		if (response_type !== "code") {
+			throw new OauthError(
+				"unsupported_response_type",
+				`Unsupported response_type: ${response_type}`
+			)
 		}
 
 		if (!client_id) {

@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.20.0
+
+### Minor Changes
+
+- refactor some providers and logic for the core issuer
+
 ## 0.19.0
 
 ### Minor Changes

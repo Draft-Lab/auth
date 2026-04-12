@@ -7,7 +7,7 @@
  */
 
 import { createStorage, type Driver as UnstorageDriver } from "unstorage"
-import { joinKey, type StorageAdapter, splitKey } from "./storage"
+import { hasKeyPrefix, joinKey, type StorageAdapter, splitKey } from "./storage"
 
 /**
  * Internal storage entry format with expiration support.
@@ -134,6 +134,9 @@ export const UnStorage = ({ driver }: { driver?: UnstorageDriver } = {}): Storag
 
 				for (const keyPath of keys) {
 					try {
+						const decodedKey = splitKey(keyPath)
+						if (!hasKeyPrefix(decodedKey, prefix)) continue
+
 						const entry = await store.getItem(keyPath)
 
 						if (!entry?.value) continue
@@ -145,7 +148,7 @@ export const UnStorage = ({ driver }: { driver?: UnstorageDriver } = {}): Storag
 							continue
 						}
 
-						yield [splitKey(keyPath), entry.value] as const
+						yield [decodedKey, entry.value] as const
 					} catch {
 						// Skip invalid entries
 					}

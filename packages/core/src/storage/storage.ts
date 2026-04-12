@@ -91,6 +91,15 @@ export const splitKey = (key: string): string[] => {
 }
 
 /**
+ * Checks whether a decoded storage key belongs to the provided prefix.
+ */
+export const hasKeyPrefix = (key: string[], prefix: string[]): boolean => {
+	return (
+		prefix.length <= key.length && prefix.every((segment, index) => key[index] === segment)
+	)
+}
+
+/**
  * Encodes a single key segment by escaping special characters.
  * Prevents collisions by properly escaping separator and escape characters.
  *

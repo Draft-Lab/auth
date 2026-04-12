@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs"
 import { writeFile } from "node:fs/promises"
-import { joinKey, type StorageAdapter, splitKey } from "./storage"
+import { hasKeyPrefix, joinKey, type StorageAdapter, splitKey } from "./storage"
 
 /**
  * In-memory storage adapter for Draft Auth with optional file persistence.
@@ -231,17 +231,17 @@ export const MemoryStorage = (options?: MemoryStorageOptions): StorageAdapter =>
 
 		async *scan(prefix: string[]) {
 			const now = Date.now()
-			const prefixStr = joinKey(prefix)
 
 			for (const [key, entry] of store) {
-				if (!key.startsWith(prefixStr)) {
+				const decodedKey = splitKey(key)
+				if (!hasKeyPrefix(decodedKey, prefix)) {
 					continue
 				}
 				if (entry.expiry && now >= entry.expiry) {
 					continue
 				}
 
-				yield [splitKey(key), entry.value] as const
+				yield [decodedKey, entry.value] as const
 			}
 		}
 	}

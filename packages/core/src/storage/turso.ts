@@ -1,5 +1,5 @@
 import type { Client } from "@libsql/client"
-import { joinKey, type StorageAdapter, splitKey } from "./storage"
+import { hasKeyPrefix, joinKey, type StorageAdapter, splitKey } from "./storage"
 
 /**
  * Turso/LibSQL storage adapter for Draft Auth with automatic expiration cleanup.
@@ -168,8 +168,13 @@ export const TursoStorage = (client: Client): StorageAdapter => {
 
 			for (const row of rows as unknown as StorageRow[]) {
 				try {
+					const decodedKey = splitKey(row.key)
+					if (!hasKeyPrefix(decodedKey, prefix)) {
+						continue
+					}
+
 					const parsedValue = JSON.parse(row.value) as Record<string, unknown>
-					yield [splitKey(row.key), parsedValue] as const
+					yield [decodedKey, parsedValue] as const
 				} catch {
 					// Skip malformed entries rather than failing the entire scan
 				}

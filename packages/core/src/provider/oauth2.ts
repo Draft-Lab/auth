@@ -154,6 +154,7 @@ export interface Oauth2Config {
 	/**
 	 * Additional query parameters to include in the authorization request.
 	 * Useful for provider-specific parameters or customizing the auth flow.
+	 * Reserved OAuth parameters controlled by the core cannot be overridden here.
 	 *
 	 * @example
 	 * ```ts
@@ -165,6 +166,11 @@ export interface Oauth2Config {
 	 *   }
 	 * }
 	 * ```
+	 *
+	 * The following parameters are reserved and must be configured through dedicated
+	 * provider options or the core flow itself:
+	 * `client_id`, `redirect_uri`, `response_type`, `state`, `scope`,
+	 * `code_challenge`, `code_challenge_method`.
 	 */
 	readonly query?: Record<string, string>
 }
@@ -273,6 +279,24 @@ export interface Oauth2UserData {
  */
 export const Oauth2Provider = (config: Oauth2Config): Provider<Oauth2UserData> => {
 	const authQuery = config.query || {}
+	const reservedAuthorizationParams = new Set([
+		"client_id",
+		"redirect_uri",
+		"response_type",
+		"state",
+		"scope",
+		"code_challenge",
+		"code_challenge_method"
+	])
+	const conflictingQueryKeys = Object.keys(authQuery).filter((key) =>
+		reservedAuthorizationParams.has(key)
+	)
+
+	if (conflictingQueryKeys.length) {
+		throw new Error(
+			`Oauth2Provider query cannot override reserved authorization parameters: ${conflictingQueryKeys.join(", ")}`
+		)
+	}
 
 	/**
 	 * Handles the OAuth 2.0 callback logic for both GET and POST requests.

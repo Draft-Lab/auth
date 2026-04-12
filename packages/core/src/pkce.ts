@@ -27,9 +27,6 @@ type PKCEMethod = "S256" | "plain"
  * // Safe for comparing sensitive values like PKCE verifiers or tokens
  * const isValid = await timingSafeCompare(receivedVerifier, expectedChallenge);
  *
- * // Safe for password hash verification
- * const isValidPassword = timingSafeCompare(hashedInput, storedHash);
- *
  * // Returns false for different types or lengths without leaking timing info
  * timingSafeCompare("abc", 123 as any); // false
  * timingSafeCompare("abc", "abcd"); // false

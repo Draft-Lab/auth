@@ -256,6 +256,10 @@ export interface RefreshOptions {
 	 * ```
 	 */
 	access?: string
+	/**
+	 * Optional fetch override for refresh-related HTTP requests.
+	 */
+	fetch?: FetchLike
 }
 
 /**
@@ -289,7 +293,7 @@ export interface VerifyOptions {
 	/**
 	 * Custom fetch for HTTP requests.
 	 *
-	 * Optionally, override the internally used fetch function.
+	 * Overrides metadata/JWKS requests during verification and any automatic refresh.
 	 */
 	fetch?: FetchLike
 }
@@ -460,9 +464,8 @@ export interface Client {
 	 * const result = await client.verify(subjects, accessToken)
 	 *
 	 * if (result.success) {
-	 *   const { subject, scopes } = result.data
-	 *   // Access user ID: subject.properties.userID
-	 *   // Access scopes: scopes?.join(', ')
+	 *   const { subject } = result.data
+	 *   // Access user properties: subject.properties
 	 * }
 	 * ```
 	 *
@@ -517,22 +520,24 @@ export const createClient = (input: ClientInput): Client => {
 	}
 	const f = input.fetch ?? (fetch as FetchLike)
 
-	const getIssuer = async (): Promise<WellKnown> => {
+	const getIssuer = async (customFetch?: FetchLike): Promise<WellKnown> => {
 		const cached = issuerCache.get(issuer)
 		if (cached) return cached
 
-		const wellKnown = (await f(`${issuer}/.well-known/oauth-authorization-server`).then(
-			(r: FetchResponse) => r.json()
-		)) as WellKnown
+		const wellKnown = (await (customFetch ?? f)(
+			`${issuer}/.well-known/oauth-authorization-server`
+		).then((r: FetchResponse) => r.json())) as WellKnown
 		issuerCache.set(issuer, wellKnown)
 		return wellKnown
 	}
 
-	const getJWKS = async () => {
-		const wk = await getIssuer()
+	const getJWKS = async (customFetch?: FetchLike) => {
+		const wk = await getIssuer(customFetch)
 		const cached = jwksCache.get(issuer)
 		if (cached) return cached
-		const keyset = (await f(wk.jwks_uri).then((r: FetchResponse) => r.json())) as JSONWebKeySet
+		const keyset = (await (customFetch ?? f)(wk.jwks_uri).then((r: FetchResponse) =>
+			r.json()
+		)) as JSONWebKeySet
 		const result = createLocalJWKSet(keyset)
 		jwksCache.set(issuer, result)
 		return result
@@ -629,16 +634,17 @@ export const createClient = (input: ClientInput): Client => {
 
 		async refresh(refresh, opts) {
 			try {
+				const fetcher = opts?.fetch ?? f
 				if (opts?.access) {
 					try {
-						const jwks = await getJWKS()
+						const jwks = await getJWKS(fetcher)
 						await jwtVerify(opts.access, jwks, { issuer })
 						return { success: true, data: {} }
 					} catch {}
 				}
 
-				const wk = await getIssuer()
-				const response = await f(wk.token_endpoint, {
+				const wk = await getIssuer(fetcher)
+				const response = await fetcher(wk.token_endpoint, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/x-www-form-urlencoded"
@@ -681,7 +687,8 @@ export const createClient = (input: ClientInput): Client => {
 			options?: VerifyOptions
 		) {
 			try {
-				const jwks = await getJWKS()
+				const fetcher = options?.fetch ?? f
+				const jwks = await getJWKS(fetcher)
 				const jwtResult = await jwtVerify<{
 					mode: "access"
 					type: keyof T
@@ -715,7 +722,9 @@ export const createClient = (input: ClientInput): Client => {
 				}
 			} catch (e) {
 				if (e instanceof errors.JWTExpired && options?.refresh) {
-					const refreshed = await client.refresh(options.refresh)
+					const refreshed = await client.refresh(options.refresh, {
+						fetch: options.fetch
+					})
 					if (!refreshed.success) return refreshed
 
 					if (!refreshed.data.tokens) {

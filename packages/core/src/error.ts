@@ -11,15 +11,11 @@
  *   UnknownStateError
  * } from "@draftlab/auth/error"
  *
- * try {
- *   await client.exchange(code, redirectUri)
- * } catch (error) {
+ * const result = await client.exchange(code, redirectUri)
+ * if (!result.success) {
+ *   const error = result.error
  *   if (error instanceof InvalidAuthorizationCodeError) {
- *     // Handle invalid authorization code
  *     // Authorization code expired or invalid
- *   } else if (error instanceof OauthError) {
- *     // Handle OAuth-specific errors
- *     // OAuth error: error.error - error.description
  *   }
  * }
  * ```
@@ -226,19 +222,14 @@ export class InvalidSubjectError extends Error {
 }
 
 /**
- * Error thrown when a refresh token is invalid, expired, or revoked.
+ * Error thrown when a refresh token is invalid or expired.
  * Occurs during token refresh operations.
  *
  * @example
  * ```ts
- * // During token refresh
- * try {
- *   const newTokens = await client.refresh(refreshToken)
- * } catch (error) {
- *   if (error instanceof InvalidRefreshTokenError) {
- *     // Redirect user to login again
- *     redirectToLogin()
- *   }
+ * const result = await client.refresh(refreshToken)
+ * if (!result.success && result.error instanceof InvalidRefreshTokenError) {
+ *   redirectToLogin()
  * }
  * ```
  */
@@ -285,14 +276,9 @@ export class InvalidAccessTokenError extends Error {
  *
  * @example
  * ```ts
- * // During authorization code exchange
- * try {
- *   const tokens = await client.exchange(code, redirectUri)
- * } catch (error) {
- *   if (error instanceof InvalidAuthorizationCodeError) {
- *     // Code may have expired or been used already
- *     redirectToAuthorize()
- *   }
+ * const result = await client.exchange(code, redirectUri)
+ * if (!result.success && result.error instanceof InvalidAuthorizationCodeError) {
+ *   redirectToAuthorize()
  * }
  * ```
  */

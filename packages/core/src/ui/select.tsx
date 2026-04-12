@@ -8,7 +8,6 @@ import { Layout } from "./base"
 import {
 	ICON_APPLE,
 	ICON_DISCORD,
-	ICON_EMAIL,
 	ICON_FACEBOOK,
 	ICON_GITHUB,
 	ICON_GITLAB,
@@ -52,17 +51,13 @@ export interface SelectProps {
  */
 const PROVIDER_ICONS: Record<string, () => Child> = {
 	apple: ICON_APPLE,
-	code: ICON_EMAIL,
 	discord: ICON_DISCORD,
-	email: ICON_EMAIL,
 	facebook: ICON_FACEBOOK,
 	github: ICON_GITHUB,
 	gitlab: ICON_GITLAB,
 	google: ICON_GOOGLE,
 	linkedin: ICON_LINKEDIN,
-	magiclink: ICON_EMAIL,
 	microsoft: ICON_MICROSOFT,
-	password: ICON_EMAIL,
 	reddit: ICON_REDDIT,
 	slack: ICON_SLACK,
 	spotify: ICON_SPOTIFY,
@@ -74,7 +69,6 @@ const PROVIDER_ICONS: Record<string, () => Child> = {
  */
 const DEFAULT_DISPLAYS: Record<string, string> = {
 	apple: "Apple",
-	code: "Code",
 	discord: "Discord",
 	facebook: "Facebook",
 	github: "GitHub",
@@ -82,7 +76,6 @@ const DEFAULT_DISPLAYS: Record<string, string> = {
 	google: "Google",
 	linkedin: "LinkedIn",
 	microsoft: "Microsoft",
-	password: "Password",
 	reddit: "Reddit",
 	slack: "Slack",
 	spotify: "Spotify",

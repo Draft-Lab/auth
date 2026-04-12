@@ -57,7 +57,6 @@
  */
 
 import type { Context } from "hono"
-import { createRemoteJWKSet, jwtVerify } from "jose"
 import { OauthError, type OauthErrorType } from "../error"
 import { generatePKCE } from "../pkce"
 import { generateSecureToken, timingSafeCompare } from "../random"
@@ -120,12 +119,8 @@ export interface Oauth2Config {
 		readonly token: string
 
 		/**
-		 * Optional JWKS endpoint for verifying ID tokens.
-		 * Required only if the provider returns ID tokens that need verification.
-		 *
-		 * @example "https://provider.com/.well-known/jwks.json"
+		 * Additional endpoint configuration for the provider.
 		 */
-		readonly jwks?: string
 	}
 
 	/**
@@ -221,8 +216,6 @@ interface TokenResponse {
 	readonly refresh_token?: string
 	/** Lifetime in seconds of the access token */
 	readonly expires_in?: number
-	/** Optional ID token (JWT) */
-	readonly id_token?: string
 	/** Error code if the request failed */
 	readonly error?: string
 	/** Human-readable error description */
@@ -267,8 +260,7 @@ export interface Oauth2UserData {
  *   clientSecret: "my-client-secret",
  *   endpoint: {
  *     authorization: "https://provider.com/oauth/authorize",
- *     token: "https://provider.com/oauth/token",
- *     jwks: "https://provider.com/.well-known/jwks.json"
+ *     token: "https://provider.com/oauth/token"
  *   },
  *   scopes: ["read", "write"],
  *   pkce: true,
@@ -333,24 +325,6 @@ export const Oauth2Provider = (config: Oauth2Config): Provider<Oauth2UserData> =
 					tokenData.error as OauthErrorType,
 					tokenData.error_description || ""
 				)
-			}
-
-			// Validate ID token if provided and JWKS endpoint is configured
-			if (tokenData.id_token && config.endpoint.jwks) {
-				try {
-					const jwks = createRemoteJWKSet(new URL(config.endpoint.jwks))
-					await jwtVerify(tokenData.id_token, jwks, {
-						issuer: config.endpoint.authorization.split("/").slice(0, 3).join("/"),
-						// Add 60 seconds clock tolerance for nbf/exp claims
-						// Handles minor time drift between servers
-						clockTolerance: 60
-					})
-				} catch (error) {
-					throw new OauthError(
-						"invalid_request",
-						`ID token validation failed: ${error instanceof Error ? error.message : "Unknown error"}`
-					)
-				}
 			}
 
 			return await ctx.success(c, {

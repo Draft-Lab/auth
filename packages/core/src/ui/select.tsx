@@ -6,7 +6,6 @@ import type { Child } from "hono/jsx"
 import type { Theme } from "../themes/theme"
 import { Layout } from "./base"
 import {
-	ICON_APPLE,
 	ICON_DISCORD,
 	ICON_FACEBOOK,
 	ICON_GITHUB,
@@ -50,7 +49,6 @@ export interface SelectProps {
  * Icon components for providers
  */
 const PROVIDER_ICONS: Record<string, () => Child> = {
-	apple: ICON_APPLE,
 	discord: ICON_DISCORD,
 	facebook: ICON_FACEBOOK,
 	github: ICON_GITHUB,
@@ -68,7 +66,6 @@ const PROVIDER_ICONS: Record<string, () => Child> = {
  * Default display names for provider types
  */
 const DEFAULT_DISPLAYS: Record<string, string> = {
-	apple: "Apple",
 	discord: "Discord",
 	facebook: "Facebook",
 	github: "GitHub",

@@ -15,7 +15,7 @@
  *       tenant: "common", // or specific tenant ID
  *       clientID: process.env.MICROSOFT_CLIENT_ID,
  *       clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
- *       scopes: ["openid", "profile", "email", "User.Read"]
+ *       scopes: ["User.Read"]
  *     })
  *   }
  * })
@@ -36,9 +36,6 @@
  *
  * ## Common Scopes
  *
- * - `openid` - Basic OpenID Connect sign-in
- * - `profile` - User's basic profile information
- * - `email` - User's email address
  * - `User.Read` - Read user's profile via Microsoft Graph
  * - `Mail.Read` - Read user's mail
  * - `Calendars.Read` - Read user's calendars
@@ -133,9 +130,6 @@ export interface MicrosoftConfig extends Oauth2WrappedConfig {
 	 * ```ts
 	 * {
 	 *   scopes: [
-	 *     "openid",           // OpenID Connect sign-in
-	 *     "profile",          // Basic profile
-	 *     "email",            // Email address
 	 *     "User.Read",        // Read user profile
 	 *     "Mail.Read",        // Read user mail
 	 *     "Calendars.Read"    // Read user calendars
@@ -185,9 +179,6 @@ export interface MicrosoftConfig extends Oauth2WrappedConfig {
  *   clientID: process.env.MICROSOFT_CLIENT_ID,
  *   clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
  *   scopes: [
- *     "openid",
- *     "profile",
- *     "email",
  *     "User.Read",
  *     "Mail.Read"
  *   ]
@@ -199,9 +190,6 @@ export interface MicrosoftConfig extends Oauth2WrappedConfig {
  *   clientID: process.env.MICROSOFT_CLIENT_ID,
  *   clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
  *   scopes: [
- *     "openid",
- *     "profile",
- *     "email",
  *     "User.Read",
  *     "Directory.Read.All",
  *     "Sites.Read.All"

@@ -166,8 +166,7 @@ export const GoogleProvider = (config: GoogleConfig) => {
 		type: "google",
 		endpoint: {
 			authorization: "https://accounts.google.com/o/oauth2/v2/auth",
-			token: "https://oauth2.googleapis.com/token",
-			jwks: "https://www.googleapis.com/oauth2/v3/certs"
+			token: "https://oauth2.googleapis.com/token"
 		}
 	})
 }

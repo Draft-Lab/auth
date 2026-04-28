@@ -4,7 +4,7 @@
 		"rootDir": "./src",
 		"jsx": "react-jsx",
 		"jsxImportSource": "hono/jsx",
-		"types": ["@draftlab/tsconfig/reset"]
+		"types": ["@draftlab/tsconfig/reset", "node", "bun"]
 	},
 	"include": ["src"]
 }

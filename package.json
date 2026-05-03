@@ -15,10 +15,10 @@
 		"clean": "turbo run clean && rm -rf .turbo node_modules"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.13",
+		"@biomejs/biome": "^2.4.14",
 		"@changesets/cli": "^2.31.0",
-		"@turbo/gen": "^2.9.6",
-		"turbo": "^2.9.6",
+		"@turbo/gen": "^2.9.8",
+		"turbo": "^2.9.8",
 		"typescript": "^6.0.3"
 	},
 	"packageManager": "pnpm@10.0.0"

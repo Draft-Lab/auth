@@ -114,10 +114,16 @@ export interface WellKnown {
 export interface Tokens {
 	/**
 	 * Access token for making authenticated API requests.
+	 *
+	 * This token is intentionally short-lived and should be replaced whenever refresh or verify
+	 * returns a newer token set.
 	 */
 	access: string
 	/**
 	 * Refresh token for obtaining new access tokens.
+	 *
+	 * Refresh tokens rotate on use. Always replace your stored refresh token with the latest value
+	 * returned by `exchange()`, `refresh()`, or `verify()`.
 	 */
 	refresh: string
 	/**
@@ -437,6 +443,7 @@ export interface Client {
 	 * const result = await client.refresh(storedRefreshToken)
 	 *
 	 * if (result.success && result.data.tokens) {
+	 *   // Important: replace both tokens because refresh tokens rotate on use.
 	 *   const { access, refresh: newRefresh } = result.data.tokens
 	 *   updateStoredTokens(access, newRefresh)
 	 * } else if (result.success) {
@@ -477,7 +484,7 @@ export interface Client {
 	 *
 	 * if (result.success) {
 	 *   if (result.data.tokens) {
-	 *     // Tokens were refreshed
+	 *     // Tokens were refreshed, so replace both the access and refresh token you store.
 	 *     updateStoredTokens(result.data.tokens.access, result.data.tokens.refresh)
 	 *   }
 	 *   // Use verified subject data

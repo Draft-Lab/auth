@@ -67,8 +67,12 @@ export interface RefreshTokenStoragePayload {
 	subject: string
 	/** Client identifier that owns this refresh token */
 	clientID: string
+	/** Token TTL configuration used when issuing descendants */
+	ttl: TtlConfiguration
 	/** OAuth scopes associated with this token */
 	scopes?: string[]
+	/** Encrypted successor refresh token used for rotation */
+	nextToken: string
 	/** Timestamp when the refresh token was first used */
 	timeUsed?: number
 }

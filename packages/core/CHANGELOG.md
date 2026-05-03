@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.22.0
+
+### Minor Changes
+
+- Improve Draft Auth token lifecycle and key rotation.
+
 ## 0.21.0
 
 ### Minor Changes

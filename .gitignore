@@ -252,3 +252,6 @@ eslint.config.js
 # tanstack 
 **/.tanstack
 **/routeTree.gen.ts
+
+# auth
+**/persist.json

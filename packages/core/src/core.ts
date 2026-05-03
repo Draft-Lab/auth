@@ -14,7 +14,7 @@ import {
 	UnauthorizedClientError,
 	UnknownStateError
 } from "./error"
-import { encryptionKeys, signingKeys } from "./keys"
+import { encryptionKeys, type KeyRotationPolicy, signingKeys } from "./keys"
 import { validatePKCE } from "./pkce"
 import type { Provider, ProviderOptions } from "./provider/provider"
 import { generateSecureToken } from "./random"
@@ -67,16 +67,21 @@ const normalizeTimingAsync = async <T>(
 
 /**
  * Sets the subject payload in the JWT token and returns the response.
+ *
+ * Pass a custom `subject` when you need a stable identity across logins, devices, or profile
+ * changes. If omitted, Draft Auth derives the subject from the payload properties.
  */
 export interface OnSuccessResponder<T extends { type: string; properties: unknown }> {
 	subject<Type extends T["type"]>(
 		type: Type,
 		properties: Extract<T, { type: Type }>["properties"],
 		opts?: {
+			/** Override the default token lifetimes for this subject issuance. */
 			ttl?: {
 				access?: number
 				refresh?: number
 			}
+			/** Provide a stable identifier instead of deriving one from the payload properties. */
 			subject?: string
 		}
 	): Promise<Response>
@@ -115,10 +120,31 @@ interface IssuerInput<
 	theme?: Theme
 	/** TTL configuration for tokens and sessions */
 	ttl?: {
+		/** Access token TTL in seconds. Defaults to 15 minutes. */
 		access?: number
+		/** Refresh token TTL in seconds. Defaults to 30 days. */
 		refresh?: number
+		/**
+		 * Grace window in seconds where the same refresh token may be retried safely.
+		 * Defaults to 15 seconds.
+		 */
 		reuse?: number
+		/**
+		 * How long to retain a used refresh token for replay detection.
+		 * Defaults to 1 day.
+		 */
 		retention?: number
+	}
+	/**
+	 * Optional key rotation policy for JWT signing keys and encrypted browser state.
+	 *
+	 * Overlap values act as minimums. The issuer will automatically keep signing keys alive long
+	 * enough to verify recently-issued access tokens, and encryption keys alive long enough to
+	 * decrypt short-lived authorization state safely.
+	 */
+	keys?: {
+		signing?: KeyRotationPolicy
+		encryption?: KeyRotationPolicy
 	}
 	/** Provider selection UI function */
 	select?(providers: Record<string, string>, req: Request): Promise<Response>
@@ -207,10 +233,10 @@ export const issuer = <
 			})
 		})
 
-	const ttlAccess = input.ttl?.access ?? 60 * 60 * 24 * 30
-	const ttlRefresh = input.ttl?.refresh ?? 60 * 60 * 24 * 365
-	const ttlRefreshReuse = input.ttl?.reuse ?? 60
-	const ttlRefreshRetention = input.ttl?.retention ?? 0
+	const ttlAccess = input.ttl?.access ?? 60 * 15
+	const ttlRefreshReuse = input.ttl?.reuse ?? 15
+	const ttlRefresh = input.ttl?.refresh ?? 60 * 60 * 24 * 30
+	const ttlRefreshRetention = input.ttl?.retention ?? 60 * 60 * 24
 
 	if (input.theme) {
 		setTheme(input.theme)
@@ -218,8 +244,22 @@ export const issuer = <
 
 	const storage = input.storage
 	const select = lazy(() => input.select ?? Select())
-	const allSigning = lazy(() => signingKeys(storage))
-	const allEncryption = lazy(() => encryptionKeys(storage))
+	// Signing keys must outlive the access token lifetime so recently-issued JWTs stay verifiable
+	// throughout the overlap window.
+	const allSigning = lazy(() => {
+		return signingKeys(storage, {
+			overlap: Math.max(ttlAccess + 60 * 5, input.keys?.signing?.overlap ?? 0),
+			rotateEvery: input.keys?.signing?.rotateEvery
+		})
+	})
+	// Encryption keys protect short-lived browser state. We still keep a conservative overlap so
+	// in-flight flows survive key rollover safely.
+	const allEncryption = lazy(() => {
+		return encryptionKeys(storage, {
+			overlap: Math.max(60 * 60 * 24 + 60 * 5, input.keys?.encryption?.overlap ?? 0),
+			rotateEvery: input.keys?.encryption?.rotateEvery
+		})
+	})
 	const allow = lazy(() => input.allow ?? defaultAllowCheck)
 	const signingKey = lazy(() => allSigning().then((all) => all[0]))
 	const encryptionKey = lazy(() => allEncryption().then((all) => all[0]))
@@ -288,7 +328,22 @@ export const issuer = <
 	}
 
 	/**
+	 * Hashes a refresh token before it is used as a storage key so leaking KV contents does not
+	 * immediately reveal bearer credentials.
+	 */
+	const hashRefreshToken = async (token: string): Promise<string> => {
+		const data = new TextEncoder().encode(token)
+		const digest = await crypto.subtle.digest("SHA-256", data)
+		return Array.from(new Uint8Array(digest))
+			.map((byte) => byte.toString(16).padStart(2, "0"))
+			.join("")
+	}
+
+	/**
 	 * Generates access and refresh tokens for OAuth 2.0.
+	 *
+	 * Access tokens remain stateless JWTs. Refresh tokens are opaque bearer credentials whose server
+	 * state is stored in KV with rotation metadata and an encrypted successor token.
 	 */
 	const generateTokens = async (
 		c: Context,
@@ -297,26 +352,29 @@ export const issuer = <
 			properties: unknown
 			subject: string
 			clientID: string
+			scopes?: string[]
+			refreshToken?: string
 			ttl: { access: number; refresh: number }
 			timeUsed?: number
-			nextToken?: string
 		},
 		opts?: { generateRefreshToken?: boolean }
 	): Promise<TokenGenerationResult> => {
-		const refreshToken = value.nextToken ?? generateSecureToken()
+		const refreshToken = value.refreshToken ?? generateSecureToken()
 
 		if (opts?.generateRefreshToken ?? true) {
+			const nextRefreshToken = generateSecureToken()
 			const refreshPayload = {
 				type: value.type,
 				properties: value.properties,
 				clientID: value.clientID,
 				subject: value.subject,
+				scopes: value.scopes,
 				ttl: value.ttl,
-				nextToken: generateSecureToken(),
+				nextToken: await encrypt(nextRefreshToken),
 				timeUsed: value.timeUsed
 			}
 
-			const refreshKey = ["oauth:refresh", value.subject, refreshToken]
+			const refreshKey = ["oauth:refresh", value.subject, await hashRefreshToken(refreshToken)]
 			await Storage.set(storage, refreshKey, refreshPayload, value.ttl.refresh)
 		}
 
@@ -649,8 +707,10 @@ export const issuer = <
 					throw new Error("Invalid refresh token format")
 				}
 				const subject = splits.join(":")
-				const key = ["oauth:refresh", subject, token]
-				const payload = await Storage.get<RefreshTokenStoragePayload>(storage, key)
+				const key = ["oauth:refresh", subject, await hashRefreshToken(token)]
+				const payload = await normalizeTimingAsync(async () => {
+					return Storage.get<RefreshTokenStoragePayload>(storage, key)
+				})
 
 				if (!payload) {
 					const err = new OauthError("invalid_grant", "Refresh token has been used or expired")
@@ -702,8 +762,25 @@ export const issuer = <
 					}
 				}
 
-				// Handle refresh token reuse logic
+				// Refresh tokens are single-use by default. We retain used tokens briefly so concurrent
+				// retries can succeed inside the reuse window and replays can still be detected.
 				const generateRefreshToken = !payload.timeUsed
+				let nextRefreshToken: string
+				try {
+					const decryptedNextToken = await decrypt(payload.nextToken)
+					if (typeof decryptedNextToken !== "string" || !decryptedNextToken.trim()) {
+						throw new Error("Invalid encrypted refresh token")
+					}
+					nextRefreshToken = decryptedNextToken
+				} catch {
+					return c.json(
+						{
+							error: "server_error",
+							error_description: "Stored refresh token state is invalid"
+						},
+						500
+					)
+				}
 				if (ttlRefreshReuse <= 0) {
 					await Storage.remove(storage, key)
 				} else if (!payload.timeUsed) {
@@ -723,14 +800,8 @@ export const issuer = <
 				const tokens = await generateTokens(
 					c,
 					{
-						type: payload.type,
-						properties: payload.properties,
-						subject: payload.subject,
-						clientID: payload.clientID,
-						ttl: {
-							access: ttlAccess,
-							refresh: ttlRefresh
-						}
+						...payload,
+						refreshToken: nextRefreshToken
 					},
 					{
 						generateRefreshToken

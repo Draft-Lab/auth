@@ -26,11 +26,11 @@
  * import { subjects } from "./subjects"
  *
  * const app = issuer({
- *   { ... }
+ *   providers: { ... },
  *   subjects,
  *   async success(ctx, value) {
  *     const userID = await lookupUser(value.email)
- *     return ctx.subject("user", { userID })
+ *     return ctx.subject("user", { userID }, { subject: `user:${userID}` })
  *   }
  * })
  * ```
@@ -49,6 +49,8 @@
  *
  * - Only store data that doesn't change frequently (avoid usernames, emails that might change)
  * - Keep payload small as it's embedded in every access token
+ * - Prefer a stable `subject` value when completing login flows so token identity survives
+ *   profile changes and repeated sign-ins
  * - Use any validation library compatible with standard-schema specification
  *
  * @packageDocumentation

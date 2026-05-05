@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.23.0
+
+### Minor Changes
+
+- refine token handling, key rotation and issuer safety
+
 ## 0.22.0
 
 ### Minor Changes

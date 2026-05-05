@@ -124,7 +124,8 @@ export interface SlackConfig extends Oauth2WrappedConfig {
  * // Basic Slack authentication
  * const basicSlack = SlackProvider({
  *   clientID: process.env.SLACK_CLIENT_ID,
- *   clientSecret: process.env.SLACK_CLIENT_SECRET
+ *   clientSecret: process.env.SLACK_CLIENT_SECRET,
+ *   scopes: ["users:read"]
  * })
  *
  * // Slack with user scopes

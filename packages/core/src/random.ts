@@ -70,9 +70,8 @@ export const generateUnbiasedDigits = (length: number): string => {
 }
 
 /**
- * Performs a timing-safe comparison of two strings to prevent timing attacks.
- * Always takes the same amount of time regardless of where the strings differ,
- * making it safe for comparing sensitive values like tokens or passwords.
+ * Performs a timing-safe comparison of two equal-length strings to reduce timing attacks.
+ * This helper returns early for non-string values or length mismatches.
  *
  * @param a - First string to compare
  * @param b - Second string to compare
@@ -82,9 +81,6 @@ export const generateUnbiasedDigits = (length: number): string => {
  * ```ts
  * // Safe for comparing sensitive values
  * const isValidToken = timingSafeCompare(userToken, expectedToken)
- *
- * // Safe for password verification
- * const isValidPassword = timingSafeCompare(hashedInput, storedHash)
  *
  * // Returns false for different types or lengths
  * timingSafeCompare("abc", 123 as any) // false

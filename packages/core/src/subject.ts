@@ -1,13 +1,13 @@
 /**
  * Subjects define the structure of data stored in access tokens after successful authentication.
- * They represent the different types of entities that can be authenticated (users, admins, etc.)
- * and are encoded as JWT claims in the resulting access tokens.
+ * They represent the kinds of authenticated subjects your app can encode into access tokens (for
+ * example users or admins) and are stored in the resulting access token payload.
  *
  * ## Quick Start
  *
  * ### 1. Define your subjects
  * ```ts title="subjects.ts"
- * import { object, string } from "valibot"
+ * import { array, number, object, string } from "valibot"
  * import { createSubjects } from "@draftlab/auth/subject"
  *
  * export const subjects = createSubjects({
@@ -47,10 +47,13 @@
  *
  * ## Important Notes
  *
- * - Only store data that doesn't change frequently (avoid usernames, emails that might change)
+ * - Prefer stable properties such as internal IDs. Avoid properties that may change, such as
+ *   usernames or email addresses, unless you are comfortable with token subject data changing
+ *   over time.
  * - Keep payload small as it's embedded in every access token
- * - Prefer a stable `subject` value when completing login flows so token identity survives
- *   profile changes and repeated sign-ins
+ * - Provide an explicit stable `subject` value when completing sign-in flows if you need the
+ *   token subject identifier (`sub`) to remain stable across profile changes and repeated
+ *   sign-ins
  * - Use any validation library compatible with standard-schema specification
  *
  * @packageDocumentation

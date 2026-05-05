@@ -166,7 +166,8 @@ export interface GithubConfig extends Oauth2WrappedConfig {
  * // Basic GitHub authentication
  * const basicGithub = GithubProvider({
  *   clientID: process.env.GITHUB_CLIENT_ID,
- *   clientSecret: process.env.GITHUB_CLIENT_SECRET
+ *   clientSecret: process.env.GITHUB_CLIENT_SECRET,
+ *   scopes: ["user:email", "read:user"]
  * })
  *
  * // GitHub with specific scopes

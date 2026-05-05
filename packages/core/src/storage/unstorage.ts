@@ -22,7 +22,10 @@ interface StorageEntry {
 
 /**
  * Creates a Draft Auth storage adapter using Unstorage drivers.
- * Supports automatic expiration, error handling, and any Unstorage driver.
+ *
+ * This adapter is intentionally thin: it layers Draft Auth key encoding and expiry metadata on top
+ * of the selected Unstorage driver. Consistency and concurrency characteristics therefore depend on
+ * the underlying backend/driver.
  *
  * @param options - Configuration options
  * @param options.driver - Optional Unstorage driver (defaults to memory)
@@ -45,6 +48,13 @@ interface StorageEntry {
  * // Using default memory driver (development only)
  * const memoryStorage = UnStorage()
  * ```
+ *
+ * ## Notes
+ *
+ * - Expiration is handled by Draft Auth metadata stored alongside values
+ * - Driver error behavior is logged conservatively inside this adapter today
+ * - This adapter does not try to upgrade every Unstorage driver into a strongly coordinated
+ *   one-time credential store; backends differ in their consistency characteristics
  */
 export const UnStorage = ({ driver }: { driver?: UnstorageDriver } = {}): StorageAdapter => {
 	const store = createStorage<StorageEntry>({
@@ -139,7 +149,7 @@ export const UnStorage = ({ driver }: { driver?: UnstorageDriver } = {}): Storag
 
 						const entry = await store.getItem(keyPath)
 
-						if (!entry?.value) continue
+						if (!entry) continue
 
 						// Skip expired entries and clean them up
 						if (entry.expiry && now >= entry.expiry) {

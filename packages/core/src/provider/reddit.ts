@@ -118,7 +118,8 @@ export interface RedditConfig extends Oauth2WrappedConfig {
  * // Basic Reddit authentication
  * const basicReddit = RedditProvider({
  *   clientID: process.env.REDDIT_CLIENT_ID,
- *   clientSecret: process.env.REDDIT_CLIENT_SECRET
+ *   clientSecret: process.env.REDDIT_CLIENT_SECRET,
+ *   scopes: ["identity"]
  * })
  *
  * // Reddit with identity scope

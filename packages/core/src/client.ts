@@ -1,6 +1,6 @@
 import type { StandardSchemaV1 } from "@standard-schema/spec"
 /**
- * Draft Auth client for OAuth 2.0 authentication.
+ * Draft Auth client for authentication flows built on OAuth 2.0 token endpoints.
  *
  * ## Quick Start
  *
@@ -15,7 +15,7 @@ import type { StandardSchemaV1 } from "@standard-schema/spec"
  * })
  * ```
  *
- * Start the OAuth flow by calling `authorize`.
+ * Start the sign-in redirect flow by calling `authorize()`.
  *
  * ```ts
  * const result = await client.authorize(
@@ -30,6 +30,13 @@ import type { StandardSchemaV1 } from "@standard-schema/spec"
  * When the user completes the flow, exchange the code for tokens.
  *
  * ```ts
+ * const expectedState = result.data.challenge.state
+ * const actualState = new URLSearchParams(window.location.search).get("state")
+ *
+ * if (expectedState !== actualState) {
+ *   throw new Error("OAuth state mismatch")
+ * }
+ *
  * const result = await client.exchange(code, redirectUri)
  * if (result.success) {
  *   const { access, refresh } = result.data
@@ -37,7 +44,7 @@ import type { StandardSchemaV1 } from "@standard-schema/spec"
  * }
  * ```
  *
- * Verify tokens to get user information.
+ * Verify an access token to get typed subject information.
  *
  * ```ts
  * const result = await client.verify(subjects, accessToken)
@@ -113,7 +120,7 @@ export interface WellKnown {
  */
 export interface Tokens {
 	/**
-	 * Access token for making authenticated API requests.
+	 * Access token returned by the auth server.
 	 *
 	 * This token is intentionally short-lived and should be replaced whenever refresh or verify
 	 * returns a newer token set.
@@ -138,10 +145,14 @@ export interface Tokens {
 export type Challenge = {
 	/**
 	 * State parameter for CSRF protection.
+	 *
+	 * Persist this value and compare it to the `state` returned on your callback URL before trusting
+	 * the callback or calling `exchange()`.
 	 */
 	state: string
 	/**
 	 * PKCE code verifier for token exchange.
+	 * Present only when `authorize()` was called with `{ pkce: true }`.
 	 */
 	verifier?: string
 }
@@ -397,8 +408,10 @@ export interface Client {
 	 * ```ts
 	 * const urlParams = new URLSearchParams(window.location.search)
 	 * const code = urlParams.get('code')
+	 * const state = urlParams.get('state')
+	 * const challenge = JSON.parse(sessionStorage.getItem("challenge") || "{}")
 	 *
-	 * if (code) {
+	 * if (code && state === challenge.state) {
 	 *   const result = await client.exchange(code, "https://myapp.com/callback")
 	 *   if (result.success) {
 	 *     const { access, refresh } = result.data
@@ -411,8 +424,9 @@ export interface Client {
 	 * ```ts
 	 * const challenge = JSON.parse(sessionStorage.getItem("challenge") || "{}")
 	 * const code = new URLSearchParams(window.location.search).get('code')
+	 * const state = new URLSearchParams(window.location.search).get('state')
 	 *
-	 * if (code && challenge.verifier) {
+	 * if (code && challenge.verifier && state === challenge.state) {
 	 *   const result = await client.exchange(
 	 *     code,
 	 *     "https://spa.example.com/callback",
@@ -527,8 +541,11 @@ export const createClient = (input: ClientInput): Client => {
 	}
 	const f = input.fetch ?? (fetch as FetchLike)
 
-	const getIssuer = async (customFetch?: FetchLike): Promise<WellKnown> => {
-		const cached = issuerCache.get(issuer)
+	const getIssuer = async (
+		customFetch?: FetchLike,
+		forceRefresh = false
+	): Promise<WellKnown> => {
+		const cached = forceRefresh ? undefined : issuerCache.get(issuer)
 		if (cached) return cached
 
 		const wellKnown = (await (customFetch ?? f)(
@@ -538,9 +555,9 @@ export const createClient = (input: ClientInput): Client => {
 		return wellKnown
 	}
 
-	const getJWKS = async (customFetch?: FetchLike) => {
-		const wk = await getIssuer(customFetch)
-		const cached = jwksCache.get(issuer)
+	const getJWKS = async (customFetch?: FetchLike, forceRefresh = false) => {
+		const wk = await getIssuer(customFetch, forceRefresh)
+		const cached = forceRefresh ? undefined : jwksCache.get(issuer)
 		if (cached) return cached
 		const keyset = (await (customFetch ?? f)(wk.jwks_uri).then((r: FetchResponse) =>
 			r.json()
@@ -548,6 +565,29 @@ export const createClient = (input: ClientInput): Client => {
 		const result = createLocalJWKSet(keyset)
 		jwksCache.set(issuer, result)
 		return result
+	}
+
+	const shouldRefreshJWKS = (error: unknown) => {
+		return (
+			error instanceof errors.JWKSNoMatchingKey ||
+			error instanceof errors.JWSSignatureVerificationFailed
+		)
+	}
+
+	const verifyAccessJWT = async <T extends Record<string, unknown>>(
+		token: string,
+		customFetch?: FetchLike,
+		options?: {
+			audience?: string
+			issuer?: string
+		},
+		forceRefresh = false
+	) => {
+		const jwks = await getJWKS(customFetch, forceRefresh)
+		return jwtVerify<T>(token, jwks, {
+			issuer: options?.issuer ?? issuer,
+			audience: options?.audience ?? input.clientID
+		})
 	}
 
 	const client: Client = {
@@ -644,10 +684,25 @@ export const createClient = (input: ClientInput): Client => {
 				const fetcher = opts?.fetch ?? f
 				if (opts?.access) {
 					try {
-						const jwks = await getJWKS(fetcher)
-						await jwtVerify(opts.access, jwks, { issuer })
-						return { success: true, data: {} }
-					} catch {}
+						const accessResult = await verifyAccessJWT<{ mode?: string }>(opts.access, fetcher)
+						if (accessResult.payload.mode === "access") {
+							return { success: true, data: {} }
+						}
+					} catch (error) {
+						if (shouldRefreshJWKS(error)) {
+							try {
+								const accessResult = await verifyAccessJWT<{ mode?: string }>(
+									opts.access,
+									fetcher,
+									undefined,
+									true
+								)
+								if (accessResult.payload.mode === "access") {
+									return { success: true, data: {} }
+								}
+							} catch {}
+						}
+					}
 				}
 
 				const wk = await getIssuer(fetcher)
@@ -693,25 +748,25 @@ export const createClient = (input: ClientInput): Client => {
 			token: string,
 			options?: VerifyOptions
 		) {
-			try {
-				const fetcher = options?.fetch ?? f
-				const jwks = await getJWKS(fetcher)
-				const jwtResult = await jwtVerify<{
-					mode: "access"
-					type: keyof T
-					properties: StandardSchemaV1.InferInput<T[keyof T]>
-				}>(token, jwks, {
-					issuer: options?.issuer ?? issuer,
-					audience: options?.audience ?? input.clientID
-				})
-
+			const fetcher = options?.fetch ?? f
+			const validateSubject = async (
+				jwtResult: Awaited<
+					ReturnType<
+						typeof verifyAccessJWT<{
+							mode: "access"
+							type: keyof T
+							properties: StandardSchemaV1.InferInput<T[keyof T]>
+						}>
+					>
+				>
+			) => {
 				const validated = await subjects[jwtResult.payload.type]?.["~standard"].validate(
 					jwtResult.payload.properties
 				)
 
 				if (!validated?.issues && jwtResult.payload.mode === "access") {
 					return {
-						success: true,
+						success: true as const,
 						data: {
 							aud: jwtResult.payload.aud as string,
 							sub: jwtResult.payload.sub as string,
@@ -724,16 +779,41 @@ export const createClient = (input: ClientInput): Client => {
 				}
 
 				return {
-					success: false,
+					success: false as const,
 					error: new InvalidSubjectError()
 				}
-			} catch (e) {
-				if (e instanceof errors.JWTExpired && options?.refresh) {
+			}
+
+			try {
+				const jwtResult = await verifyAccessJWT<{
+					mode: "access"
+					type: keyof T
+					properties: StandardSchemaV1.InferInput<T[keyof T]>
+				}>(token, fetcher, options)
+
+				return validateSubject(jwtResult)
+			} catch (error) {
+				let finalError = error
+
+				if (shouldRefreshJWKS(error)) {
+					try {
+						const jwtResult = await verifyAccessJWT<{
+							mode: "access"
+							type: keyof T
+							properties: StandardSchemaV1.InferInput<T[keyof T]>
+						}>(token, fetcher, options, true)
+
+						return await validateSubject(jwtResult)
+					} catch (retryError) {
+						finalError = retryError
+					}
+				}
+
+				if (finalError instanceof errors.JWTExpired && options?.refresh) {
 					const refreshed = await client.refresh(options.refresh, {
 						fetch: options.fetch
 					})
 					if (!refreshed.success) return refreshed
-
 					if (!refreshed.data.tokens) {
 						return {
 							success: false,

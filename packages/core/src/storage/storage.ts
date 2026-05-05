@@ -57,34 +57,20 @@ const SEPARATOR = String.fromCharCode(0x1f)
 const ESCAPE = "\\"
 
 /**
- * Joins an array of key segments into a single string using the separator.
- * Segments are properly escaped to handle any input, including separators and escape characters.
+ * Joins an array of already-encoded key segments into a single storage key.
  *
  * @param key - Array of key segments to join
  * @returns Single string representing the full key path
- *
- * @example
- * ```ts
- * joinKey(['user', 'data\x1fwith\x1fseparators'])
- * // Returns: "user\x1fdata\\x1fwith\\x1fseparators"
- * ```
  */
 export const joinKey = (key: string[]): string => {
 	return key.join(SEPARATOR)
 }
 
 /**
- * Splits a joined key string back into its component segments.
- * Handles escaped characters properly.
+ * Splits a joined storage key back into its encoded component segments.
  *
  * @param key - Joined key string to split
  * @returns Array of individual key segments
- *
- * @example
- * ```ts
- * splitKey("user\x1fdata\\x1fwith\\x1fseparators")
- * // Returns: ['user', 'data\x1fwith\x1fseparators']
- * ```
  */
 export const splitKey = (key: string): string[] => {
 	return key.split(SEPARATOR)
@@ -152,8 +138,9 @@ export const Storage = {
 	 *
 	 * @example
 	 * ```ts
-	 * Storage.encode(['user', 'data\x1fwith\x1fseparators'])
-	 * // Returns: ['user', 'data\\x1fwith\\x1fseparators']
+	 * const encoded = Storage.encode(["user", "data with separators"])
+	 * const roundTrip = Storage.decode(encoded)
+	 * // roundTrip === ["user", "data with separators"]
 	 * ```
 	 */
 	encode: (key: string[]): string[] => {
@@ -179,7 +166,7 @@ export const Storage = {
 	 * @template T - Expected type of the stored value
 	 * @param adapter - Storage adapter to use
 	 * @param key - Array of key segments identifying the value
-	 * @returns Promise resolving to the typed value or null if not found
+	 * @returns Promise resolving to the typed value or undefined if not found
 	 *
 	 * @example
 	 * ```ts
@@ -197,8 +184,8 @@ export const Storage = {
 	get: <T = Record<string, unknown>>(
 		adapter: StorageAdapter,
 		key: string[]
-	): Promise<T | null> => {
-		return adapter.get(Storage.encode(key)) as Promise<T | null>
+	): Promise<T | undefined> => {
+		return adapter.get(Storage.encode(key)) as Promise<T | undefined>
 	},
 
 	/**
@@ -273,7 +260,7 @@ export const Storage = {
 	 * @template T - Expected type of the stored values
 	 * @param adapter - Storage adapter to use
 	 * @param prefix - Array of key segments to use as prefix filter
-	 * @returns Async iterable of typed key-value pairs
+	 * @returns Async iterable of typed key-value pairs using decoded key segments
 	 *
 	 * @example
 	 * ```ts
@@ -287,6 +274,14 @@ export const Storage = {
 		adapter: StorageAdapter,
 		prefix: string[]
 	): AsyncIterable<readonly [string[], T]> => {
-		return adapter.scan(Storage.encode(prefix)) as AsyncIterable<readonly [string[], T]>
+		const encodedPrefix = Storage.encode(prefix)
+
+		return {
+			async *[Symbol.asyncIterator]() {
+				for await (const [key, value] of adapter.scan(encodedPrefix)) {
+					yield [Storage.decode(key), value as T] as const
+				}
+			}
+		}
 	}
 } as const

@@ -141,7 +141,8 @@ export interface GitlabConfig extends Oauth2WrappedConfig {
  * // Basic GitLab.com authentication
  * const basicGitlab = GitlabProvider({
  *   clientID: process.env.GITLAB_CLIENT_ID,
- *   clientSecret: process.env.GITLAB_CLIENT_SECRET
+ *   clientSecret: process.env.GITLAB_CLIENT_SECRET,
+ *   scopes: ["read_user"]
  * })
  *
  * // GitLab with read access

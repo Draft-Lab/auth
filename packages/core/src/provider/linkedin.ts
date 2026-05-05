@@ -121,7 +121,7 @@ export interface LinkedInConfig extends Oauth2WrappedConfig {
 	 * ```ts
 	 * {
 	 *   query: {
-	 *     state: "custom-state-value" // Custom state parameter
+	 *     prompt: "consent" // Provider-specific extra parameter
 	 *   }
 	 * }
 	 * ```
@@ -141,7 +141,8 @@ export interface LinkedInConfig extends Oauth2WrappedConfig {
  * // Basic LinkedIn authentication
  * const basicLinkedIn = LinkedInProvider({
  *   clientID: process.env.LINKEDIN_CLIENT_ID,
- *   clientSecret: process.env.LINKEDIN_CLIENT_SECRET
+ *   clientSecret: process.env.LINKEDIN_CLIENT_SECRET,
+ *   scopes: ["r_liteprofile", "r_emailaddress"]
  * })
  *
  * // LinkedIn with specific scopes

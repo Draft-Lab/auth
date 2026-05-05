@@ -31,7 +31,8 @@ import { hasKeyPrefix, joinKey, type StorageAdapter, splitKey } from "./storage"
  * - **Not for production**: Use proper databases in production environments
  * - **Development friendly**: Great for testing and local development
  * - **Optional persistence**: Can backup to file to survive restarts
- * - **Automatic cleanup**: Expired entries are removed automatically
+ * - **Best-effort cleanup**: Expired entries are removed when they are read directly. Scans skip
+ *   expired entries but do not eagerly rewrite the persisted file.
  *
  * @packageDocumentation
  */
@@ -68,7 +69,7 @@ type StoreEntry = readonly [
 
 /**
  * Creates an in-memory storage adapter with optional file persistence.
- * Uses binary search for efficient key lookups and maintains sorted order.
+ * Uses binary search for efficient key lookups and maintains sorted order in-process.
  *
  * @param options - Configuration options for the memory storage
  * @returns Storage adapter implementing the StorageAdapter interface

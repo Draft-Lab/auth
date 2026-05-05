@@ -121,7 +121,8 @@ export interface TwitchConfig extends Oauth2WrappedConfig {
  * // Basic Twitch authentication
  * const basicTwitch = TwitchProvider({
  *   clientID: process.env.TWITCH_CLIENT_ID,
- *   clientSecret: process.env.TWITCH_CLIENT_SECRET
+ *   clientSecret: process.env.TWITCH_CLIENT_SECRET,
+ *   scopes: ["user:read:email"]
  * })
  *
  * // Twitch with email scope

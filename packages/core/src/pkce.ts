@@ -161,9 +161,7 @@ export const generatePKCE = async (length = 48): Promise<PKCEChallenge> => {
 
 /**
  * Validates a PKCE code verifier against a previously generated challenge.
- * Uses timing-safe comparison and timing normalization to prevent timing attacks.
- * All validation paths take the same computational time regardless of input validity,
- * making it resistant to timing-based side-channel attacks.
+ * Uses timing-safe comparison and timing normalization to reduce timing side channels.
  *
  * @param verifier - The code verifier received from the client
  * @param challenge - The code challenge stored during authorization

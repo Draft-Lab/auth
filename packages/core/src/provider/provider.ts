@@ -111,14 +111,19 @@ export interface ProviderOptions<Properties> {
 	 * @example
 	 * ```ts
 	 * const userData = { userId: "123", email: "user@example.com" }
-	 * return await ctx.success(c, userData)
+	 * return await provider.success(c, userData)
 	 * ```
 	 */
 	success: (
 		ctx: Context,
 		properties: Properties,
 		opts?: {
-			/** Function to invalidate existing user sessions */
+			/**
+			 * Optional custom invalidation hook invoked with the final subject chosen by the issuer.
+			 *
+			 * This is mainly useful for custom provider authors that want to revoke additional state
+			 * before the issuer completes the login flow.
+			 */
 			readonly invalidate?: (subject: string) => Promise<void>
 		}
 	) => Promise<Response>
@@ -182,8 +187,10 @@ export interface ProviderOptions<Properties> {
 	unset: (ctx: Context, key: string) => Promise<void>
 
 	/**
-	 * Invalidates all sessions for a given subject (user).
-	 * Forces logout across all devices and applications.
+	 * Invalidates all stored refresh-token state for a given subject (user).
+	 *
+	 * This prevents future refreshes for that subject, which effectively logs out other sessions once
+	 * their short-lived access tokens expire.
 	 *
 	 * @param subject - Subject identifier to invalidate
 	 *

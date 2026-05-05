@@ -1,34 +1,38 @@
 import { isDomainMatch } from "./util"
 
 /**
- * Client authorization validation utilities.
- * Provides security checks to determine if OAuth authorization requests should be permitted
- * based on redirect URI validation and domain matching policies.
+ * Client validation utilities.
+ * Provides default checks to determine if incoming authentication requests should be permitted
+ * based on redirect URI validation and hostname matching rules.
  */
 
 /**
- * Input parameters for authorization allow checks.
- * Contains all necessary information to validate if a client request should be permitted.
+ * Input parameters for client-validation checks.
+ * Contains all necessary information to decide whether a client request should be permitted.
  */
 export interface AllowCheckInput {
 	/** The client ID of the application requesting authorization */
 	readonly clientID: string
-	/** The redirect URI where the user will be sent after authorization */
+	/** The redirect URI where the user will be sent after sign-in completes */
 	readonly redirectURI: string
-	/** Optional audience parameter for the authorization request */
+	/**
+	 * Optional audience metadata from the authorization request.
+	 *
+	 * This is available so custom allow callbacks can apply their own client/resource policy.
+	 */
 	readonly audience?: string
 }
 
 /**
- * Default authorization check that validates client requests based on redirect URI security.
+ * Default allow check that validates client requests based on redirect URI safety.
  *
  * ## Security Policy
- * - **Localhost**: Always allowed (for development)
- * - **Same domain**: Redirect URI must match request origin at TLD+1 level
+ * - **Localhost**: Allowed only when the issuer itself is also running on localhost/127.0.0.1
+ * - **Same site**: Redirect URI host must share the same last two hostname labels
  * - **Cross-domain**: Rejected for security
  *
- * This prevents unauthorized applications from hijacking authorization codes by using
- * malicious redirect URIs that don't belong to the legitimate client application.
+ * This prevents unrelated origins from hijacking sign-in callbacks using redirect URIs that do
+ * not belong to the same site as the issuer.
  *
  * @param input - Client request details including ID and redirect URI
  * @param req - The original HTTP request for domain comparison
@@ -36,13 +40,13 @@ export interface AllowCheckInput {
  *
  * @example
  * ```ts
- * // Allowed: localhost development
+ * // Allowed: localhost development when the issuer is also local
  * await defaultAllowCheck({
  *   clientID: "dev-app",
  *   redirectURI: "http://localhost:3000/callback"
  * }, request) // → true
  *
- * // Allowed: same domain
+ * // Allowed: same site
  * // Request from: https://myapp.com
  * await defaultAllowCheck({
  *   clientID: "web-app",
@@ -68,9 +72,10 @@ export const defaultAllowCheck = (input: AllowCheckInput, req: Request): Promise
 				return false
 			}
 
-			// Always allow localhost for development
+			// Allow localhost redirects only when the issuer itself is also local.
 			if (redirectHostname === "localhost" || redirectHostname === "127.0.0.1") {
-				return true
+				const requestHost = new URL(req.url).hostname
+				return requestHost === "localhost" || requestHost === "127.0.0.1"
 			}
 
 			// Extract current request hostname (handling proxy headers)
@@ -84,7 +89,8 @@ export const defaultAllowCheck = (input: AllowCheckInput, req: Request): Promise
 				return false
 			}
 
-			// Check if redirect URI belongs to the same effective domain
+			// Check if redirect URI belongs to the same site according to Draft Auth's lightweight
+			// hostname heuristic.
 			return isDomainMatch(redirectHostname, currentHostname)
 		})()
 	)

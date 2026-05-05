@@ -4,8 +4,6 @@ import { MemoryStorage } from "@draftlab/auth/storage/memory"
 import { createFileRoute } from "@tanstack/react-router"
 import { subjects } from "@/libs/auth"
 
-const id = crypto.randomUUID()
-
 export const auth = issuer({
 	subjects,
 	basePath: "/auth",
@@ -27,13 +25,7 @@ export const auth = issuer({
 	},
 	success: (ctx, value) => {
 		if (value.provider === "github") {
-			return ctx.subject(
-				"user",
-				{
-					email: value.tokenset.access
-				},
-				{ subject: `user:${id}` }
-			)
+			return ctx.subject("user", { email: value.tokenset.access })
 		}
 
 		throw new Error("Unknown provider")

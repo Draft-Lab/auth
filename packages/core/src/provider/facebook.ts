@@ -122,8 +122,7 @@ export interface FacebookConfig extends Oauth2WrappedConfig {
 	 * {
 	 *   query: {
 	 *     display: "popup",           // Show login in popup
-	 *     auth_type: "rerequest",     // Force permission re-request
-	 *     state: "custom-state"       // Custom state parameter
+	 *     auth_type: "rerequest"      // Force permission re-request
 	 *   }
 	 * }
 	 * ```

@@ -170,7 +170,8 @@ export interface MicrosoftConfig extends Oauth2WrappedConfig {
  * const basicMicrosoft = MicrosoftProvider({
  *   tenant: "common",
  *   clientID: process.env.MICROSOFT_CLIENT_ID,
- *   clientSecret: process.env.MICROSOFT_CLIENT_SECRET
+ *   clientSecret: process.env.MICROSOFT_CLIENT_SECRET,
+ *   scopes: ["User.Read"]
  * })
  *
  * // Work/school accounts only

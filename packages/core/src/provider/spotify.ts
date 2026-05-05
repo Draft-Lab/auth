@@ -122,7 +122,8 @@ export interface SpotifyConfig extends Oauth2WrappedConfig {
  * // Basic Spotify authentication
  * const basicSpotify = SpotifyProvider({
  *   clientID: process.env.SPOTIFY_CLIENT_ID,
- *   clientSecret: process.env.SPOTIFY_CLIENT_SECRET
+ *   clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+ *   scopes: ["user-read-email"]
  * })
  *
  * // Spotify with user data access

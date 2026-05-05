@@ -6,7 +6,7 @@ import type { Context } from "hono"
 import { Hono } from "hono"
 import { deleteCookie, getCookie, setCookie } from "hono/cookie"
 import { cors } from "hono/cors"
-import { CompactEncrypt, compactDecrypt, SignJWT } from "jose"
+import { CompactEncrypt, compactDecrypt, decodeProtectedHeader, SignJWT } from "jose"
 import { type AllowCheckInput, defaultAllowCheck } from "./allow"
 import {
 	MissingParameterError,
@@ -28,7 +28,7 @@ import type {
 	TokenGenerationResult
 } from "./types"
 import { Select } from "./ui/select"
-import { getRelativeUrl, lazy, type Prettify } from "./util"
+import { getRelativeUrl, type Prettify } from "./util"
 
 /**
  * Performs an operation with guaranteed minimum execution time.
@@ -76,6 +76,13 @@ export interface OnSuccessResponder<T extends { type: string; properties: unknow
 		type: Type,
 		properties: Extract<T, { type: Type }>["properties"],
 		opts?: {
+			/**
+			 * Revoke all stored refresh-token state for the final subject before issuing a new token set.
+			 *
+			 * Useful for single-session or "latest login wins" policies. Existing access tokens remain
+			 * valid until their short-lived expiry because they are stateless JWTs.
+			 */
+			invalidate?: boolean
 			/** Override the default token lifetimes for this subject issuance. */
 			ttl?: {
 				access?: number
@@ -152,10 +159,10 @@ interface IssuerInput<
 	start?(req: Request): Promise<void>
 	/** Error handling callback */
 	error?(error: UnknownStateError, req: Request): Promise<Response>
-	/** Client authorization check function */
+	/** Client validation / allowlist check function */
 	allow?(input: AllowCheckInput, req: Request): Promise<boolean>
 	/**
-	 * Refresh callback for updating user claims.
+	 * Refresh callback for updating authenticated subject claims.
 	 *
 	 * @example
 	 * ```typescript
@@ -169,8 +176,10 @@ interface IssuerInput<
 	 *     type: payload.type,
 	 *     properties: {
 	 *       userID: user.id,
-	 *       role: user.role,
-	 *       permissions: user.permissions,
+	 *       email: user.email,
+	 *       name: user.name,
+	 *       avatarURL: user.avatarURL,
+	 *       emailVerified: user.emailVerified,
 	 *       lastLogin: new Date().toISOString()
 	 *     }
 	 *   }
@@ -243,26 +252,26 @@ export const issuer = <
 	}
 
 	const storage = input.storage
-	const select = lazy(() => input.select ?? Select())
+	const select = input.select ?? Select()
 	// Signing keys must outlive the access token lifetime so recently-issued JWTs stay verifiable
 	// throughout the overlap window.
-	const allSigning = lazy(() => {
+	const getSigningKeys = () => {
 		return signingKeys(storage, {
 			overlap: Math.max(ttlAccess + 60 * 5, input.keys?.signing?.overlap ?? 0),
 			rotateEvery: input.keys?.signing?.rotateEvery
 		})
-	})
+	}
 	// Encryption keys protect short-lived browser state. We still keep a conservative overlap so
 	// in-flight flows survive key rollover safely.
-	const allEncryption = lazy(() => {
+	const getEncryptionKeys = () => {
 		return encryptionKeys(storage, {
 			overlap: Math.max(60 * 60 * 24 + 60 * 5, input.keys?.encryption?.overlap ?? 0),
 			rotateEvery: input.keys?.encryption?.rotateEvery
 		})
-	})
-	const allow = lazy(() => input.allow ?? defaultAllowCheck)
-	const signingKey = lazy(() => allSigning().then((all) => all[0]))
-	const encryptionKey = lazy(() => allEncryption().then((all) => all[0]))
+	}
+	const allow = input.allow ?? defaultAllowCheck
+	const getSigningKey = async () => (await getSigningKeys())[0]
+	const getEncryptionKey = async () => (await getEncryptionKeys())[0]
 
 	// Cookie path for basePath support
 	const cookiePath = input.basePath || "/"
@@ -290,28 +299,46 @@ export const issuer = <
 	 * Encrypts value for secure cookie storage.
 	 */
 	const encrypt = async (value: unknown): Promise<string> => {
-		const key = await encryptionKey()
+		const key = await getEncryptionKey()
 		if (!key) {
 			throw new Error("Encryption key not available")
 		}
 		return await new CompactEncrypt(new TextEncoder().encode(JSON.stringify(value)))
-			.setProtectedHeader({ alg: "RSA-OAEP-512", enc: "A256GCM" })
+			.setProtectedHeader({ alg: "RSA-OAEP-512", enc: "A256GCM", kid: key.id })
 			.encrypt(key.public)
 	}
 
 	/**
 	 * Decrypts value from secure cookie storage.
+	 *
+	 * The issuer may keep older encryption keys during an overlap window after rotation, so we try
+	 * the key identified by `kid` first and fall back to all currently valid keys.
 	 */
 	const decrypt = async (value: string): Promise<unknown> => {
-		const key = await encryptionKey()
-		if (!key) {
+		const keys = await getEncryptionKeys()
+		if (!keys.length) {
 			throw new Error("Encryption key not available")
 		}
-		return JSON.parse(
-			new TextDecoder().decode(
-				await compactDecrypt(value, key.private).then((result) => result.plaintext)
-			)
-		)
+
+		const header = decodeProtectedHeader(value)
+		const orderedKeys = header.kid
+			? [
+					...keys.filter((key) => key.id === header.kid),
+					...keys.filter((key) => key.id !== header.kid)
+				]
+			: keys
+
+		for (const key of orderedKeys) {
+			try {
+				return JSON.parse(
+					new TextDecoder().decode(
+						await compactDecrypt(value, key.private).then((result) => result.plaintext)
+					)
+				)
+			} catch {}
+		}
+
+		throw new Error("Unable to decrypt value with active encryption keys")
 	}
 
 	/**
@@ -378,7 +405,7 @@ export const issuer = <
 			await Storage.set(storage, refreshKey, refreshPayload, value.ttl.refresh)
 		}
 
-		const signingKeyData = await signingKey()
+		const signingKeyData = await getSigningKey()
 		if (!signingKeyData) {
 			throw new Error("Signing key not available")
 		}
@@ -417,7 +444,7 @@ export const issuer = <
 	}
 
 	/**
-	 * Gets authorization state from context.
+	 * Gets OAuth request state from context.
 	 */
 	const getAuthorization = async (c: Context) => {
 		const match = (await auth.get(c, "authorization")) || c.get("authorization")
@@ -443,7 +470,13 @@ export const issuer = <
 				{
 					async subject(type, properties, subjectOpts) {
 						const subject = subjectOpts?.subject ?? (await resolveSubject(type, properties))
-						await successOpts?.invalidate?.(await resolveSubject(type, properties))
+
+						if (subjectOpts?.invalidate) {
+							await auth.invalidate(subject)
+						}
+
+						await successOpts?.invalidate?.(subject)
+
 						if (!authorization.redirect_uri) {
 							throw new Error("redirect_uri is required")
 						}
@@ -572,7 +605,7 @@ export const issuer = <
 			credentials: false
 		}),
 		async (c) => {
-			const signingKeysData = await allSigning()
+			const signingKeysData = await getSigningKeys()
 
 			const jwksDocument = {
 				keys: signingKeysData.map((keyInfo) => ({
@@ -634,25 +667,13 @@ export const issuer = <
 				const key = ["oauth:code", code.toString()]
 
 				// Validate code with timing normalization to prevent timing attacks
-				const { isValid, payload } = await normalizeTimingAsync(async () => {
-					const data = await Storage.get<CodeStoragePayload>(storage, key)
-
-					const redirectUri = form.get("redirect_uri")
-					const clientId = form.get("client_id")
-
-					const valid = !!(
-						data &&
-						data.redirectURI === redirectUri &&
-						data.clientID === clientId
-					)
-
-					return {
-						isValid: valid,
-						payload: valid ? data : undefined
-					}
+				const payload = await normalizeTimingAsync(async () => {
+					return Storage.get<CodeStoragePayload>(storage, key)
 				})
+				const redirectUri = form.get("redirect_uri")
+				const clientId = form.get("client_id")
 
-				if (!isValid || !payload) {
+				if (!payload || payload.redirectURI !== redirectUri || payload.clientID !== clientId) {
 					const err = new OauthError(
 						"invalid_grant",
 						"Authorization code has been used or expired"
@@ -703,10 +724,11 @@ export const issuer = <
 
 				const splits = refreshTokenStr.split(":")
 				const token = splits.pop()
-				if (!token) {
-					throw new Error("Invalid refresh token format")
-				}
 				const subject = splits.join(":")
+				if (!token || !subject.trim()) {
+					const err = new OauthError("invalid_grant", "Refresh token has been used or expired")
+					return c.json(err.toJSON(), 400)
+				}
 				const key = ["oauth:refresh", subject, await hashRefreshToken(token)]
 				const payload = await normalizeTimingAsync(async () => {
 					return Storage.get<RefreshTokenStoragePayload>(storage, key)
@@ -748,7 +770,7 @@ export const issuer = <
 						if (refreshResult.subject) {
 							payload.subject = refreshResult.subject
 						}
-						if (refreshResult.scopes) {
+						if (refreshResult.scopes !== undefined) {
 							payload.scopes = refreshResult.scopes
 						}
 					} catch {
@@ -781,6 +803,7 @@ export const issuer = <
 						500
 					)
 				}
+
 				if (ttlRefreshReuse <= 0) {
 					await Storage.remove(storage, key)
 				} else if (!payload.timeUsed) {
@@ -842,6 +865,23 @@ export const issuer = <
 		const scope = c.req.query("scope")
 		const scopes = scope ? scope.split(" ").filter(Boolean) : undefined
 
+		if (
+			(code_challenge && !code_challenge_method) ||
+			(!code_challenge && code_challenge_method)
+		) {
+			throw new OauthError(
+				"invalid_request",
+				"code_challenge and code_challenge_method must be provided together"
+			)
+		}
+
+		if (code_challenge_method && code_challenge_method !== "S256") {
+			throw new OauthError(
+				"invalid_request",
+				`Unsupported code_challenge_method: ${code_challenge_method}`
+			)
+		}
+
 		const authorization: AuthorizationState = {
 			response_type,
 			redirect_uri,
@@ -898,7 +938,7 @@ export const issuer = <
 
 		// Client authorization check
 		if (
-			!(await allow()(
+			!(await allow(
 				{
 					clientID: client_id,
 					redirectURI: redirect_uri,
@@ -915,6 +955,10 @@ export const issuer = <
 
 		// Handle provider selection
 		if (provider) {
+			if (!Object.hasOwn(input.providers, provider)) {
+				throw new OauthError("invalid_request", `Unknown provider: ${provider}`)
+			}
+
 			return c.redirect(`${provider}/authorize`)
 		}
 
@@ -926,7 +970,7 @@ export const issuer = <
 		// Show provider selection UI
 		return auth.forward(
 			c,
-			await select()(
+			await select(
 				Object.fromEntries(
 					Object.entries(input.providers).map(([key, value]) => [key, value.type])
 				),

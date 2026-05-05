@@ -40,35 +40,11 @@ export const getRelativeUrl = (c: Context, path: string): string => {
 }
 
 /**
- * List of known two-part top-level domains that require special handling
- * for domain matching. These domains have an additional level that should
- * be considered when determining effective domain boundaries.
- */
-const twoPartTlds = [
-	"co.uk",
-	"co.jp",
-	"co.kr",
-	"co.nz",
-	"co.za",
-	"co.in",
-	"com.au",
-	"com.br",
-	"com.cn",
-	"com.mx",
-	"com.tw",
-	"net.au",
-	"org.uk",
-	"ne.jp",
-	"ac.uk",
-	"gov.uk",
-	"edu.au",
-	"gov.au"
-] as const
-
-/**
- * Determines if two domain names are considered a match for security purposes.
- * Uses effective TLD+1 matching to allow subdomains while preventing
- * unauthorized cross-domain requests.
+ * Determines if two hostnames should be treated as belonging to the same site for Draft Auth's
+ * default allow policy.
+ *
+ * This is intentionally a lightweight heuristic that allows exact matches and direct subdomains of
+ * the same registrable-looking suffix. It is not a full public-suffix implementation.
  *
  * @param a - First domain name to compare
  * @param b - Second domain name to compare
@@ -77,8 +53,8 @@ const twoPartTlds = [
  * @example
  * ```ts
  * isDomainMatch("app.example.com", "auth.example.com") // true
+ * isDomainMatch("example.com", "auth.example.com") // true
  * isDomainMatch("example.com", "evil.com") // false
- * isDomainMatch("app.co.uk", "auth.co.uk") // true (handles two-part TLD)
  * ```
  */
 export const isDomainMatch = (a: string, b: string): boolean => {
@@ -88,71 +64,8 @@ export const isDomainMatch = (a: string, b: string): boolean => {
 
 	const partsA = a.split(".")
 	const partsB = b.split(".")
-
-	const hasTwoPartTld = twoPartTlds.some(
-		(tld) => a.endsWith(`.${tld}`) || b.endsWith(`.${tld}`)
-	)
-
-	const numParts = hasTwoPartTld ? -3 : -2
-	const min = Math.min(partsA.length, partsB.length, numParts)
-	const tailA = partsA.slice(min).join(".")
-	const tailB = partsB.slice(min).join(".")
+	const tailA = partsA.slice(-2).join(".")
+	const tailB = partsB.slice(-2).join(".")
 
 	return tailA === tailB
 }
-
-/**
- * Creates a lazy-evaluated function that caches the result of the first execution.
- * Subsequent calls return the cached value without re-executing the function.
- *
- * @template T - The return type of the lazy function
- * @param fn - Function to execute lazily
- * @returns Function that returns the cached result
- *
- * @example
- * ```ts
- * const expensiveOperation = lazy(() => {
- *   // Computing... (only logs once)
- *   return heavyComputation()
- * })
- *
- * const result1 = expensiveOperation() // Executes and caches
- * const result2 = expensiveOperation() // Returns cached value
- * ```
- */
-export const lazy = <T>(fn: () => T): (() => T) => {
-	let value: T
-	let hasValue = false
-
-	return (): T => {
-		if (!hasValue) {
-			value = fn()
-			hasValue = true
-		}
-		return value
-	}
-}
-
-/**
- * Utility function to immediately invoke a function and return its result.
- * Useful for complex conditional rendering logic in JSX/TSX where you want
- * to use if/else statements instead of ternary operators.
- *
- * @template T - The return type of the function
- * @param fn - Function to execute immediately
- * @returns The result of executing the function
- *
- * @example
- * ```tsx
- * return (
- *   <div>
- *     {run(() => {
- *       if (state === "loading") return <Spinner />
- *       if (state === "error") return <Error />
- *       return <Content />
- *     })}
- *   </div>
- * )
- * ```
- */
-export const run = <T>(fn: () => T): T => fn()

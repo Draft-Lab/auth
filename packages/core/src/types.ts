@@ -14,11 +14,21 @@ export interface AuthorizationState {
 	state?: string
 	/** OAuth client identifier */
 	client_id?: string
-	/** OAuth audience parameter */
+	/**
+	 * Optional audience metadata from the authorization request.
+	 *
+	 * Draft Auth currently forwards this to the `allow()` callback but does not mint it into the
+	 * access token audience claim by default.
+	 */
 	audience?: string
 	/** Raw scope string from request */
 	scope?: string
-	/** Parsed OAuth scopes array */
+	/**
+	 * Parsed OAuth scopes preserved as authorization metadata.
+	 *
+	 * These scopes are available to issuer hooks and refresh-token state but are not embedded into
+	 * access-token claims by default.
+	 */
 	scopes?: string[]
 	/** PKCE challenge data for code verification */
 	pkce?: PKCEChallenge
@@ -69,7 +79,7 @@ export interface RefreshTokenStoragePayload {
 	clientID: string
 	/** Token TTL configuration used when issuing descendants */
 	ttl: TtlConfiguration
-	/** OAuth scopes associated with this token */
+	/** OAuth scopes metadata associated with this refresh token chain. */
 	scopes?: string[]
 	/** Encrypted successor refresh token used for rotation */
 	nextToken: string
@@ -92,7 +102,7 @@ export interface CodeStoragePayload {
 	redirectURI: string
 	/** Client identifier */
 	clientID: string
-	/** OAuth scopes */
+	/** OAuth scopes metadata captured during authorization. */
 	scopes?: string[]
 	/** Token TTL configuration */
 	ttl: TtlConfiguration

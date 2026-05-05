@@ -145,7 +145,8 @@ export interface DiscordConfig extends Oauth2WrappedConfig {
  * // Basic Discord authentication
  * const basicDiscord = DiscordProvider({
  *   clientID: process.env.DISCORD_CLIENT_ID,
- *   clientSecret: process.env.DISCORD_CLIENT_SECRET
+ *   clientSecret: process.env.DISCORD_CLIENT_SECRET,
+ *   scopes: ["identify"]
  * })
  *
  * // Discord with specific scopes

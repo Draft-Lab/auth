@@ -45,7 +45,8 @@
  *
  * ```ts
  * success: async (ctx, value) => {
- *   if (value.provider === "oauth2") {
+ *   // `value.provider` is the key you configured inside issuer({ providers: { ... } })
+ *   if (value.provider === "github") {
  *     // Access token for API calls: value.tokenset.access
  *     // Refresh token (if provided): value.tokenset.refresh
  *     // Client ID used: value.clientID
@@ -180,7 +181,7 @@ export interface Oauth2Config {
  * Used internally for provider wrapping.
  * @internal
  */
-export type Oauth2WrappedConfig = Omit<Oauth2Config, "endpoint" | "name">
+export type Oauth2WrappedConfig = Omit<Oauth2Config, "endpoint">
 
 /**
  * OAuth 2.0 token response containing access tokens and metadata.
@@ -306,7 +307,6 @@ export const Oauth2Provider = (config: Oauth2Config): Provider<Oauth2UserData> =
 		c: Context,
 		ctx: {
 			get: <T>(c: Context, key: string) => Promise<T | undefined>
-			set: <T>(c: Context, key: string, ttl: number, value: T) => Promise<void>
 			success: (c: Context, data: Oauth2UserData) => Promise<Response>
 		},
 		provider: ProviderState,

@@ -31,8 +31,8 @@
  */
 
 /**
- * Standard OAuth error types
- * These error codes are returned by OAuth authorization servers.
+ * OAuth-related error codes used by Draft Auth.
+ * They primarily follow standard OAuth error names, with a few pragmatic additions for local use.
  */
 export type OauthErrorType =
 	| "invalid_request" // Request is missing required parameter or malformed
@@ -92,24 +92,6 @@ export class OauthError extends Error {
 			error: this.error,
 			error_description: this.description
 		}
-	}
-}
-
-/**
- * Error thrown when a provider parameter is missing from the authorization request.
- * Occurs when multiple providers are configured but no specific provider is selected.
- */
-export class MissingProviderError extends OauthError {
-	/**
-	 * Creates a missing provider error.
-	 * Thrown when the provider query parameter is required but not provided.
-	 */
-	constructor() {
-		super(
-			"invalid_request",
-			"Must specify `provider` query parameter if `select` callback on issuer is not specified"
-		)
-		this.name = "MissingProviderError"
 	}
 }
 

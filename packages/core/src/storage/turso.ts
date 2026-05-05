@@ -2,14 +2,14 @@ import type { Client } from "@libsql/client"
 import { hasKeyPrefix, joinKey, type StorageAdapter, splitKey } from "./storage"
 
 /**
- * Turso/LibSQL storage adapter for Draft Auth with automatic expiration cleanup.
- * Provides persistent storage using Turso's edge database with built-in TTL support.
+ * Turso/LibSQL storage adapter for Draft Auth with persistent key-value storage semantics.
+ * Expiration is handled by Draft Auth at read/scan time rather than by native database TTL.
  *
  * ## Features
  *
  * - **Edge database**: Fast global access through Turso's distributed architecture
- * - **Automatic expiration**: Built-in cleanup of expired entries
- * - **ACID transactions**: Reliable data consistency
+ * - **Read-time expiration handling**: Expired entries are skipped and opportunistically cleaned up
+ * - **SQL-backed persistence**: Suitable for durable server-side auth state
  * - **Efficient scanning**: Optimized prefix-based queries
  *
  * @example
@@ -42,8 +42,8 @@ interface StorageRow {
 
 /**
  * Creates a Turso storage adapter using the provided LibSQL client.
- * Automatically initializes the required database table and implements
- * the StorageAdapter interface with efficient SQL operations.
+ * The adapter initializes its backing table/indexes in the background and implements the
+ * StorageAdapter interface using straightforward SQL operations.
  *
  * @param client - Configured LibSQL client for database operations
  * @returns Storage adapter implementing the StorageAdapter interface

@@ -131,7 +131,8 @@ export interface GoogleConfig extends Oauth2WrappedConfig {
  * // Basic setup for user authentication
  * const basicGoogle = GoogleProvider({
  *   clientID: process.env.GOOGLE_CLIENT_ID,
- *   clientSecret: process.env.GOOGLE_CLIENT_SECRET
+ *   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+ *   scopes: ["profile", "email"]
  * })
  *
  * // Advanced setup with API access

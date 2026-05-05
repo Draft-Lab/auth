@@ -162,7 +162,10 @@ interface IssuerInput<
 	/** Client validation / allowlist check function */
 	allow?(input: AllowCheckInput, req: Request): Promise<boolean>
 	/**
-	 * Refresh callback for updating authenticated subject claims.
+	 * Refresh callback for updating authenticated subject properties.
+	 *
+	 * Returning `undefined` invalidates the refresh-token chain. Returning a value keeps the same
+	 * subject identity and subject type while replacing only the stored subject properties.
 	 *
 	 * @example
 	 * ```typescript
@@ -173,7 +176,6 @@ interface IssuerInput<
 	 *   }
 	 *
 	 *   return {
-	 *     type: payload.type,
 	 *     properties: {
 	 *       userID: user.id,
 	 *       email: user.email,
@@ -192,18 +194,9 @@ interface IssuerInput<
 			properties: SubjectPayload<Subjects>["properties"]
 			subject: string
 			clientID: string
-			scopes?: string[]
 		},
 		req: Request
-	): Promise<
-		| {
-				type: SubjectPayload<Subjects>["type"]
-				properties: SubjectPayload<Subjects>["properties"]
-				subject?: string
-				scopes?: string[]
-		  }
-		| undefined
-	>
+	): Promise<{ properties: SubjectPayload<Subjects>["properties"] } | undefined>
 }
 
 /**
@@ -747,8 +740,7 @@ export const issuer = <
 								type: payload.type,
 								properties: payload.properties,
 								subject: payload.subject,
-								clientID: payload.clientID,
-								scopes: payload.scopes
+								clientID: payload.clientID
 							},
 							c.req.raw
 						)
@@ -765,14 +757,7 @@ export const issuer = <
 						}
 
 						// Update payload with refresh result
-						payload.type = refreshResult.type
 						payload.properties = refreshResult.properties
-						if (refreshResult.subject) {
-							payload.subject = refreshResult.subject
-						}
-						if (refreshResult.scopes !== undefined) {
-							payload.scopes = refreshResult.scopes
-						}
 					} catch {
 						return c.json(
 							{

@@ -24,9 +24,9 @@ export interface AuthorizationState {
 	/** Raw scope string from request */
 	scope?: string
 	/**
-	 * Parsed OAuth scopes preserved as authorization metadata.
+	 * Parsed scope values preserved as request metadata.
 	 *
-	 * These scopes are available to issuer hooks and refresh-token state but are not embedded into
+	 * These values are available to issuer hooks and refresh-token state but are not embedded into
 	 * access-token claims by default.
 	 */
 	scopes?: string[]
@@ -79,7 +79,7 @@ export interface RefreshTokenStoragePayload {
 	clientID: string
 	/** Token TTL configuration used when issuing descendants */
 	ttl: TtlConfiguration
-	/** OAuth scopes metadata associated with this refresh token chain. */
+	/** Optional scope values preserved as request metadata for this refresh-token chain. */
 	scopes?: string[]
 	/** Encrypted successor refresh token used for rotation */
 	nextToken: string
@@ -102,7 +102,7 @@ export interface CodeStoragePayload {
 	redirectURI: string
 	/** Client identifier */
 	clientID: string
-	/** OAuth scopes metadata captured during authorization. */
+	/** Optional scope values captured from the request and preserved as metadata. */
 	scopes?: string[]
 	/** Token TTL configuration */
 	ttl: TtlConfiguration

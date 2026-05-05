@@ -1,5 +1,11 @@
 # @draftlab/auth
 
+## 0.24.0
+
+### Minor Changes
+
+- modify refresh callback to only change properties or invalidate
+
 ## 0.23.0
 
 ### Minor Changes
